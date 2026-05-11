@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MSC Studio · mockup</title>
+<style>
+  :root{
+    --bg: #FAF9F7;
+    --surface: #FFFFFF;
+    --surface-2: #F4F2EE;
+    --ink: #1A1A1A;
+    --ink-muted: #6B6B6B;
+    --ink-tertiary: #9A9A9A;
+    --border: #E6E3DD;
+    --border-strong: #D0CDC5;
+    --pri: #2C3D6E;
+    --pri-soft: #E6F1FB;
+    --pri-ink: #0C447C;
+    --amber: #F5C84B;
+    --amber-soft: #FAEEDA;
+    --amber-ink: #854F0B;
+    --green-soft: #E1F5EE;
+    --green-ink: #085041;
+    --red-soft: #FCEBEB;
+    --red-strong: #F09595;
+    --red-ink: #791F1F;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system,BlinkMacSystemFont,"Segoe UI","Inter",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5}
+  .page{max-width:980px;margin:0 auto;padding:32px 20px}
+  .intro{margin-bottom:24px}
+  .intro h1{font-size:22px;font-weight:600;margin:0 0 6px}
+  .intro p{margin:0;color:var(--ink-muted);font-size:14px}
+  .intro .pill{display:inline-block;font-size:11px;background:var(--amber-soft);color:var(--amber-ink);padding:3px 10px;border-radius:999px;margin-bottom:8px;font-weight:500}
+
+  .msc-app{font-family:var(--font);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+  .msc-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+  .msc-brand{display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px}
+  .msc-mark{width:22px;height:22px;border-radius:6px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
+  .msc-topright{display:flex;align-items:center;gap:10px}
+  .msc-stepper{display:flex;gap:5px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--border)}
+  .msc-step{font-size:11px;padding:6px 9px;border-radius:var(--radius-md);border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink-muted);font-family:inherit}
+  .msc-step.active{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .msc-screen{padding:18px 16px;min-height:480px}
+  .msc-h{font-size:17px;font-weight:600;margin:0 0 6px}
+  .msc-sub{font-size:13px;color:var(--ink-muted);margin:0 0 14px}
+  .msc-row{display:flex;gap:10px;flex-wrap:wrap}
+  .msc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px}
+  .msc-projcard{flex:1 1 230px;display:flex;flex-direction:column;gap:6px;position:relative}
+  .msc-status{font-size:11px;padding:2px 8px;border-radius:var(--radius-md);width:fit-content;font-weight:500}
+  .st-draft{background:var(--amber-soft);color:var(--amber-ink)}
+  .st-pub{background:var(--green-soft);color:var(--green-ink)}
+  .st-arch{background:var(--surface-2);color:var(--ink-muted)}
+  .msc-btn{font-size:12px;padding:7px 12px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface);cursor:pointer;font-family:inherit;color:var(--ink)}
+  .msc-btn:hover{background:var(--surface-2)}
+  .msc-btn-pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .msc-btn-pri:hover{background:#23335E;color:#fff}
+  .msc-btn-amber{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:500}
+  .msc-btn-amber:hover{background:#E2B438;color:var(--amber-ink)}
+  .msc-btn-sm{font-size:11px;padding:4px 9px}
+  .msc-btn-link{background:transparent;border:none;color:var(--pri);text-decoration:underline;cursor:pointer;font-size:11px;padding:0;font-family:inherit}
+  .msc-fld{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+  .msc-lbl{font-size:12px;color:var(--ink-muted)}
+  .msc-input,.msc-textarea,.msc-select{width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface);color:var(--ink);font-family:inherit;box-sizing:border-box}
+  .msc-input:focus,.msc-textarea:focus,.msc-select:focus{outline:2px solid var(--pri-soft);border-color:var(--pri)}
+  .msc-textarea{min-height:60px;resize:vertical}
+  .msc-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .msc-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .msc-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .msc-thumb{aspect-ratio:1/1;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink-tertiary);cursor:pointer;overflow:hidden;position:relative}
+  .msc-thumb.sel{border:2px solid var(--pri)}
+  .msc-color{width:18px;height:18px;border-radius:50%;border:1px solid var(--border);display:inline-block;vertical-align:middle;margin-right:6px}
+  .msc-tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .msc-tbl th,.msc-tbl td{text-align:left;padding:8px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .msc-tbl th{font-weight:500;color:var(--ink-muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .msc-pill{font-size:11px;padding:2px 8px;border-radius:var(--radius-md);background:var(--surface-2);color:var(--ink-muted)}
+  .msc-pill-pri{background:var(--pri-soft);color:var(--pri-ink);font-weight:500}
+  .msc-pill-amber{background:var(--amber-soft);color:var(--amber-ink)}
+  .msc-pill-green{background:var(--green-soft);color:var(--green-ink)}
+  .msc-foto{width:30px;height:30px;border-radius:var(--radius-md);background:var(--surface-2);border:1px solid var(--border);flex-shrink:0}
+  .msc-search{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+  .msc-search-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center}
+  .msc-prod-list{max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-md)}
+  .msc-prod-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid var(--border);font-size:12px}
+  .msc-prod-row:last-child{border-bottom:0}
+  .msc-prod-row.sel{background:var(--pri-soft)}
+  .msc-prod-name{flex:1;line-height:1.3}
+  .msc-prod-cod{font-size:10px;color:var(--ink-tertiary)}
+  .msc-prod-prc{font-size:11px;font-weight:500}
+  .msc-mini{font-size:11px;color:var(--ink-tertiary)}
+  .msc-num{font-size:12px;padding:5px 8px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface);color:var(--ink);font-family:inherit;box-sizing:border-box}
+
+  .msc-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid var(--border);background:var(--surface-2)}
+  .hidden{display:none}
+  .msc-selstrip{display:flex;gap:6px;overflow-x:auto;padding:8px;border:1px dashed var(--pri);border-radius:var(--radius-md);background:var(--pri-soft);margin-bottom:10px;align-items:center}
+  .msc-chip{display:flex;align-items:center;gap:6px;padding:4px 6px 4px 4px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);font-size:11px;flex-shrink:0}
+  .msc-chip-foto{width:22px;height:22px;border-radius:4px;background:var(--surface-2)}
+  .msc-chip-x{font-size:14px;color:var(--ink-tertiary);cursor:pointer;padding:0 4px}
+  .msc-dz{border:2px dashed var(--border-strong);border-radius:var(--radius-md);padding:14px;text-align:center;font-size:12px;color:var(--ink-muted);background:var(--surface-2)}
+  .msc-dz-row{display:flex;gap:6px;margin-top:8px}
+  .msc-dz-thumb{width:48px;height:48px;border-radius:var(--radius-md);background:var(--surface-2);border:1px solid var(--border);font-size:9px;color:var(--ink-tertiary);display:flex;align-items:center;justify-content:center}
+  .msc-menu{position:absolute;top:8px;right:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-md);padding:2px 8px;font-size:14px;cursor:pointer;color:var(--ink-muted)}
+  .msc-callout{font-size:12px;padding:8px 10px;background:var(--amber-soft);color:var(--amber-ink);border-radius:var(--radius-md);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .msc-asset-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface)}
+  .msc-asset-thumb{width:100%;aspect-ratio:1/1;border-radius:var(--radius-md);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--ink-tertiary);font-size:11px;text-align:center;padding:4px}
+  .msc-asset-thumb.has{background:linear-gradient(135deg,#FFE0EC,#FFC0D5);color:#A32D2D;font-weight:500}
+  .msc-asset-thumb.has-blue{background:var(--pri);color:var(--amber);font-weight:500}
+  .msc-asset-card .msc-mini{margin-top:2px}
+  .msc-section{padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-2);margin:8px 0}
+  .msc-section-h{font-size:12px;font-weight:500;color:var(--ink);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .msc-toggle{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+  .msc-radio{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border-strong);display:inline-block;vertical-align:middle;position:relative}
+  .msc-radio.on{border-color:var(--pri)}
+  .msc-radio.on::after{content:'';position:absolute;top:2px;left:2px;width:5px;height:5px;border-radius:50%;background:var(--pri)}
+
+  .preview-section{margin-bottom:18px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);overflow:hidden}
+  .preview-section-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+  .preview-section-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+  .preview-section-body{padding:10px 12px}
+  .preview-thumb{position:relative;border-radius:var(--radius-md);overflow:hidden;cursor:pointer;border:1px solid var(--border);background:linear-gradient(180deg,#F5A8B8,#DC5070)}
+  .preview-thumb:hover{outline:2px solid var(--pri);outline-offset:2px}
+  .preview-thumb.square{aspect-ratio:1/1}
+  .preview-thumb.story{aspect-ratio:9/16}
+  .preview-thumb.tv{aspect-ratio:16/9}
+  .preview-thumb.cat{aspect-ratio:7/9}
+  .preview-thumb.hero{aspect-ratio:5/2}
+  .preview-thumb-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.55));color:#fff;font-size:10px;padding:14px 6px 4px;font-weight:500;text-align:center}
+  .preview-thumb-badge{position:absolute;top:4px;right:4px;background:var(--amber);color:var(--amber-ink);font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
+  .preview-thumb-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:10px;text-align:center;padding:8px}
+  .preview-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+  .editor-mode-tabs{display:flex;gap:6px;margin-bottom:12px;padding:4px;background:var(--surface-2);border-radius:var(--radius-md);width:fit-content}
+  .editor-mode-tab{font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;border:none;background:transparent;color:var(--ink-muted);font-family:inherit}
+  .editor-mode-tab.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-weight:500}
+
+  .msc-editor{display:grid;grid-template-columns:1fr 220px;gap:14px}
+  .msc-canvas{aspect-ratio:1/1;background:#F5A8B8;border-radius:var(--radius-md);padding:14px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+  .msc-canvas-head{background:var(--pri);color:var(--amber);padding:6px 10px;border-radius:var(--radius-md);font-size:13px;font-weight:600;text-align:center}
+  .msc-canvas-photo{background:#fff;border-radius:var(--radius-md);height:140px;display:flex;align-items:center;justify-content:center;color:var(--ink-tertiary);font-size:11px;cursor:pointer;border:2px dashed transparent}
+  .msc-canvas-photo:hover{border-color:var(--amber)}
+  .msc-canvas-text{font-size:13px;font-weight:500;text-align:center;background:rgba(255,255,255,.92);color:#A32D2D;padding:8px;border-radius:var(--radius-md);cursor:text}
+  .msc-tools{display:flex;flex-direction:column;gap:6px;font-size:12px}
+  .msc-tool{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:8px;background:var(--surface)}
+  .msc-tool:hover{background:var(--surface-2)}
+  .msc-toolicon{width:14px;height:14px;flex-shrink:0;border-radius:3px;background:var(--surface-2);font-size:10px;display:flex;align-items:center;justify-content:center}
+
+  .catalog-canvas{aspect-ratio:7/9;background:linear-gradient(180deg,#F5A8B8,#DC5070);border-radius:var(--radius-md);padding:18px 12px;color:#fff;position:relative;display:flex;flex-direction:column;gap:8px}
+  .catalog-header{background:var(--pri);color:var(--amber);text-align:center;padding:8px;border-radius:6px;font-size:13px;font-weight:600}
+  .catalog-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px}
+  .catalog-cell{background:rgba(255,255,255,0.92);border:2px solid transparent;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#A32D2D;text-align:center;padding:4px;cursor:pointer;font-weight:500;line-height:1.3;position:relative}
+  .catalog-cell:hover{border-color:var(--amber);background:#fff}
+  .catalog-cell.editing{border-color:var(--amber);outline:2px solid var(--amber);outline-offset:2px}
+  .catalog-cell-mini{position:absolute;top:2px;right:3px;font-size:8px;color:#A32D2D;opacity:.6}
+  .catalog-footer{background:var(--pri);color:#fff;text-align:center;padding:6px;border-radius:6px;font-size:10px}
+
+  .feedback-note{margin-top:24px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);font-size:13px;color:var(--ink-muted)}
+  .feedback-note strong{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="intro">
+    <span class="pill">Mockup interativo · v3.1</span>
+    <h1>MSC Studio</h1>
+    <p>Sistema interno para automatizar a criação de catálogos e peças de campanha das Lojas MSC. Diretor seleciona produtos e descontos → IA gera o fundo da campanha → sistema renderiza catálogo, posts, stories, TV e WhatsApp em todos os formatos.</p>
+  </div>
+
+<div class="msc-app">
+
+  <div class="msc-topbar">
+    <div class="msc-brand"><span class="msc-mark">M</span> lojas msc · studio</div>
+    <div class="msc-topright">
+      <button class="msc-btn msc-btn-sm">⚙ Biblioteca de marca</button>
+      <span class="msc-mini">david@lojasmsc.com.br</span>
+    </div>
+  </div>
+
+  <div class="msc-stepper" id="stepper">
+    <button class="msc-step active" data-s="1">1. Projetos</button>
+    <button class="msc-step" data-s="2">2. Briefing</button>
+    <button class="msc-step" data-s="3">3. Marca do projeto</button>
+    <button class="msc-step" data-s="4">4. Produtos</button>
+    <button class="msc-step" data-s="5">5. Descontos</button>
+    <button class="msc-step" data-s="6">6. Preview</button>
+    <button class="msc-step" data-s="7">7. Editor</button>
+  </div>
+
+  <div id="scr1" class="msc-screen">
+    <h3 class="msc-h">Projetos</h3>
+    <p class="msc-sub">Cada campanha vira um projeto. Marca padrão (mascote, logos, paleta) já está cadastrada na biblioteca; cada projeto pode usar a padrão ou trocar para uma versão temática.</p>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;gap:6px">
+      <button class="msc-btn">Importar de campanha</button>
+      <button class="msc-btn msc-btn-pri">+ Novo projeto</button>
+    </div>
+    <div class="msc-row">
+      <div class="msc-card msc-projcard">
+        <button class="msc-menu">⋯</button>
+        <span class="msc-status st-draft">rascunho</span>
+        <div style="font-weight:600;font-size:14px">Mês das Mães 2026</div>
+        <div class="msc-mini">12 produtos · 01/05–09/05</div>
+        <div class="msc-mini">marca: padrão</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="msc-btn msc-btn-sm">Abrir</button>
+          <button class="msc-btn msc-btn-sm">Duplicar</button>
+        </div>
+      </div>
+      <div class="msc-card msc-projcard">
+        <button class="msc-menu">⋯</button>
+        <span class="msc-status st-pub">publicado</span>
+        <div style="font-weight:600;font-size:14px">Especial Refrigeradores</div>
+        <div class="msc-mini">8 produtos · 15/04–30/04</div>
+        <div class="msc-mini">marca: padrão</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="msc-btn msc-btn-sm">Abrir</button>
+          <button class="msc-btn msc-btn-sm">Duplicar</button>
+        </div>
+      </div>
+      <div class="msc-card msc-projcard">
+        <button class="msc-menu">⋯</button>
+        <span class="msc-status st-arch">arquivado</span>
+        <div style="font-weight:600;font-size:14px">Natal MSC 2025</div>
+        <div class="msc-mini">22 produtos · 15/12–24/12</div>
+        <div class="msc-mini">marca: <span class="msc-pill-amber" style="padding:1px 6px;border-radius:6px;font-size:10px">vovô natal</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="msc-btn msc-btn-sm">Abrir</button>
+          <button class="msc-btn msc-btn-sm">Duplicar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="scr2" class="msc-screen hidden">
+    <h3 class="msc-h">Mês das Mães 2026 · briefing</h3>
+    <p class="msc-sub">Tudo aqui guia a IA. Use "Auto-preencher" e a IA monta a campanha a partir de um nome curto.</p>
+    <div class="msc-callout">
+      <span>Auto-preencher:</span>
+      <input class="msc-input" style="flex:1;padding:6px 9px;font-size:12px" value="Mês das Mães"/>
+      <button class="msc-btn msc-btn-amber msc-btn-sm">Preencher tudo com IA</button>
+    </div>
+    <div class="msc-grid2">
+      <div class="msc-fld"><span class="msc-lbl">Nome</span><input class="msc-input" value="Mês das Mães 2026"/></div>
+      <div class="msc-fld"><span class="msc-lbl">Período</span><input class="msc-input" value="01/05/2026 → 09/05/2026"/></div>
+    </div>
+    <div class="msc-grid2">
+      <div class="msc-fld"><span class="msc-lbl">Headline</span><input class="msc-input" value="MÊS DAS MÃES"/></div>
+      <div class="msc-fld"><span class="msc-lbl">Tom da campanha</span>
+        <select class="msc-select"><option>emocional / festivo</option><option>premium / sóbrio</option><option>urgente / liquidação</option></select></div>
+    </div>
+    <div class="msc-fld"><span class="msc-lbl">Subtítulo</span><input class="msc-input" value="Toda loja com até 50% de desconto · Em até 16x no carnê"/></div>
+    <div class="msc-fld"><span class="msc-lbl">Briefing (contexto para a IA)</span>
+      <textarea class="msc-textarea">Tom carinhoso e festivo. Vovô MSC abençoando a mãe. Cenário com flores, corações suaves, tons rosa-salmão. Sorteio para compras de 01/05 a 09/05.</textarea></div>
+    <div class="msc-fld"><span class="msc-lbl">Referências visuais (arraste imagens)</span>
+      <div class="msc-dz">
+        Arraste imagens aqui ou clique para enviar
+        <div class="msc-dz-row" style="justify-content:center">
+          <div class="msc-dz-thumb">ref 1</div>
+          <div class="msc-dz-thumb">ref 2</div>
+          <div class="msc-dz-thumb">+</div>
+        </div>
+      </div></div>
+  </div>
+
+  <div id="scr3" class="msc-screen hidden">
+    <h3 class="msc-h">Marca do projeto</h3>
+    <p class="msc-sub">Cada projeto pode usar a marca padrão da MSC ou trocar mascote/logo só nele (ex: vovô natal). A biblioteca global vive em "⚙ Biblioteca de marca" no topo.</p>
+
+    <div class="msc-section">
+      <div class="msc-section-h">
+        <span>Origem dos assets</span>
+        <button class="msc-btn-link">abrir biblioteca →</button>
+      </div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <label class="msc-toggle"><span class="msc-radio on"></span> Usar padrão da loja</label>
+        <label class="msc-toggle"><span class="msc-radio"></span> Customizar para esse projeto</label>
+      </div>
+    </div>
+
+    <div class="msc-grid3">
+      <div class="msc-asset-card">
+        <div class="msc-asset-thumb has">vovô MSC<br><span class="msc-mini">+ halo</span></div>
+        <div style="font-size:12px;font-weight:500">Mascote</div>
+        <div class="msc-mini">padrão · mascote_msc.png</div>
+        <button class="msc-btn msc-btn-sm" style="width:100%;margin-top:6px">Trocar</button>
+      </div>
+      <div class="msc-asset-card">
+        <div class="msc-asset-thumb has-blue">lojas msc</div>
+        <div style="font-size:12px;font-weight:500">Logo principal</div>
+        <div class="msc-mini">padrão · logo_msc.png</div>
+        <button class="msc-btn msc-btn-sm" style="width:100%;margin-top:6px">Trocar</button>
+      </div>
+      <div class="msc-asset-card">
+        <div class="msc-asset-thumb has-blue" style="background:#5D6FA0">lojas msc</div>
+        <div style="font-size:12px;font-weight:500">Logo branca</div>
+        <div class="msc-mini">padrão · logo_msc_branco.png</div>
+        <button class="msc-btn msc-btn-sm" style="width:100%;margin-top:6px">Trocar</button>
+      </div>
+    </div>
+
+    <div class="msc-grid2" style="margin-top:14px">
+      <div class="msc-fld"><span class="msc-lbl">Cor primária</span><div><span class="msc-color" style="background:#2C3D6E"></span> #2C3D6E</div></div>
+      <div class="msc-fld"><span class="msc-lbl">Cor de destaque</span><div><span class="msc-color" style="background:#F5C84B"></span> #F5C84B</div></div>
+    </div>
+    <div class="msc-grid2">
+      <div class="msc-fld"><span class="msc-lbl">Fundo da campanha</span><div><span class="msc-color" style="background:#F5A8B8"></span> Rosa-salmão (override)</div></div>
+      <div class="msc-fld"><span class="msc-lbl">Cor do lettering 3D</span><div><span class="msc-color" style="background:#FF6E91"></span> Rosa pink (override)</div></div>
+    </div>
+
+    <div class="msc-fld"><span class="msc-lbl">Fundo gerado por IA (decorações ao redor do lettering)</span>
+      <div style="display:flex;gap:8px;align-items:center"><input class="msc-input" style="flex:1" value="rosa pastel, pétalas suaves, mood Mães"/><button class="msc-btn msc-btn-amber">Gerar 4 opções</button></div>
+    </div>
+    <div class="msc-grid4" style="margin-top:8px">
+      <div class="msc-thumb sel" style="background:#F5A8B8;color:#A32D2D;font-weight:500">A · escolhido</div>
+      <div class="msc-thumb" style="background:#F0BCD2">B</div>
+      <div class="msc-thumb" style="background:#E89AB7">C</div>
+      <div class="msc-thumb" style="background:#FFD9E1">D</div>
+    </div>
+  </div>
+
+  <div id="scr4" class="msc-screen hidden">
+    <h3 class="msc-h">Selecionar produtos</h3>
+    <p class="msc-sub">Filtra livremente — selecionados ficam fixos na faixa superior, mesmo trocando filtro.</p>
+
+    <div class="msc-selstrip">
+      <span class="msc-pill msc-pill-pri" style="flex-shrink:0">5 selecionados</span>
+      <div class="msc-chip"><div class="msc-chip-foto"></div>000002 Midea<span class="msc-chip-x">×</span></div>
+      <div class="msc-chip"><div class="msc-chip-foto"></div>000003 Consul<span class="msc-chip-x">×</span></div>
+      <div class="msc-chip"><div class="msc-chip-foto"></div>000004 Samsung<span class="msc-chip-x">×</span></div>
+      <div class="msc-chip"><div class="msc-chip-foto"></div>000005 Consul 340<span class="msc-chip-x">×</span></div>
+      <div class="msc-chip"><div class="msc-chip-foto"></div>000118 Mueller<span class="msc-chip-x">×</span></div>
+    </div>
+
+    <div class="msc-search">
+      <select class="msc-select" style="font-size:11px;padding:6px 7px"><option>Grupo: ELETRO</option><option>Todos</option><option>MOVEIS</option></select>
+      <select class="msc-select" style="font-size:11px;padding:6px 7px"><option>Subgrupo: todos</option><option>LINHA BRANCA</option></select>
+      <select class="msc-select" style="font-size:11px;padding:6px 7px"><option>Grade: todas</option><option>REFRIGERADOR</option></select>
+      <select class="msc-select" style="font-size:11px;padding:6px 7px"><option>Marca: todas</option><option>SAMSUNG</option><option>CONSUL</option></select>
+    </div>
+    <div class="msc-search-bar">
+      <input class="msc-input" placeholder="Buscar por nome ou código..." style="flex:1"/>
+      <button class="msc-btn msc-btn-sm">Limpar filtros</button>
+    </div>
+    <div class="msc-prod-list">
+      <div class="msc-prod-row sel"><input type="checkbox" checked><div class="msc-foto"></div><div class="msc-prod-name">REFRIG. MIDEA 463L INOX <span class="msc-prod-cod">· 000002 · MIDEA</span></div><div class="msc-prod-prc">R$ 5.525,70</div></div>
+      <div class="msc-prod-row sel"><input type="checkbox" checked><div class="msc-foto"></div><div class="msc-prod-name">REFRIGERADOR CONSUL 334L <span class="msc-prod-cod">· 000003 · CONSUL</span></div><div class="msc-prod-prc">R$ 3.259,00</div></div>
+      <div class="msc-prod-row sel"><input type="checkbox" checked><div class="msc-foto"></div><div class="msc-prod-name">REFRIGERADOR SAMSUNG 460L <span class="msc-prod-cod">· 000004 · SAMSUNG</span></div><div class="msc-prod-prc">R$ 6.967,39</div></div>
+      <div class="msc-prod-row"><input type="checkbox"><div class="msc-foto"></div><div class="msc-prod-name">FOGAO MUELLER 4BCS <span class="msc-prod-cod">· 000092 · MUELLER</span></div><div class="msc-prod-prc">R$ 1.719,00</div></div>
+      <div class="msc-prod-row sel"><input type="checkbox" checked><div class="msc-foto"></div><div class="msc-prod-name">REFRIGERADOR CONSUL 340L <span class="msc-prod-cod">· 000005 · CONSUL</span></div><div class="msc-prod-prc">R$ 4.754,48</div></div>
+      <div class="msc-prod-row sel"><input type="checkbox" checked><div class="msc-foto"></div><div class="msc-prod-name">LAVADORA MUELLER 12KG <span class="msc-prod-cod">· 000118 · MUELLER</span></div><div class="msc-prod-prc">R$ 1.890,00</div></div>
+      <div class="msc-prod-row"><input type="checkbox"><div class="msc-foto"></div><div class="msc-prod-name">FOGAO ATLAS MONACO <span class="msc-prod-cod">· 000076 · ATLAS</span></div><div class="msc-prod-prc">R$ 1.250,00</div></div>
+      <div class="msc-prod-row"><input type="checkbox"><div class="msc-foto"></div><div class="msc-prod-name">LAVADORA COLORMAQ 11KG <span class="msc-prod-cod">· 000091 · COLORMAQ</span></div><div class="msc-prod-prc">R$ 2.100,00</div></div>
+    </div>
+  </div>
+
+  <div id="scr5" class="msc-screen hidden">
+    <h3 class="msc-h">Configurar descontos & destaques</h3>
+    <p class="msc-sub"><strong>Todos</strong> os produtos selecionados entram no catálogo. Só os marcados como ⭐ <strong>Destaque</strong> ganham peças avulsas (Instagram, Stories, WhatsApp, TV).</p>
+    <div class="msc-card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="msc-lbl">Desconto geral</span>
+        <input class="msc-num" value="20" style="width:50px"/><span class="msc-mini">%</span>
+        <span class="msc-mini">·</span><span class="msc-lbl">Parcelas</span>
+        <input class="msc-num" value="10" style="width:42px"/><span class="msc-mini">x sem juros</span>
+        <span class="msc-mini">·</span><span class="msc-lbl">Layout do catálogo</span>
+        <select class="msc-select" style="width:auto;font-size:11px;padding:4px 6px"><option>4×3 — 12 por página</option><option>3×2 — 6 por página</option><option>3×3 — 9 por página</option><option>4×4 — 16 por página</option></select>
+        <button class="msc-btn msc-btn-sm" style="margin-left:auto">Aplicar a todos</button>
+      </div>
+    </div>
+    <table class="msc-tbl">
+      <thead><tr><th>destaque</th><th>produto</th><th>de</th><th>desc</th><th>por (à vista)</th><th>parcela</th></tr></thead>
+      <tbody>
+        <tr><td style="text-align:center"><input type="checkbox" checked title="Gerar peças avulsas"/></td><td>Midea 463L<div class="msc-prod-cod">000002</div></td><td>R$ 5.525,70</td><td><input class="msc-num" value="24" style="width:48px"/>%</td><td>R$ 4.190,00</td><td>1+9× R$ 419,00</td></tr>
+        <tr><td style="text-align:center"><input type="checkbox" checked/></td><td>Consul 334L<div class="msc-prod-cod">000003</div></td><td>R$ 3.259,00</td><td><input class="msc-num" value="18" style="width:48px"/>%</td><td>R$ 2.672,38</td><td>1+9× R$ 267,24</td></tr>
+        <tr><td style="text-align:center"><input type="checkbox" checked/></td><td>Samsung 460L<div class="msc-prod-cod">000004</div></td><td>R$ 6.967,39</td><td><input class="msc-num" value="24" style="width:48px"/>%</td><td>R$ 5.290,00</td><td>1+9× R$ 529,00</td></tr>
+        <tr><td style="text-align:center"><input type="checkbox"/></td><td>Consul 340L<div class="msc-prod-cod">000005</div></td><td>R$ 4.754,48</td><td><input class="msc-num" value="25" style="width:48px"/>%</td><td>R$ 3.565,86</td><td>1+9× R$ 356,59</td></tr>
+        <tr><td style="text-align:center"><input type="checkbox"/></td><td>Mueller 12KG<div class="msc-prod-cod">000118</div></td><td>R$ 1.890,00</td><td><input class="msc-num" value="20" style="width:48px"/>%</td><td>R$ 1.512,00</td><td>1+9× R$ 151,20</td></tr>
+      </tbody>
+    </table>
+    <div class="msc-card" style="margin-top:12px;background:var(--surface-2);display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="msc-pill msc-pill-pri">5 produtos no catálogo</span>
+      <span class="msc-pill msc-pill-amber">3 destaques · gera 12 peças avulsas (3×4 formatos)</span>
+      <span class="msc-mini" style="margin-left:auto">total estimado: 1 hero + 1 catálogo PDF + 12 peças = 14 arquivos</span>
+    </div>
+  </div>
+
+  <div id="scr6" class="msc-screen hidden">
+    <h3 class="msc-h">Preview & gerar</h3>
+    <p class="msc-sub">Cada categoria abaixo mostra todas as peças geradas. <strong>Click em qualquer thumbnail</strong> para abrir o editor daquela peça específica. Peças marcadas com selo "manual" foram editadas e não serão sobrescritas pela IA.</p>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">Hero da campanha <span class="msc-pill">1 imagem · campanha</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div class="preview-thumb hero" style="max-width:480px">
+          <div class="preview-thumb-content">
+            <div style="font-size:14px;font-weight:700">MÊS DAS mães · 50% off</div>
+            <div style="font-size:9px;opacity:.85">click para editar este hero</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">Catálogo · multi-página <span class="msc-pill">1 PDF · 5 produtos · 1 página (4×3)</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+          <div class="preview-thumb cat" style="width:140px"><div class="preview-thumb-content"><div style="font-size:10px;font-weight:600">página 1/1</div><div style="font-size:8px;opacity:.85">grade 4×3</div></div></div>
+          <div style="flex:1;min-width:240px">
+            <p class="msc-mini" style="margin:0 0 6px"><strong>Como escala com mais produtos:</strong></p>
+            <ul style="margin:0;padding-left:18px;font-size:11px;color:var(--ink-muted);line-height:1.6">
+              <li>5 produtos = 1 página</li>
+              <li>20 produtos = 2 páginas (4×3 cada)</li>
+              <li>40 produtos = 4 páginas</li>
+              <li>80 produtos = 7 páginas</li>
+            </ul>
+            <p class="msc-mini" style="margin:8px 0 0">PDF único de várias páginas. Cada produto da grade é clicável no editor para ajustar foto/texto sem mexer nas outras. Header, faixa "10x sem juros" e rodapé editáveis como elementos globais.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="msc-callout" style="background:var(--pri-soft);color:var(--pri-ink);margin-top:6px">
+      <span>★</span> Apenas os <strong>3 produtos marcados como destaque</strong> na tela 5 ganham peças avulsas. Para incluir mais, volte e marque o ⭐.
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">Instagram Feed <span class="msc-pill">3 imagens · 1080×1080 · só destaques</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+          <div class="preview-thumb square"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Midea</div><div style="font-size:8px;opacity:.85">000002 ⭐</div></div><div class="preview-thumb-label">R$ 419,00</div></div>
+          <div class="preview-thumb square"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Consul</div><div style="font-size:8px;opacity:.85">000003 ⭐</div></div><div class="preview-thumb-label">R$ 267,24</div></div>
+          <div class="preview-thumb square"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Samsung</div><div style="font-size:8px;opacity:.85">000004 ⭐</div></div><div class="preview-thumb-label">R$ 529,00</div><div class="preview-thumb-badge">manual</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">Stories / Reels <span class="msc-pill">3 imagens · 1080×1920 · só destaques</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Midea ⭐</div></div><div class="preview-thumb-label">R$ 419,00</div></div>
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Consul ⭐</div></div><div class="preview-thumb-label">R$ 267,24</div></div>
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Samsung ⭐</div></div><div class="preview-thumb-label">R$ 529,00</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">WhatsApp / Status <span class="msc-pill">3 imagens · 1080×1920 · só destaques</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Midea ⭐</div></div></div>
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Consul ⭐</div></div></div>
+          <div class="preview-thumb story"><div class="preview-thumb-content"><div style="font-size:8px;font-weight:600">Samsung ⭐</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-head">
+        <div class="preview-section-title">TV (loja física) <span class="msc-pill">3 imagens · 1920×1080 · só destaques</span></div>
+        <button class="msc-btn msc-btn-sm">Refazer com IA</button>
+      </div>
+      <div class="preview-section-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div class="preview-thumb tv"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Midea ⭐ · R$ 419,00</div></div></div>
+          <div class="preview-thumb tv"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Consul ⭐ · R$ 267,24</div></div></div>
+          <div class="preview-thumb tv"><div class="preview-thumb-content"><div style="font-size:9px;font-weight:600">Samsung ⭐ · R$ 529,00</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:6px;border-top:1px solid var(--border)">
+      <span class="msc-pill">14 arquivos · ~9 MB</span>
+      <span class="msc-pill-green msc-pill">1 com edição manual</span>
+      <span class="msc-pill-amber msc-pill">3 de 5 produtos como destaques</span>
+      <span style="flex:1"></span>
+      <button class="msc-btn">Refazer todas com IA</button>
+      <button class="msc-btn msc-btn-pri">Baixar ZIP</button>
+    </div>
+  </div>
+
+  <div id="scr7" class="msc-screen hidden">
+    <h3 class="msc-h">Editor manual</h3>
+    <p class="msc-sub">Existem dois modos: editor de peça avulsa (1 produto, 1 formato) e editor do catálogo inteiro (vários produtos numa página). O modo é escolhido automaticamente quando você clica num thumbnail no Preview.</p>
+
+    <div class="editor-mode-tabs">
+      <button class="editor-mode-tab on" id="mode-piece">Peça avulsa · Instagram do Samsung 460L</button>
+      <button class="editor-mode-tab" id="mode-catalog">Catálogo completo</button>
+    </div>
+
+    <div id="editor-piece">
+      <div class="msc-editor">
+        <div class="msc-canvas">
+          <div class="msc-canvas-head">MÊS DAS MÃES · LOJAS MSC</div>
+          <div class="msc-canvas-photo">click para trocar foto</div>
+          <div class="msc-canvas-text" contenteditable="true">REFRIGERADOR SAMSUNG 460L<br>1+9× R$ 529,00 · à vista R$ 5.290,00</div>
+        </div>
+        <div class="msc-tools">
+          <div class="msc-tool"><span class="msc-toolicon">T</span> Editar texto</div>
+          <div class="msc-tool"><span class="msc-toolicon">+</span> Trocar foto</div>
+          <div class="msc-tool"><span class="msc-toolicon">↔</span> Reposicionar</div>
+          <div class="msc-tool"><span class="msc-toolicon">a</span> Tamanho da fonte</div>
+          <div class="msc-tool"><span class="msc-toolicon">⟲</span> Desfazer</div>
+          <div class="msc-tool" style="background:var(--red-soft);border-color:var(--red-strong);color:var(--red-ink)"><span class="msc-toolicon" style="background:var(--red-strong)">↺</span> Resetar p/ IA</div>
+          <div class="msc-tool" style="background:var(--green-soft);border-color:#5DCAA5;color:var(--green-ink)"><span class="msc-toolicon" style="background:#5DCAA5">✓</span> Salvar peça</div>
+        </div>
+      </div>
+      <p class="msc-mini" style="margin-top:10px">Editou? Vai ganhar selo "manual". Da próxima vez que rodar "Refazer com IA", essa peça é preservada.</p>
+    </div>
+
+    <div id="editor-catalog" class="hidden">
+      <div class="msc-editor">
+        <div class="catalog-canvas">
+          <div class="catalog-header">MÊS DAS MÃES · LOJAS MSC <span style="opacity:.85">click no header para editar</span></div>
+          <div class="catalog-grid">
+            <div class="catalog-cell editing">
+              <div class="catalog-cell-mini">000002</div>
+              MIDEA 463L
+              <div style="font-size:11px">R$ 419,00</div>
+              <div class="msc-mini" style="font-size:7px;color:var(--amber-ink);margin-top:2px;font-weight:600">EDITANDO</div>
+            </div>
+            <div class="catalog-cell"><div class="catalog-cell-mini">000003</div>CONSUL 334L<div style="font-size:11px">R$ 267,24</div></div>
+            <div class="catalog-cell"><div class="catalog-cell-mini">000004</div>SAMSUNG 460L<div style="font-size:11px">R$ 529,00</div></div>
+            <div class="catalog-cell"><div class="catalog-cell-mini">000005</div>CONSUL 340L<div style="font-size:11px">R$ 356,59</div></div>
+            <div class="catalog-cell"><div class="catalog-cell-mini">000118</div>MUELLER 12KG<div style="font-size:11px">R$ 151,20</div></div>
+            <div class="catalog-cell" style="opacity:.5;border:2px dashed rgba(255,255,255,.6);background:rgba(255,255,255,.3);color:#fff;font-weight:500">+ adicionar produto</div>
+          </div>
+          <div class="catalog-footer">click para editar rodapé · Sorteio para compras de 01/05 a 09/05</div>
+        </div>
+        <div class="msc-tools">
+          <div class="msc-tool" style="background:var(--amber-soft);border-color:var(--amber);color:var(--amber-ink);font-weight:500"><span class="msc-toolicon" style="background:var(--amber)">⊕</span> Editando: Midea 463L</div>
+          <div class="msc-tool"><span class="msc-toolicon">T</span> Editar texto da posição</div>
+          <div class="msc-tool"><span class="msc-toolicon">+</span> Trocar foto</div>
+          <div class="msc-tool"><span class="msc-toolicon">⇄</span> Trocar produto da posição</div>
+          <div class="msc-tool"><span class="msc-toolicon">↕</span> Reordenar grade (drag)</div>
+          <div class="msc-tool"><span class="msc-toolicon">∷</span> Layout (3×2 / 2×3 / 4×2)</div>
+          <div class="msc-tool" style="background:var(--green-soft);border-color:#5DCAA5;color:var(--green-ink)"><span class="msc-toolicon" style="background:#5DCAA5">✓</span> Salvar catálogo</div>
+        </div>
+      </div>
+      <p class="msc-mini" style="margin-top:10px"><strong>Como funciona:</strong> click em qualquer card de produto na grade → ferramentas mostram opções específicas daquela posição. Click no header/rodapé → edita textos globais da campanha. Drag-and-drop para reordenar produtos. Layout dropdown muda 3×2 → 2×3 → 4×2 etc.</p>
+    </div>
+  </div>
+
+  <div class="msc-foot">
+    <button class="msc-btn" id="prev">← Anterior</button>
+    <button class="msc-btn msc-btn-pri" id="next">Próxima →</button>
+  </div>
+</div>
+
+<div class="feedback-note">
+  <strong>Para quem está revisando este mockup:</strong><br>
+  Este é apenas um <em>mockup interativo</em> — nenhum botão dispara ação real. O objetivo é validar fluxo, hierarquia das telas e organização da informação antes de codar o app. Navegue clicando nas abas no topo (1 a 7) ou nos botões "Anterior/Próxima" no rodapé.<br><br>
+  Aspectos para avaliar: <strong>fluxo</strong> (a ordem das telas faz sentido?), <strong>completude</strong> (algo essencial está faltando?), <strong>simplicidade</strong> (alguma tela está poluída?), <strong>terminologia</strong> ("briefing", "marca do projeto", "preview" — funcionam para os usuários reais?). Na <strong>tela 7 (Editor)</strong>, há dois modos clicáveis: peça avulsa e catálogo completo — vale conferir os dois.
+</div>
+
+</div>
+
+<script>
+(function(){
+  let s = 1;
+  const N = 7;
+  function show(n){
+    s = n;
+    for (let i=1;i<=N;i++){
+      const el = document.getElementById('scr'+i);
+      if (el) el.classList.toggle('hidden', i!==n);
+    }
+    document.querySelectorAll('#stepper .msc-step').forEach(b=>{
+      b.classList.toggle('active', Number(b.dataset.s)===n);
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.getElementById('stepper').addEventListener('click', e=>{
+    if (e.target.dataset.s) show(Number(e.target.dataset.s));
+  });
+  document.getElementById('prev').addEventListener('click', ()=> show(Math.max(1, s-1)));
+  document.getElementById('next').addEventListener('click', ()=> show(Math.min(N, s+1)));
+
+  // Editor mode toggle
+  const tabPiece = document.getElementById('mode-piece');
+  const tabCat = document.getElementById('mode-catalog');
+  const edPiece = document.getElementById('editor-piece');
+  const edCat = document.getElementById('editor-catalog');
+  tabPiece.addEventListener('click', ()=>{
+    tabPiece.classList.add('on'); tabCat.classList.remove('on');
+    edPiece.classList.remove('hidden'); edCat.classList.add('hidden');
+  });
+  tabCat.addEventListener('click', ()=>{
+    tabCat.classList.add('on'); tabPiece.classList.remove('on');
+    edCat.classList.remove('hidden'); edPiece.classList.add('hidden');
+  });
+
+  // Click on preview thumb -> jump to editor
+  document.querySelectorAll('.preview-thumb').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      const isCat = t.classList.contains('cat');
+      show(7);
+      if (isCat) tabCat.click(); else tabPiece.click();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

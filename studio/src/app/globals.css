@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pri: #2C3D6E;
+  --amber: #F5C84B;
+}
+
+html, body { font-family: -apple-system, "Segoe UI", "Inter", Roboto, sans-serif; }

@@ -1,0 +1,1602 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MSC-Catalogo — Design Directions Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ========== DESIGN TOKENS ========== */
+  :root {
+    --msc-blue: #303060;
+    --msc-blue-fg: #FFFFFF;
+    --msc-yellow: #E0B050;
+    --msc-yellow-fg: #1A1A1A;
+
+    --background: #FAFAFA;
+    --foreground: #0F0F1E;
+    --primary: #303060;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F4F4F8;
+    --secondary-foreground: #303060;
+    --muted: #E8E8EE;
+    --muted-foreground: #6B6B7C;
+    --accent: #E0B050;
+    --accent-foreground: #1A1A1A;
+    --destructive: #DC2626;
+    --destructive-foreground: #FFFFFF;
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --border: #E2E2E8;
+    --input: #FFFFFF;
+    --ring: #303060;
+
+    --radius: 0.5rem;
+    --radius-sm: 0.375rem;
+    --radius-lg: 0.75rem;
+
+    --shadow-sm: 0 1px 2px 0 rgb(15 15 30 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(15 15 30 / 0.08), 0 2px 4px -2px rgb(15 15 30 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(15 15 30 / 0.1), 0 4px 6px -4px rgb(15 15 30 / 0.05);
+    --shadow-xl: 0 20px 25px -5px rgb(15 15 30 / 0.1), 0 8px 10px -6px rgb(15 15 30 / 0.05);
+  }
+
+  /* ========== RESET ========== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--foreground);
+    background: var(--background);
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: none; background: none; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; max-width: 100%; }
+
+  /* ========== TOP BAR (mockup nav) ========== */
+  .mockup-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 12px 24px; display: flex; gap: 8px; align-items: center;
+    overflow-x: auto;
+  }
+  .mockup-nav .brand {
+    font-weight: 600; color: var(--msc-blue);
+    margin-right: 16px; display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+  .mockup-nav .brand-mark {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--msc-blue); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+  }
+  .mockup-nav button.tab {
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+  .mockup-nav button.tab:hover { background: var(--muted); color: var(--foreground); }
+  .mockup-nav button.tab.active { background: var(--msc-blue); color: white; }
+
+  /* ========== APP SHELL ========== */
+  html { scroll-behavior: smooth; }
+  .screen {
+    display: grid; grid-template-columns: 288px 1fr;
+    min-height: calc(100vh - 49px);
+    border-bottom: 8px dashed var(--border);
+    scroll-margin-top: 49px;
+  }
+  .screen:last-of-type { border-bottom: none; }
+  .screen-divider {
+    background: var(--msc-blue); color: white;
+    padding: 8px 24px; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stepper { display: flex; flex-direction: column; gap: 2px; padding: 4px 0; }
+  .step-item {
+    display: flex; gap: 10px; padding: 8px 12px; border-radius: var(--radius-sm);
+    transition: background 80ms; align-items: flex-start;
+  }
+  .step-item:hover { background: var(--muted); }
+  .step-item.active { background: var(--secondary); }
+  .step-item .step-num {
+    width: 22px; height: 22px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--muted); color: var(--muted-foreground);
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-item .step-num.active { background: var(--msc-blue); color: white; }
+  .step-item .step-num.done { background: var(--success); color: white; }
+  .step-item .step-info { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+  .step-item .step-info strong { font-size: 13px; font-weight: 500; }
+  .step-item .step-info small { color: var(--muted-foreground); font-size: 11px; }
+  .step-item.active .step-info strong { color: var(--msc-blue); font-weight: 600; }
+  .step-item.done .step-info strong { color: var(--success); }
+  .screen-divider .num {
+    width: 22px; height: 22px; border-radius: 999px;
+    background: var(--msc-yellow); color: var(--msc-yellow-fg);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ========== SIDEBAR ========== */
+  .sidebar {
+    background: white; border-right: 1px solid var(--border);
+    padding: 16px 12px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar .logo {
+    padding: 8px 12px; display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .sidebar .logo-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--msc-blue); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .sidebar .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
+  .sidebar .logo-text strong { font-weight: 600; font-size: 14px; }
+  .sidebar .logo-text small { color: var(--muted-foreground); font-size: 11px; }
+
+  .sidebar .nav-section { padding: 8px 12px 4px; font-size: 11px; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .sidebar .nav-item {
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--foreground); font-weight: 500;
+    transition: background 80ms;
+  }
+  .sidebar .nav-item:hover { background: var(--muted); }
+  .sidebar .nav-item.active { background: var(--secondary); color: var(--msc-blue); }
+  .sidebar .nav-item .icon { width: 16px; height: 16px; flex-shrink: 0; }
+  .sidebar .nav-item .badge {
+    margin-left: auto; background: var(--accent); color: var(--accent-foreground);
+    padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 600;
+  }
+
+  .sidebar .spacer { flex: 1; }
+  .sidebar .user-card {
+    padding: 8px 12px; display: flex; align-items: center; gap: 10px;
+    border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px;
+  }
+  .sidebar .user-card .avatar {
+    width: 32px; height: 32px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--msc-blue), #5050A0);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .sidebar .user-card .info { display: flex; flex-direction: column; line-height: 1.2; }
+  .sidebar .user-card .info strong { font-size: 13px; font-weight: 500; }
+  .sidebar .user-card .info small { color: var(--muted-foreground); font-size: 11px; }
+
+  /* ========== MAIN ========== */
+  .main {
+    padding: 32px 40px; max-width: 1400px; margin: 0 auto; width: 100%;
+  }
+  .main-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 32px; gap: 24px;
+  }
+  .main-header h1 { font-size: 24px; font-weight: 600; line-height: 1.3; }
+  .main-header .subtitle { color: var(--muted-foreground); margin-top: 4px; font-size: 14px; }
+  .main-header .actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  /* ========== BUTTONS ========== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500;
+    transition: all 80ms; min-height: 36px;
+  }
+  .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  .btn-primary { background: var(--msc-blue); color: white; }
+  .btn-primary:hover { background: #252550; }
+  .btn-secondary { background: white; color: var(--foreground); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--muted); }
+  .btn-ghost { color: var(--foreground); }
+  .btn-ghost:hover { background: var(--muted); }
+  .btn-destructive { background: var(--destructive); color: white; }
+  .btn-destructive:hover { background: #B91C1C; }
+  .btn-lg { padding: 10px 20px; font-size: 14px; min-height: 44px; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; min-height: 28px; }
+  .btn .icon { width: 16px; height: 16px; }
+
+  /* ========== CARDS ========== */
+  .card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .card .card-header h3 { font-size: 15px; font-weight: 600; }
+  .card .card-meta { color: var(--muted-foreground); font-size: 12px; }
+
+  /* ========== BADGES ========== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 500;
+  }
+  .badge-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+  .badge-accent { background: var(--accent); color: var(--accent-foreground); }
+  .badge-success { background: #DCFCE7; color: #14532D; }
+  .badge-warning { background: #FEF3C7; color: #78350F; }
+  .badge-muted { background: var(--muted); color: var(--muted-foreground); }
+  .badge-outline { background: white; border: 1px solid var(--border); color: var(--foreground); }
+
+  /* ========== INPUTS ========== */
+  .input, .textarea, .select {
+    width: 100%; padding: 8px 12px;
+    background: var(--input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px; min-height: 36px;
+    transition: border 80ms, box-shadow 80ms;
+  }
+  .input:focus, .textarea:focus, .select:focus {
+    outline: none; border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgb(48 48 96 / 0.1);
+  }
+  .textarea { resize: vertical; min-height: 80px; }
+  .label { display: block; font-size: 12px; font-weight: 500; color: var(--muted-foreground); margin-bottom: 6px; }
+  .form-row { margin-bottom: 16px; }
+  .input-with-icon { position: relative; }
+  .input-with-icon .icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted-foreground); }
+  .input-with-icon .input { padding-left: 34px; }
+
+  /* ========== TABS ========== */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .tabs button {
+    padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--muted-foreground);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tabs button:hover { color: var(--foreground); }
+  .tabs button.active { color: var(--msc-blue); border-bottom-color: var(--msc-blue); }
+
+  /* ========== SCREEN: HOME ========== */
+  .home-cta {
+    background: linear-gradient(135deg, var(--msc-blue), #404080);
+    color: white; padding: 32px; border-radius: var(--radius-lg);
+    margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .home-cta h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .home-cta p { font-size: 13px; opacity: 0.85; max-width: 460px; }
+  .home-cta .btn { background: white; color: var(--msc-blue); }
+  .home-cta .btn:hover { background: var(--secondary); }
+
+  .campaign-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: var(--shadow-sm); transition: box-shadow 100ms, transform 100ms;
+    cursor: pointer;
+  }
+  .campaign-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .campaign-card .preview {
+    height: 140px; background: linear-gradient(135deg, #FFB6C1, #FF6FA0);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 22px;
+  }
+  .campaign-card .preview.azul { background: linear-gradient(135deg, #1A2050, #303060); }
+  .campaign-card .preview.dourado { background: linear-gradient(135deg, #B8860B, #E0B050); }
+  .campaign-card .body { padding: 14px 16px; }
+  .campaign-card .body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .campaign-card .body .meta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted-foreground); }
+
+  /* ========== SCREEN: BRIEFING ========== */
+  .briefing-grid {
+    display: grid; grid-template-columns: 1fr 380px; gap: 32px;
+  }
+  .briefing-form { display: flex; flex-direction: column; gap: 20px; }
+  .briefing-modes { display: flex; flex-direction: column; gap: 8px; }
+  .briefing-mode {
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: var(--radius); display: flex; align-items: flex-start; gap: 10px;
+    cursor: pointer; transition: border 80ms, background 80ms;
+  }
+  .briefing-mode:hover { background: var(--secondary); }
+  .briefing-mode.selected { border-color: var(--msc-blue); background: var(--secondary); }
+  .briefing-mode .radio {
+    width: 16px; height: 16px; border: 2px solid var(--border); border-radius: 999px;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .briefing-mode.selected .radio {
+    border-color: var(--msc-blue);
+    background: radial-gradient(circle, var(--msc-blue) 40%, transparent 50%);
+  }
+  .briefing-mode .info { flex: 1; }
+  .briefing-mode .info strong { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; }
+  .briefing-mode .info p { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+
+  .ai-result {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 20px; display: flex; flex-direction: column; gap: 14px;
+    box-shadow: var(--shadow-sm); height: fit-content; position: sticky; top: 88px;
+  }
+  .ai-status {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; background: var(--secondary); border-radius: var(--radius-sm);
+    font-size: 12px; color: var(--msc-blue); font-weight: 500;
+  }
+  .ai-status .dot {
+    width: 6px; height: 6px; background: var(--success); border-radius: 999px;
+  }
+  .ai-field {
+    border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px;
+    display: flex; flex-direction: column; gap: 4px; background: white; position: relative;
+    cursor: text;
+  }
+  .ai-field:hover { border-color: var(--msc-blue); }
+  .ai-field .label-ai {
+    display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted-foreground);
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  }
+  .ai-field .label-ai .icon-pencil { width: 10px; height: 10px; }
+  .ai-field .value { font-size: 14px; font-weight: 500; }
+  .ai-field .value-multiline { font-size: 13px; }
+  .ai-field .swatches { display: flex; gap: 6px; margin-top: 4px; }
+  .ai-field .swatch { width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border); position: relative; }
+  .ai-field .swatch::after {
+    content: attr(data-hex); position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; color: var(--muted-foreground); font-family: monospace; white-space: nowrap;
+  }
+  .ai-field .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .ai-field .chip { padding: 3px 8px; background: var(--secondary); color: var(--msc-blue); border-radius: 999px; font-size: 11px; font-weight: 500; }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--muted) 0%, var(--secondary) 50%, var(--muted) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: var(--radius-sm);
+  }
+  @keyframes skeleton-loading {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .save-indicator { font-size: 11px; color: var(--success); display: flex; align-items: center; gap: 4px; }
+
+  /* ========== SCREEN: PRODUTOS ========== */
+  .filters-bar {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 16px;
+    display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 12px; align-items: end;
+  }
+  .product-table {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .product-table table { width: 100%; border-collapse: collapse; }
+  .product-table th {
+    text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600;
+    color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--secondary); border-bottom: 1px solid var(--border);
+  }
+  .product-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  .product-table tr:last-child td { border-bottom: none; }
+  .product-table tr:hover td { background: var(--secondary); }
+  .product-table .photo {
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: var(--muted); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; color: var(--muted-foreground);
+  }
+  .product-table .name { font-weight: 500; }
+  .product-table .codigo { color: var(--muted-foreground); font-size: 11px; font-family: monospace; }
+  .product-table .price { font-variant-numeric: tabular-nums; }
+  .product-table .price.discount { color: var(--success); font-weight: 600; }
+  .product-table .star { color: var(--muted-foreground); font-size: 18px; cursor: pointer; }
+  .product-table .star.active { color: var(--accent); }
+  .product-table .checkbox {
+    width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .product-table .checkbox.checked { background: var(--msc-blue); border-color: var(--msc-blue); color: white; }
+
+  .bulk-actions {
+    background: var(--msc-blue); color: white;
+    padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .bulk-actions .selected-count { font-size: 13px; font-weight: 500; }
+  .bulk-actions .actions { display: flex; gap: 8px; align-items: center; }
+  .bulk-actions input { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; }
+  .bulk-actions input::placeholder { color: rgba(255,255,255,0.7); }
+
+  /* ========== SCREEN: EDITOR ========== */
+  .editor-grid {
+    display: grid; grid-template-columns: 1fr 320px; gap: 24px;
+  }
+  .editor-canvas {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    overflow: hidden; box-shadow: var(--shadow-sm);
+    aspect-ratio: 11/14; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #FFC4D6, #FF87B3);
+    color: white; position: relative;
+  }
+  .editor-canvas .label { color: rgba(255,255,255,0.8); font-size: 11px; padding: 8px; position: absolute; top: 0; left: 0; }
+  .editor-canvas .preview-content { text-align: center; padding: 40px; }
+  .editor-canvas h2 { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 8px; text-shadow: 2px 2px 0 #C0246A; }
+  .editor-canvas .maes { font-size: 96px; font-weight: 800; line-height: 1; margin-bottom: 16px; text-shadow: 4px 4px 0 #C0246A, 8px 8px 0 #A0204C; }
+  .editor-canvas .product-area { background: white; padding: 20px; border-radius: var(--radius); color: var(--foreground); margin: 20px 0; box-shadow: 0 4px 12px rgb(0 0 0 / 0.2); }
+  .editor-canvas .product-area .placeholder { background: var(--muted); height: 120px; border-radius: var(--radius-sm); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); font-size: 12px; }
+  .editor-canvas .product-area h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .editor-canvas .product-area .price-pill {
+    display: inline-block; padding: 6px 16px; background: var(--accent); color: var(--accent-foreground);
+    border-radius: 999px; border: 2px dashed #B8860B; font-weight: 700; font-size: 18px;
+    font-family: monospace;
+  }
+
+  .editor-canvas .selectable {
+    position: relative; cursor: pointer; transition: outline 80ms;
+  }
+  .editor-canvas .selectable.selected { outline: 2px solid #4ADE80; outline-offset: 4px; border-radius: 4px; }
+
+  .editor-toolbar {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 8px; display: flex; gap: 4px; box-shadow: var(--shadow-md);
+    position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+  }
+  .editor-toolbar button {
+    padding: 6px 10px; border-radius: var(--radius-sm); font-size: 12px;
+    color: var(--foreground); display: flex; align-items: center; gap: 4px;
+  }
+  .editor-toolbar button:hover { background: var(--muted); }
+  .editor-toolbar .divider { width: 1px; height: 20px; background: var(--border); margin: 4px 2px; }
+
+  .editor-sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .editor-sidebar .panel {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px;
+  }
+  .editor-sidebar .panel h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .editor-sidebar .panel small { color: var(--muted-foreground); font-size: 11px; }
+
+  .ai-edit-input {
+    background: var(--secondary); border: 1px dashed var(--msc-blue);
+    border-radius: var(--radius); padding: 12px; margin-top: 12px;
+  }
+  .ai-edit-input .label-ai-edit { font-size: 10px; color: var(--msc-blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+
+  /* ========== SCREEN: CONFIG ========== */
+  .config-section {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 24px; margin-bottom: 16px;
+  }
+  .config-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .config-section .desc { color: var(--muted-foreground); font-size: 13px; margin-bottom: 20px; }
+  .stores-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+  }
+  .store-card {
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .store-card strong { font-size: 13px; font-weight: 600; }
+  .store-card small { color: var(--muted-foreground); font-size: 12px; }
+
+  /* ========== UTILITIES ========== */
+  .text-muted { color: var(--muted-foreground); }
+  .text-success { color: var(--success); }
+  .text-destructive { color: var(--destructive); }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .gap-2 { gap: 8px; }
+  .gap-3 { gap: 12px; }
+  .gap-4 { gap: 16px; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .mt-2 { margin-top: 8px; }
+  .mt-4 { margin-top: 16px; }
+  .mt-6 { margin-top: 24px; }
+  .text-sm { font-size: 13px; }
+  .text-xs { font-size: 12px; }
+  .font-semibold { font-weight: 600; }
+  .font-medium { font-weight: 500; }
+  .relative { position: relative; }
+
+  /* ========== TOAST ========== */
+  .toast-area {
+    position: fixed; bottom: 24px; right: 24px; z-index: 100;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg); min-width: 280px; font-size: 13px;
+  }
+  .toast.success { border-left: 3px solid var(--success); }
+  .toast.warn { border-left: 3px solid var(--warning); }
+
+  @media (max-width: 1280px) {
+    .briefing-grid { grid-template-columns: 1fr; }
+    .editor-grid { grid-template-columns: 1fr; }
+    .ai-result { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ MOCKUP NAV ============ -->
+<nav class="mockup-nav">
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    MSC-Catalogo · Design Mockup v1
+  </div>
+  <a class="tab" href="#screen-home">🏠 Home</a>
+  <a class="tab" href="#screen-briefing">✨ Briefing por IA</a>
+  <a class="tab" href="#screen-produtos">🛒 Produtos</a>
+  <a class="tab" href="#screen-editor">🎨 Editor</a>
+  <a class="tab" href="#screen-apresentacao">🖥️ Modo apresentação</a>
+  <a class="tab" href="#screen-exportar">📤 Exportar</a>
+  <a class="tab" href="#screen-config">⚙️ Configurações</a>
+</nav>
+
+<!-- ============ SCREEN: HOME ============ -->
+<div id="screen-home" class="screen">
+  <div class="screen-divider"><span class="num">1</span> Tela 1 — Home</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+
+    <div class="nav-section">Workspace</div>
+    <a class="nav-item active">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg>
+      Início
+    </a>
+    <a class="nav-item">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+      Campanhas
+      <span class="badge">5</span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Histórico
+    </a>
+
+    <div class="nav-section" style="margin-top: 16px;">Recursos</div>
+    <a class="nav-item">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Configurações
+    </a>
+
+    <div class="spacer"></div>
+
+    <div class="user-card">
+      <div class="avatar">A</div>
+      <div class="info">
+        <strong>Amanda</strong>
+        <small>Lojas MSC · Marketing</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h1>Olá Amanda 👋</h1>
+        <p class="subtitle">Você tem 1 campanha em rascunho e 4 publicadas este mês.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          Buscar
+        </button>
+        <button class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nova campanha
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid de campanhas (cada card mostra última edição; abrir = continua de onde parou) -->
+    <div class="flex justify-between items-center" style="margin-bottom: 16px;">
+      <h2 style="font-size: 16px; font-weight: 600;">Suas campanhas</h2>
+      <div class="tabs" style="border: none; margin: 0;">
+        <button class="active">Todas</button>
+        <button>Rascunho (1)</button>
+        <button>Publicadas (4)</button>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="campaign-card" style="outline: 2px solid var(--msc-blue); outline-offset: -2px;">
+        <div class="preview">MÊS DAS MÃES</div>
+        <div class="body">
+          <h3>Mês das Mães 2026 <span class="badge badge-accent" style="margin-left: 4px;">Em andamento</span></h3>
+          <div class="meta">
+            <span class="badge badge-warning">Rascunho</span>
+            <span>·</span>
+            <span>32 produtos · 3 destaques</span>
+            <span>·</span>
+            <span>Editado há 14h</span>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <div class="preview azul">ABRIL DO DESCONTÃO</div>
+        <div class="body">
+          <h3>Abril do Descontão 2026</h3>
+          <div class="meta">
+            <span class="badge badge-success">Publicada</span>
+            <span>·</span>
+            <span>30 abril</span>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <div class="preview" style="background: linear-gradient(135deg, #4A1F1F, #8B0000);">VOLTA ÀS AULAS</div>
+        <div class="body">
+          <h3>Volta às Aulas 2026</h3>
+          <div class="meta">
+            <span class="badge badge-success">Publicada</span>
+            <span>·</span>
+            <span>10 fev</span>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <div class="preview dourado">VERÃO 2026</div>
+        <div class="body">
+          <h3>Promoção Verão 2026</h3>
+          <div class="meta">
+            <span class="badge badge-success">Publicada</span>
+            <span>·</span>
+            <span>5 jan</span>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <div class="preview" style="background: linear-gradient(135deg, #1a1a3a, #303060);">NATAL MSC</div>
+        <div class="body">
+          <h3>Natal Lojas MSC 2025</h3>
+          <div class="meta">
+            <span class="badge badge-success">Publicada</span>
+            <span>·</span>
+            <span>15 dez 2025</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ SCREEN: BRIEFING ============ -->
+<div id="screen-briefing" class="screen">
+  <div class="screen-divider"><span class="num">2</span> Tela 2 — Briefing por IA (interação central)</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+
+    <div class="nav-section">Etapas da campanha</div>
+    <div class="stepper">
+      <div class="step-item active">
+        <span class="step-num active">●</span>
+        <div class="step-info"><strong>1. Briefing</strong><small>Definindo a pele</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>2. Produtos</strong><small>Pendente</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>3. Editor & Preview</strong><small>Pendente</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>4. Exportar</strong><small>Pendente</small></div>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="user-card">
+      <div class="avatar">A</div>
+      <div class="info">
+        <strong>Amanda</strong>
+        <small>Lojas MSC · Marketing</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">
+          <span style="color: var(--msc-blue); font-weight: 500;">Início</span> · Nova campanha · <span style="color: var(--foreground);">Briefing</span>
+        </div>
+        <h1>Como vamos começar?</h1>
+        <p class="subtitle">A IA monta o briefing inteiro. Você refina o que precisar.</p>
+      </div>
+      <div class="actions">
+        <span class="save-indicator">
+          <svg class="icon" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+          Salvo agora
+        </span>
+      </div>
+    </div>
+
+    <div class="briefing-grid">
+
+      <div class="briefing-form">
+
+        <!-- Modos de iniciar -->
+        <div>
+          <label class="label">Modo de início</label>
+          <div class="briefing-modes">
+            <div class="briefing-mode">
+              <div class="radio"></div>
+              <div class="info">
+                <strong>📄 Partir do zero</strong>
+                <p>A IA cria tudo a partir do tema</p>
+              </div>
+            </div>
+            <div class="briefing-mode selected">
+              <div class="radio"></div>
+              <div class="info">
+                <strong>📋 Duplicar campanha anterior <span class="badge badge-accent" style="margin-left: 6px;">⭐ mais comum</span></strong>
+                <p>Parte de uma campanha pronta e adapta</p>
+                <select class="select" style="margin-top: 8px; max-width: 280px;">
+                  <option>Mês das Mães 2025</option>
+                  <option>Abril do Descontão 2025</option>
+                  <option>Natal Lojas MSC 2024</option>
+                </select>
+              </div>
+            </div>
+            <div class="briefing-mode">
+              <div class="radio"></div>
+              <div class="info">
+                <strong>🎨 Inspirar em referência externa</strong>
+                <p>Anexa até 3 imagens (JPG/PNG/PDF). Slider define quão fiel à inspiração.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tema -->
+        <div class="form-row">
+          <label class="label">Tema da campanha</label>
+          <textarea class="textarea" rows="2" placeholder="Ex.: campanha mês das mães 2026">campanha mês das mães 2026</textarea>
+          <small class="text-muted text-xs" style="margin-top: 6px; display: block;">A IA usa isso pra inferir paleta, decoração, lettering e mood.</small>
+        </div>
+
+        <button class="btn btn-primary btn-lg" style="align-self: flex-start;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" transform="translate(7 -1)"/></svg>
+          Gerar briefing
+        </button>
+
+      </div>
+
+      <!-- Resultado da IA — mostrando STREAMING EM PROGRESSO (3 campos prontos, paleta chegando, restantes skeleton) -->
+      <div class="ai-result">
+
+        <div class="ai-status">
+          <div class="dot" style="background: var(--warning); animation: pulse 1.5s infinite;"></div>
+          ⚡ Ajustando tipografia e mood... <small style="margin-left: auto; color: var(--muted-foreground);">7s</small>
+        </div>
+        <style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }</style>
+
+        <!-- Textos -->
+        <div class="ai-field">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Título · gerado por IA
+          </div>
+          <div class="value">MÊS DAS MÃES</div>
+        </div>
+
+        <div class="ai-field">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Slogan · gerado por IA
+          </div>
+          <div class="value-multiline">Para quem sempre cuidou de você</div>
+        </div>
+
+        <div class="ai-field">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            CTA principal · gerado por IA
+          </div>
+          <div class="value-multiline">TUDO EM 10X SEM JUROS · OU EM 16X NO CARNÊ DA LOJA</div>
+        </div>
+
+        <!-- Paleta -->
+        <div class="ai-field">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Paleta · gerado por IA
+          </div>
+          <div class="swatches">
+            <div class="swatch" style="background: #FF6FA0;" data-hex="#FF6FA0"></div>
+            <div class="swatch" style="background: #FFC107;" data-hex="#FFC107"></div>
+            <div class="swatch" style="background: #FFB6C1;" data-hex="#FFB6C1"></div>
+          </div>
+          <div style="height: 18px;"></div>
+        </div>
+
+        <!-- Decoração -->
+        <div class="ai-field">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Decoração · gerado por IA
+          </div>
+          <div class="chips">
+            <span class="chip">corações 3D</span>
+            <span class="chip">fitas suaves</span>
+            <span class="chip">pétalas</span>
+          </div>
+        </div>
+
+        <!-- Mood + Tipografia: AINDA EM SKELETON (streaming não terminou) -->
+        <div class="ai-field" style="border-style: dashed; opacity: 0.7;">
+          <div class="label-ai">
+            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Mood + Tipografia · aguardando IA...
+          </div>
+          <div class="skeleton" style="height: 14px; width: 80%; margin-top: 4px;"></div>
+          <div class="skeleton" style="height: 14px; width: 60%; margin-top: 4px;"></div>
+        </div>
+
+        <p class="text-xs text-muted" style="text-align: center; margin-top: 8px; font-style: italic;">
+          ⏳ Streaming em progresso — campos vão aparecendo um a um. Ao terminar, botões "Continuar" aparecem aqui.
+        </p>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============ SCREEN: PRODUTOS ============ -->
+<div id="screen-produtos" class="screen">
+  <div class="screen-divider"><span class="num">3</span> Tela 3 — Seleção de produtos (filtros Terasoft)</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+    <div class="nav-section">Etapas da campanha</div>
+    <div class="stepper">
+      <div class="step-item done">
+        <span class="step-num done">✓</span>
+        <div class="step-info"><strong>1. Briefing</strong><small>Concluído</small></div>
+      </div>
+      <div class="step-item active">
+        <span class="step-num active">●</span>
+        <div class="step-info"><strong>2. Produtos</strong><small>32 selecionados · 3 destaques</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>3. Editor & Preview</strong><small>Pendente</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>4. Exportar</strong><small>Pendente</small></div>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar">A</div><div class="info"><strong>Amanda</strong><small>Lojas MSC · Marketing</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">
+          <span style="color: var(--msc-blue);">Início</span> · Mês das Mães 2026 · <span>Produtos</span>
+        </div>
+        <h1>Selecionar produtos</h1>
+        <p class="subtitle">Filtre, escolha e defina desconto + parcelamento. Marque <strong>⭐ destaques</strong> que viram peças avulsas pro Insta/WhatsApp.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary">← Voltar</button>
+        <button class="btn btn-primary">Continuar pra preview →</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-bar">
+      <div>
+        <label class="label">Buscar produto</label>
+        <div class="input-with-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input class="input" placeholder="redmi, geladeira, sofá...">
+        </div>
+      </div>
+      <div>
+        <label class="label">Grupo</label>
+        <select class="select"><option>Todos</option><option>Eletrodomésticos</option><option>Móveis</option><option>Telefonia</option></select>
+      </div>
+      <div>
+        <label class="label">Subgrupo</label>
+        <select class="select"><option>Todos</option><option>Geladeiras</option><option>Smartphones</option></select>
+      </div>
+      <div>
+        <label class="label">Marca</label>
+        <select class="select"><option>Todas</option><option>Samsung</option><option>Xiaomi</option><option>Brastemp</option></select>
+      </div>
+      <div>
+        <label class="label">Foto</label>
+        <select class="select"><option>Com foto</option><option>Sem foto</option></select>
+      </div>
+      <button class="btn btn-secondary" style="margin-bottom: 0;">Limpar filtros</button>
+    </div>
+
+    <!-- Bulk actions (32 selecionados) -->
+    <div class="bulk-actions">
+      <div class="selected-count">
+        ✓ <strong>32 produtos selecionados</strong> · 3 destaques
+      </div>
+      <div class="actions">
+        <input class="input" style="width: 110px; min-height: 28px; padding: 4px 10px; font-size: 12px;" placeholder="Desconto %" value="30">
+        <input class="input" style="width: 90px; min-height: 28px; padding: 4px 10px; font-size: 12px;" placeholder="Parcelas" value="10">
+        <button class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">Aplicar a todos</button>
+      </div>
+    </div>
+
+    <!-- Tabela de produtos -->
+    <div class="product-table">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 32px;"></th>
+            <th style="width: 56px;">Foto</th>
+            <th>Produto</th>
+            <th style="width: 100px;">À vista</th>
+            <th style="width: 100px;">Desconto</th>
+            <th style="width: 100px;">Parcelas</th>
+            <th style="width: 100px;">Promo</th>
+            <th style="width: 60px; text-align: center;">⭐</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="checkbox checked">✓</span></td>
+            <td><div class="photo">📱</div></td>
+            <td>
+              <div class="name">CELULAR XIAOMI REDMI 15C 256GB</div>
+              <div class="codigo">Cód. 3245 / 2741 / 3029</div>
+            </td>
+            <td class="price">R$ 1.190,00</td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="30%"></td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
+            <td class="price discount">R$ 833,00</td>
+            <td style="text-align: center;"><span class="star active">⭐</span></td>
+          </tr>
+          <tr>
+            <td><span class="checkbox checked">✓</span></td>
+            <td><div class="photo">📱</div></td>
+            <td>
+              <div class="name">CELULAR SAMSUNG GALAXY A07 128GB</div>
+              <div class="codigo">Cód. 4012</div>
+            </td>
+            <td class="price">R$ 1.490,00</td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="30%"></td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
+            <td class="price discount">R$ 1.043,00</td>
+            <td style="text-align: center;"><span class="star">⭐</span></td>
+          </tr>
+          <tr>
+            <td><span class="checkbox checked">✓</span></td>
+            <td><div class="photo">🧊</div></td>
+            <td>
+              <div class="name">REFRIGERADOR MIDEA 463L 02 PORTAS INOX 127V</div>
+              <div class="codigo">Cód. 0002</div>
+              <span class="badge badge-secondary text-xs" style="margin-top: 4px; display: inline-block;">A: 1.80m · L: 0.65m · P: 0.70m</span>
+            </td>
+            <td class="price">R$ 5.525,70</td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="24%"></td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
+            <td class="price discount">R$ 4.199,53</td>
+            <td style="text-align: center;"><span class="star active">⭐</span></td>
+          </tr>
+          <tr>
+            <td><span class="checkbox checked">✓</span></td>
+            <td><div class="photo">🛋️</div></td>
+            <td>
+              <div class="name">ESTOFADO PREMIER SOFT 2,40M Retrátil/Reclinável</div>
+              <div class="codigo">Cód. 1857 / 1860 / 1861</div>
+              <span class="badge badge-secondary text-xs" style="margin-top: 4px; display: inline-block;">A: 0.95m · L: 2.40m · P: 1.10m</span>
+            </td>
+            <td class="price">R$ 3.500,00</td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="32%"></td>
+            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
+            <td class="price discount">R$ 2.380,00</td>
+            <td style="text-align: center;"><span class="star active">⭐</span></td>
+          </tr>
+          <tr style="opacity: 0.5;">
+            <td><span class="checkbox"></span></td>
+            <td><div class="photo">🌬️</div></td>
+            <td>
+              <div class="name">VENTILADOR VENTISOL TURBO 6 40CM</div>
+              <div class="codigo">Cód. 2972</div>
+            </td>
+            <td class="price">R$ 219,00</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="text-align: center;"><span class="star">⭐</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-muted text-xs" style="margin-top: 12px; text-align: center;">
+      Mostrando 5 de 32 selecionados · 451 produtos disponíveis no Terasoft com filtros aplicados
+    </p>
+  </main>
+</div>
+
+<!-- ============ SCREEN: EDITOR ============ -->
+<div id="screen-editor" class="screen">
+  <div class="screen-divider"><span class="num">4</span> Tela 4 — Editor inline (preview + IA-edit + auditoria de preços)</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+
+    <div class="nav-section">Etapas da campanha</div>
+    <div class="stepper">
+      <div class="step-item done">
+        <span class="step-num done">✓</span>
+        <div class="step-info"><strong>1. Briefing</strong><small>Concluído</small></div>
+      </div>
+      <div class="step-item done">
+        <span class="step-num done">✓</span>
+        <div class="step-info"><strong>2. Produtos</strong><small>32 selecionados</small></div>
+      </div>
+      <div class="step-item active">
+        <span class="step-num active">●</span>
+        <div class="step-info"><strong>3. Editor & Preview</strong><small>Página 2 de 4</small></div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">○</span>
+        <div class="step-info"><strong>4. Exportar</strong><small>Pendente</small></div>
+      </div>
+    </div>
+
+    <div class="nav-section" style="margin-top: 12px;">Páginas do catálogo</div>
+    <a class="nav-item">📄 Pág. 1 (capa)</a>
+    <a class="nav-item active">📄 Pág. 2 (eletro)</a>
+    <a class="nav-item">📄 Pág. 3 (móveis)</a>
+    <a class="nav-item">📄 Pág. 4 (cozinha)</a>
+
+    <div class="nav-section" style="margin-top: 12px;">Peças avulsas ⭐</div>
+    <a class="nav-item"><span style="color: var(--accent);">⭐</span> Redmi 15C</a>
+    <a class="nav-item"><span style="color: var(--accent);">⭐</span> Refr. Midea</a>
+    <a class="nav-item"><span style="color: var(--accent);">⭐</span> Sofá Premier</a>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar">A</div><div class="info"><strong>Amanda</strong><small>Lojas MSC · Marketing</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">
+          Mês das Mães 2026 · <span>Editor</span>
+        </div>
+        <h1>Editor & Preview</h1>
+        <p class="subtitle">Arraste, ajuste, troque foto. Selecione um elemento pra editar.</p>
+      </div>
+      <div class="actions">
+        <span class="save-indicator">
+          <svg class="icon" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+          Salvo há 2s
+        </span>
+        <button class="btn btn-secondary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Modo apresentação
+        </button>
+        <button class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar
+        </button>
+      </div>
+    </div>
+
+    <div class="editor-grid">
+
+      <!-- Canvas -->
+      <div style="position: relative;">
+        <div class="editor-toolbar">
+          <button>↩</button>
+          <button>↪</button>
+          <div class="divider"></div>
+          <button>📷 Trocar foto</button>
+          <button>🎨 Cor</button>
+          <button>📏 Tamanho</button>
+          <div class="divider"></div>
+          <button class="text-destructive">🗑 Excluir</button>
+        </div>
+
+        <div class="editor-canvas">
+          <div class="label">PÁGINA 2 · 2200×2540 · zoom 25%</div>
+          <div class="preview-content">
+            <h2>MÊS DAS</h2>
+            <div class="maes">mães</div>
+            <div class="product-area selectable selected" style="margin-top: 30px;">
+              <div class="placeholder">Foto do produto</div>
+              <h3>REFRIGERADOR MIDEA 463L</h3>
+              <p style="font-size: 11px; color: var(--muted-foreground); margin-bottom: 8px;">DE: R$ 5.525,70 · POR: 1+9X SEM JUROS</p>
+              <span class="price-pill">R$ 419,95</span>
+              <p style="font-size: 11px; color: var(--muted-foreground); margin-top: 8px;">OU À VISTA: R$ 4.199,53</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar de propriedades -->
+      <div class="editor-sidebar">
+
+        <div class="panel">
+          <h3>📦 Refrigerador Midea</h3>
+          <small>Produto selecionado</small>
+          <div class="form-row mt-4">
+            <label class="label">Posição</label>
+            <div class="flex gap-2">
+              <input class="input" value="X: 1100" style="font-size: 12px;">
+              <input class="input" value="Y: 1200" style="font-size: 12px;">
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="label">Tamanho</label>
+            <input class="input" value="800 × 1000 px" style="font-size: 12px;">
+          </div>
+          <div class="form-row">
+            <label class="label">Foto</label>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: center;">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              Trocar foto do produto
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🤖 Editar com IA <small>· MVP-2 (preview)</small></h3>
+          <small>Mude pele, decoração ou layout via prompt. <strong>Nunca preço.</strong></small>
+          <div class="ai-edit-input">
+            <div class="label-ai-edit">Prompt</div>
+            <textarea class="textarea" rows="2" placeholder="Ex: deixa o mascote maior · muda o fundo pra coral mais claro" style="background: white;"></textarea>
+            <button class="btn btn-primary btn-sm" style="margin-top: 8px;">✨ Aplicar</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🔒 Auditoria de preços</h3>
+          <small>Confira antes de exportar</small>
+          <div class="mt-4 text-xs flex flex-col gap-2">
+            <div class="flex justify-between"><span>Produtos no catálogo</span><strong>32</strong></div>
+            <div class="flex justify-between"><span>Valores conferem com Terasoft</span><span class="text-success font-medium">✓ todos</span></div>
+            <div class="flex justify-between"><span>Edições manuais de preço</span><strong>0</strong></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============ SCREEN: MODO APRESENTAÇÃO ============ -->
+<div id="screen-apresentacao" class="screen" style="grid-template-columns: 1fr; background: #1a1a2e; color: white;">
+  <div class="screen-divider"><span class="num">5</span> Tela 5 — Modo Apresentação (pra mostrar pro Marcos na mesa)</div>
+
+  <main style="padding: 32px 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 24px; align-items: center; min-height: 70vh; justify-content: center; position: relative;">
+
+    <!-- Indicador de navegação topo -->
+    <div style="position: absolute; top: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.08); padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(8px);">
+      <span style="font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em;">Mês das Mães 2026</span>
+      <span style="font-size: 13px; font-weight: 600;">Página 2 de 4</span>
+      <div style="display: flex; gap: 4px;">
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.3);"></span>
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: white;"></span>
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.3);"></span>
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.3);"></span>
+      </div>
+    </div>
+
+    <!-- Botões setas laterais -->
+    <button style="position: absolute; left: 32px; top: 50%; transform: translateY(-50%); width: 56px; height: 56px; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; backdrop-filter: blur(8px); font-size: 24px;">←</button>
+    <button style="position: absolute; right: 32px; top: 50%; transform: translateY(-50%); width: 56px; height: 56px; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; backdrop-filter: blur(8px); font-size: 24px;">→</button>
+
+    <!-- Preview da página em tela cheia -->
+    <div style="background: linear-gradient(135deg, #FFC4D6, #FF87B3); border-radius: var(--radius-lg); width: 70%; max-width: 800px; aspect-ratio: 11/14; box-shadow: 0 20px 60px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 60px;">
+      <div>
+        <div style="font-size: 32px; font-weight: 800; text-shadow: 2px 2px 0 #C0246A; margin-bottom: 8px;">MÊS DAS</div>
+        <div style="font-size: 96px; font-weight: 800; line-height: 1; text-shadow: 4px 4px 0 #C0246A, 8px 8px 0 #A0204C; margin-bottom: 24px;">mães</div>
+        <div style="background: white; color: var(--foreground); padding: 24px; border-radius: var(--radius); margin: 0 auto; max-width: 360px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+          <div style="background: var(--muted); height: 100px; border-radius: var(--radius-sm); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); font-size: 11px;">Foto do produto</div>
+          <h3 style="font-size: 14px; font-weight: 600;">REFRIGERADOR MIDEA 463L</h3>
+          <div style="display: inline-block; padding: 8px 20px; background: var(--accent); color: var(--accent-foreground); border-radius: 999px; border: 2px dashed #B8860B; font-weight: 700; font-size: 20px; margin-top: 8px;">R$ 419,95</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hint de teclado -->
+    <div style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(255,255,255,0.6);">
+      <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">←</kbd> <kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">→</kbd> navegar</span>
+      <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">ESC</kbd> sair</span>
+      <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">F</kbd> tela cheia</span>
+    </div>
+
+    <p style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; max-width: 500px;">
+      💡 Sem chrome, sem sidebar, sem toolbar — só a peça. Amanda vira o monitor pro Marcos, ele aprova com um aceno.
+    </p>
+  </main>
+</div>
+
+<!-- ============ SCREEN: EXPORTAR ============ -->
+<div id="screen-exportar" class="screen">
+  <div class="screen-divider"><span class="num">6</span> Tela 6 — Exportar (com auditoria de preços bloqueante 🔒)</div>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+
+    <div class="nav-section">Etapas da campanha</div>
+    <div class="stepper">
+      <div class="step-item done"><span class="step-num done">✓</span><div class="step-info"><strong>1. Briefing</strong><small>Concluído</small></div></div>
+      <div class="step-item done"><span class="step-num done">✓</span><div class="step-info"><strong>2. Produtos</strong><small>32 selecionados</small></div></div>
+      <div class="step-item done"><span class="step-num done">✓</span><div class="step-info"><strong>3. Editor & Preview</strong><small>Concluído</small></div></div>
+      <div class="step-item active"><span class="step-num active">●</span><div class="step-info"><strong>4. Exportar</strong><small>Revisão de preços</small></div></div>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar">A</div><div class="info"><strong>Amanda</strong><small>Lojas MSC · Marketing</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">
+          Mês das Mães 2026 · <span style="color: var(--foreground);">Exportar</span>
+        </div>
+        <h1>Pronto pra mandar pra gráfica?</h1>
+        <p class="subtitle">Última conferência de preços antes de gerar PDF + JPGs sociais + mini-site público.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary">← Voltar ao editor</button>
+      </div>
+    </div>
+
+    <!-- ALERTA de auditoria bloqueante -->
+    <div style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: var(--radius); padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; align-items: flex-start;">
+      <svg style="width: 20px; height: 20px; color: #B45309; flex-shrink: 0; margin-top: 2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div>
+        <strong style="color: #78350F;">Auditoria de preços obrigatória</strong>
+        <p style="font-size: 13px; color: #78350F; margin-top: 2px;">Confira que todos os preços batem com a Terasoft antes de exportar. <strong>Preço errado em catálogo é vinculante (CDC art. 30).</strong></p>
+      </div>
+    </div>
+
+    <!-- Tabela de auditoria -->
+    <div class="product-table" style="margin-bottom: 24px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 56px;">Foto</th>
+            <th>Produto</th>
+            <th style="width: 120px;">Preço Terasoft</th>
+            <th style="width: 80px;">Desconto</th>
+            <th style="width: 120px;">Preço final</th>
+            <th style="width: 100px;">Origem</th>
+            <th style="width: 80px; text-align: center;">OK?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="photo">📱</div></td>
+            <td>
+              <div class="name">XIAOMI REDMI 15C 256GB</div>
+              <div class="codigo">Cód. 3245</div>
+            </td>
+            <td class="price">R$ 1.190,00</td>
+            <td>30%</td>
+            <td class="price discount">R$ 833,00</td>
+            <td><span class="badge badge-success">Terasoft ✓</span></td>
+            <td style="text-align: center;"><span class="checkbox checked">✓</span></td>
+          </tr>
+          <tr>
+            <td><div class="photo">🧊</div></td>
+            <td>
+              <div class="name">REFRIGERADOR MIDEA 463L INOX</div>
+              <div class="codigo">Cód. 0002</div>
+            </td>
+            <td class="price">R$ 5.525,70</td>
+            <td>24%</td>
+            <td class="price discount">R$ 4.199,53</td>
+            <td><span class="badge badge-success">Terasoft ✓</span></td>
+            <td style="text-align: center;"><span class="checkbox checked">✓</span></td>
+          </tr>
+          <tr style="background: #FFFBEB;">
+            <td><div class="photo">📺</div></td>
+            <td>
+              <div class="name">TV SAMSUNG 50" UHD</div>
+              <div class="codigo">Cód. 1234</div>
+            </td>
+            <td class="price">R$ 2.890,00</td>
+            <td>—</td>
+            <td class="price" style="color: #B45309; font-weight: 700;">R$ 2.499,00 ⚠</td>
+            <td><span class="badge badge-warning">Editado manual</span></td>
+            <td style="text-align: center;"><span class="checkbox">⚠</span></td>
+          </tr>
+          <tr>
+            <td><div class="photo">🛋️</div></td>
+            <td>
+              <div class="name">ESTOFADO PREMIER SOFT 2,40M</div>
+              <div class="codigo">Cód. 1857</div>
+            </td>
+            <td class="price">R$ 3.500,00</td>
+            <td>32%</td>
+            <td class="price discount">R$ 2.380,00</td>
+            <td><span class="badge badge-success">Terasoft ✓</span></td>
+            <td style="text-align: center;"><span class="checkbox checked">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aviso da edição manual -->
+    <div style="background: white; border: 1px solid var(--border); border-left: 3px solid var(--warning); border-radius: var(--radius); padding: 16px; margin-bottom: 24px;">
+      <strong style="font-size: 13px; color: var(--foreground);">⚠ 1 preço foi editado manualmente</strong>
+      <p style="font-size: 12px; color: var(--muted-foreground); margin-top: 4px;">A TV Samsung 50" foi alterada de R$ 2.890,00 (Terasoft) para R$ 2.499,00. Confirme que esse preço está correto antes de exportar.</p>
+      <div class="flex gap-2 mt-2">
+        <button class="btn btn-secondary btn-sm">Voltar e reverter</button>
+        <button class="btn btn-secondary btn-sm">Marcar como conferido</button>
+      </div>
+    </div>
+
+    <!-- Entregáveis -->
+    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">Entregáveis que serão gerados</h2>
+    <div class="flex gap-4" style="margin-bottom: 24px;">
+      <div class="card" style="flex: 1;">
+        <div class="card-header">
+          <h3>📄 Catálogo PDF</h3>
+          <span class="badge badge-secondary">4 páginas</span>
+        </div>
+        <p class="text-xs text-muted">Pronto pra mandar pra gráfica. Tamanho A4, sem CMYK (gráfica aceita PDF padrão).</p>
+        <p class="text-xs text-muted mt-2">~2.5 MB</p>
+      </div>
+      <div class="card" style="flex: 1;">
+        <div class="card-header">
+          <h3>📱 Peças sociais</h3>
+          <span class="badge badge-secondary">12 peças</span>
+        </div>
+        <p class="text-xs text-muted">3 destaques × 4 formatos (IG / Story / WA / TV). Geradas sob demanda quando ⭐ marcado.</p>
+        <p class="text-xs text-muted mt-2">~9 MB total</p>
+      </div>
+      <div class="card" style="flex: 1;">
+        <div class="card-header">
+          <h3>🌐 Mini-site público</h3>
+          <span class="badge badge-accent">Novo!</span>
+        </div>
+        <p class="text-xs text-muted">Link compartilhável <code style="font-size: 11px;">msc-catalogo.app/c/mes-das-maes-2026</code> com QR Code.</p>
+        <p class="text-xs text-muted mt-2">Mobile-friendly</p>
+      </div>
+    </div>
+
+    <!-- Botão de exportar bloqueado -->
+    <div style="background: var(--secondary); border-radius: var(--radius); padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div>
+        <strong style="font-size: 14px; font-weight: 600;">⚠ Auditoria pendente</strong>
+        <p style="font-size: 13px; color: var(--muted-foreground); margin-top: 2px;">1 preço editado manualmente ainda não foi confirmado. Resolva pra liberar exportação.</p>
+      </div>
+      <button class="btn btn-primary btn-lg" disabled style="background: var(--muted); color: var(--muted-foreground); cursor: not-allowed;">
+        🔒 Exportar (bloqueado)
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ SCREEN: CONFIG ============ -->
+<div id="screen-config" class="screen">
+  <div class="screen-divider"><span class="num">7</span> Tela 7 — Configurações da Casa MSC</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        <strong>MSC-Catalogo</strong>
+        <small>Sempre perto de você</small>
+      </div>
+    </div>
+
+    <div class="nav-section">Configurações</div>
+    <a class="nav-item active">🏢 Casa MSC</a>
+    <a class="nav-item">🎨 Marca & Assets</a>
+    <a class="nav-item">🔌 Integração Terasoft</a>
+    <a class="nav-item">👤 Conta</a>
+    <a class="nav-item">🤖 IA & API Keys</a>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar">A</div><div class="info"><strong>Amanda</strong><small>Lojas MSC · Marketing</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h1>Configurações da Casa MSC</h1>
+        <p class="subtitle">Esses dados aparecem automaticamente em todos os catálogos. Mudam raramente — quando uma loja abre/fecha, troca de telefone etc.</p>
+      </div>
+      <div class="actions">
+        <span class="save-indicator">
+          <svg class="icon" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+          Salvo agora
+        </span>
+      </div>
+    </div>
+
+    <!-- Identidade -->
+    <div class="config-section">
+      <h2>Identidade da marca</h2>
+      <p class="desc">Tagline e textos legais que aparecem em todo catálogo gerado.</p>
+
+      <div class="form-row">
+        <label class="label">Tagline oficial</label>
+        <input class="input" value="Sempre perto de você!" style="max-width: 400px;">
+      </div>
+
+      <div class="form-row">
+        <label class="label">Texto legal de rodapé</label>
+        <textarea class="textarea" rows="2" style="max-width: 600px;">Imagens ilustrativas. Salvo erros de impressão. Venda sujeita a aprovação de crédito.</textarea>
+      </div>
+    </div>
+
+    <!-- Lojas -->
+    <div class="config-section">
+      <h2>Lojas físicas <span class="badge badge-secondary">9 lojas</span></h2>
+      <p class="desc">Endereços + telefones que aparecem no rodapé do catálogo.</p>
+
+      <div class="stores-grid">
+        <div class="store-card">
+          <strong>Floresta</strong>
+          <small>Av. Pres. Getúlio Vargas, 2195A</small>
+          <small class="text-muted">(44) 3236-2140</small>
+        </div>
+        <div class="store-card">
+          <strong>Mandaguaçu</strong>
+          <small>Av. Munhoz da Rocha, 1278 — Centro</small>
+          <small class="text-muted">(44) 3245-5310</small>
+        </div>
+        <div class="store-card">
+          <strong>Maringá</strong>
+          <small>Av. Brasil, 4355</small>
+          <small class="text-muted">(44) 3035-0484</small>
+        </div>
+        <div class="store-card">
+          <strong>Paiçandu</strong>
+          <small>Av. Sílvio Alves, 679</small>
+          <small class="text-muted">(44) 9928-0156</small>
+        </div>
+        <div class="store-card">
+          <strong>Paraíso do Norte</strong>
+          <small>Pç. Santos Dumont, 67</small>
+          <small class="text-muted">(44) 3431-2090</small>
+        </div>
+        <div class="store-card">
+          <strong>Nova Esperança</strong>
+          <small>Av. 14 de Dezembro, 470</small>
+          <small class="text-muted">(44) 3252-4824</small>
+        </div>
+        <div class="store-card">
+          <strong>São Carlos do Ivaí</strong>
+          <small>Av. Dona Izabel, 766</small>
+          <small class="text-muted">(44) 3438-1283</small>
+        </div>
+        <div class="store-card">
+          <strong>Sarandi</strong>
+          <small>Rua Tal, 471 — Centro</small>
+          <small class="text-muted">(44) 3035-0770</small>
+        </div>
+        <button class="store-card" style="border-style: dashed; text-align: center; cursor: pointer; background: var(--secondary);">
+          <strong style="color: var(--msc-blue);">+ Adicionar loja</strong>
+        </button>
+      </div>
+    </div>
+
+    <!-- Redes sociais -->
+    <div class="config-section">
+      <h2>Redes sociais e site</h2>
+      <p class="desc">Links que vão no rodapé das peças e do mini-site público.</p>
+
+      <div class="flex gap-4 mt-2">
+        <div class="form-row" style="flex: 1;">
+          <label class="label">Instagram</label>
+          <input class="input" value="@msaocarlos">
+        </div>
+        <div class="form-row" style="flex: 1;">
+          <label class="label">Facebook</label>
+          <input class="input" value="@LOJASMSC">
+        </div>
+        <div class="form-row" style="flex: 1;">
+          <label class="label">Site</label>
+          <input class="input" value="www.lojasmsc.com.br">
+        </div>
+      </div>
+    </div>
+
+    <!-- Mascote/Logo -->
+    <div class="config-section">
+      <h2>Mascote e logo</h2>
+      <p class="desc">Ativos da marca usados pelo renderer. Não devem mudar com frequência.</p>
+
+      <div class="flex gap-4">
+        <div class="card" style="width: 180px; text-align: center;">
+          <div style="width: 100%; aspect-ratio: 1; background: var(--secondary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 48px;">👴</div>
+          <h3 style="margin-top: 12px; font-size: 13px; font-weight: 600;">Mascote</h3>
+          <small class="text-muted">mascote_msc.png</small>
+        </div>
+        <div class="card" style="width: 180px; text-align: center;">
+          <div style="width: 100%; aspect-ratio: 1; background: var(--secondary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--msc-blue);">LOJAS<br>msc</div>
+          <h3 style="margin-top: 12px; font-size: 13px; font-weight: 600;">Logo (colorida)</h3>
+          <small class="text-muted">logo_msc.png</small>
+        </div>
+        <div class="card" style="width: 180px; text-align: center; background: var(--msc-blue);">
+          <div style="width: 100%; aspect-ratio: 1; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">LOJAS<br>msc</div>
+          <h3 style="margin-top: 12px; font-size: 13px; font-weight: 600; color: white;">Logo (branca)</h3>
+          <small style="color: rgba(255,255,255,0.7);">logo_msc_branco.png</small>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast-area">
+  <div class="toast success">
+    <svg style="width: 20px; height: 20px; color: var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+    <div>
+      <strong style="font-weight: 500;">Peça pronta</strong>
+      <small style="display: block; color: var(--muted-foreground);">Refrigerador Midea · IG · 1080×1080</small>
+    </div>
+  </div>
+</div>
+
+<!-- Sem JS: tabs são âncoras puras (#screen-X), todas as telas visíveis empilhadas com scroll-behavior smooth. -->
+<script>
+  // Highlight da tab ativa baseado em qual tela está visível no viewport.
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.mockup-nav .tab');
+    const screens = document.querySelectorAll('.screen');
+    const setActive = (id) => {
+      tabs.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#' + id));
+    };
+    if (screens[0]) setActive(screens[0].id);
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: '-50% 0px -49% 0px' });
+    screens.forEach(s => obs.observe(s));
+  });
+</script>
+
+</body>
+</html>

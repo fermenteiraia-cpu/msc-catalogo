@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MSC Studio</title>
+<style>
+  :root{
+    --bg:#FAF9F7; --surface:#fff; --surface-2:#F4F2EE;
+    --ink:#1A1A1A; --ink-muted:#6B6B6B; --ink-tertiary:#9A9A9A;
+    --border:#E6E3DD; --border-strong:#D0CDC5;
+    --pri:#2C3D6E; --pri-soft:#E6F1FB; --pri-ink:#0C447C;
+    --amber:#F5C84B; --amber-soft:#FAEEDA; --amber-ink:#854F0B;
+    --green-soft:#E1F5EE; --green-ink:#085041;
+    --red-soft:#FCEBEB; --red-ink:#791F1F;
+    --radius:8px; --radius-lg:12px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Inter",Roboto,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+  .mark{width:24px;height:24px;border-radius:6px;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .container{max-width:1200px;margin:0 auto;padding:24px}
+  .step-bar{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+  .step{font-size:12px;padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--ink-muted);cursor:pointer;font-family:inherit}
+  .step.active{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .step.done{background:var(--green-soft);color:var(--green-ink);border-color:#5DCAA5}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px}
+  h2{font-size:18px;font-weight:600;margin:0 0 6px}
+  .sub{font-size:13px;color:var(--ink-muted);margin:0 0 16px}
+  label{font-size:12px;color:var(--ink-muted);display:block;margin-bottom:4px}
+  input,select,textarea,button{font-family:inherit}
+  .input,select,textarea{width:100%;padding:8px 11px;font-size:13px;border:1px solid var(--border-strong);border-radius:var(--radius);background:#fff;box-sizing:border-box}
+  .input:focus,select:focus{outline:2px solid var(--pri-soft);border-color:var(--pri)}
+  .btn{font-size:13px;padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border-strong);background:#fff;cursor:pointer;color:var(--ink)}
+  .btn:hover{background:var(--surface-2)}
+  .btn-pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .btn-pri:hover{background:#23335E}
+  .btn-pri:disabled{background:var(--border);color:var(--ink-tertiary);cursor:not-allowed}
+  .btn-amber{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:500}
+  .btn-amber:hover{background:#E2B438}
+  .btn-sm{font-size:11px;padding:5px 10px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid-filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+  .selstrip{display:flex;gap:6px;overflow-x:auto;padding:10px;border:1px dashed var(--pri);border-radius:var(--radius);background:var(--pri-soft);margin-bottom:12px;align-items:center;min-height:46px}
+  .chip{display:flex;align-items:center;gap:6px;padding:4px 6px 4px 4px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);font-size:11px;flex-shrink:0;white-space:nowrap}
+  .chip-foto{width:22px;height:22px;border-radius:4px;background:var(--surface-2);object-fit:cover}
+  .chip-x{font-size:14px;color:var(--ink-tertiary);cursor:pointer;padding:0 4px}
+  .chip-x:hover{color:var(--red-ink)}
+  .pill{font-size:11px;padding:2px 8px;border-radius:var(--radius);background:var(--surface-2);color:var(--ink-muted);font-weight:500}
+  .pill-pri{background:var(--pri-soft);color:var(--pri-ink)}
+  .pill-amber{background:var(--amber-soft);color:var(--amber-ink)}
+  .pill-green{background:var(--green-soft);color:var(--green-ink)}
+  .prod-list{max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius)}
+  .prod-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer}
+  .prod-row:last-child{border-bottom:0}
+  .prod-row:hover{background:var(--surface-2)}
+  .prod-row.sel{background:var(--pri-soft)}
+  .prod-foto{width:36px;height:36px;border-radius:var(--radius);background:var(--surface-2);object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+  .prod-name{flex:1;line-height:1.3}
+  .prod-cod{font-size:10px;color:var(--ink-tertiary)}
+  .prod-prc{font-weight:600;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid var(--border);vertical-align:middle}
+  th{font-weight:500;color:var(--ink-muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .num{width:60px;padding:5px 8px;font-size:12px;border:1px solid var(--border-strong);border-radius:var(--radius)}
+  .star{font-size:18px;color:var(--ink-tertiary);cursor:pointer;user-select:none}
+  .star.on{color:var(--amber)}
+  .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  .preview-tile{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface);cursor:pointer;transition:transform 0.1s}
+  .preview-tile:hover{outline:2px solid var(--pri);outline-offset:2px}
+  .preview-tile img{display:block;width:100%;height:auto}
+  .preview-tile .tile-label{padding:6px 8px;font-size:11px;color:var(--ink-muted);background:var(--surface-2);border-top:1px solid var(--border)}
+  .toast{position:fixed;bottom:24px;right:24px;padding:14px 20px;background:var(--ink);color:#fff;border-radius:var(--radius);font-size:13px;display:none;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+  .toast.show{display:block}
+  .toast.error{background:#A32D2D}
+  .loading{display:flex;justify-content:center;padding:40px;color:var(--ink-muted);font-size:13px}
+  .loading::before{content:"";width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--pri);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:30px}
+  .modal.show{display:flex}
+  .modal-content{background:#fff;border-radius:var(--radius-lg);max-width:90%;max-height:90%;overflow:auto;position:relative;padding:8px}
+  .modal-close{position:absolute;top:10px;right:14px;background:#fff;border:1px solid var(--border);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;line-height:1;z-index:1}
+  .hidden{display:none}
+  .muted{color:var(--ink-muted);font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="mark">M</span> lojas msc · studio</div>
+  <div class="muted" id="status">conectando...</div>
+</div>
+
+<div class="container">
+
+  <div class="step-bar" id="stepbar">
+    <button class="step active" data-s="1">1. Briefing</button>
+    <button class="step" data-s="2">2. Produtos</button>
+    <button class="step" data-s="3">3. Descontos & destaques</button>
+    <button class="step" data-s="4">4. Gerar & preview</button>
+  </div>
+
+  <div id="s1" class="panel">
+    <h2>Briefing da campanha</h2>
+    <p class="sub">Define o nome, headline e layout do catálogo.</p>
+    <div class="grid2">
+      <div><label>Nome da campanha</label><input class="input" id="f-nome" value="Mês das Mães 2026"/></div>
+      <div><label>Headline (vai no topo das peças)</label><input class="input" id="f-headline" value="MÊS DAS MÃES"/></div>
+    </div>
+    <div class="grid2">
+      <div><label>Subtítulo</label><input class="input" id="f-sub" value="LOJAS MSC"/></div>
+      <div><label>Layout do catálogo</label>
+        <select id="f-layout">
+          <option value="4x3">4×3 — 12 por página (default)</option>
+          <option value="3x2">3×2 — 6 por página (cards grandes)</option>
+          <option value="3x3">3×3 — 9 por página</option>
+          <option value="4x4">4×4 — 16 por página (denso)</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:14px;text-align:right">
+      <button class="btn btn-pri" onclick="goto(2)">Próximo: produtos →</button>
+    </div>
+  </div>
+
+  <div id="s2" class="panel hidden">
+    <h2>Selecionar produtos</h2>
+    <p class="sub">Use os filtros e busca; click numa linha para adicionar/remover.</p>
+
+    <div class="selstrip" id="selstrip">
+      <span class="pill pill-pri" id="sel-counter">0 selecionados</span>
+    </div>
+
+    <div class="grid-filters">
+      <select id="f-grupo" onchange="reloadFilters();applyFilters()"><option value="">Todos os grupos</option></select>
+      <select id="f-subgrupo" onchange="applyFilters()"><option value="">Subgrupo: todos</option></select>
+      <select id="f-grade" onchange="applyFilters()"><option value="">Grade: todas</option></select>
+      <select id="f-marca" onchange="applyFilters()"><option value="">Marca: todas</option></select>
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      <input class="input" id="f-busca" placeholder="Buscar por nome ou código..." style="flex:1" oninput="applyFilters()"/>
+      <button class="btn btn-sm" onclick="clearFilters()">Limpar filtros</button>
+    </div>
+    <div class="muted" id="prod-counter" style="margin-bottom:6px"></div>
+    <div class="prod-list" id="prod-list"><div class="loading">carregando produtos...</div></div>
+
+    <div style="margin-top:14px;text-align:right">
+      <button class="btn" onclick="goto(1)">← briefing</button>
+      <button class="btn btn-pri" onclick="goto(3)">Próximo: descontos →</button>
+    </div>
+  </div>
+
+  <div id="s3" class="panel hidden">
+    <h2>Descontos & destaques</h2>
+    <p class="sub">⭐ Marque os destaques que ganham peças avulsas (Instagram, Stories, WhatsApp, TV). Os outros entram só no catálogo.</p>
+
+    <div class="row" style="margin-bottom:14px;align-items:center">
+      <label style="margin:0">Desconto geral</label>
+      <input class="num" id="f-desc-geral" value="20"/><span class="muted">%</span>
+      <span class="muted">·</span>
+      <label style="margin:0">Parcelas</label>
+      <input class="num" id="f-parc-geral" value="10" style="width:42px"/><span class="muted">x sem juros</span>
+      <button class="btn btn-sm" onclick="aplicarDescGeral()">Aplicar a todos</button>
+    </div>
+
+    <div id="desc-table-wrap"></div>
+
+    <div class="row" style="margin-top:14px;justify-content:space-between;align-items:center">
+      <div id="resumo-counts" class="muted"></div>
+      <div>
+        <button class="btn" onclick="goto(2)">← produtos</button>
+        <button class="btn btn-pri" onclick="goto(4);gerarCampanha()">Gerar campanha →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="s4" class="panel hidden">
+    <h2>Preview & gerar</h2>
+    <p class="sub" id="s4-sub">Click numa peça para ver em tamanho real.</p>
+    <div id="s4-content"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <button class="modal-close" onclick="closeModal()">×</button>
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
+<script>
+const API = window.location.origin;
+let TODOS_PRODUTOS = [];
+let SELECIONADOS = [];   // {codigo, nome, marca, grupo, subgrupo, grade, valorvenda, desconto_pct, parcelas, destaque}
+let FILTROS_CACHE = null;
+
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' error' : '');
+  setTimeout(()=>{ t.classList.remove('show'); }, 3500);
+}
+
+function goto(n) {
+  for (let i=1; i<=4; i++) {
+    document.getElementById('s'+i).classList.toggle('hidden', i !== n);
+  }
+  document.querySelectorAll('.step').forEach(b => {
+    b.classList.toggle('active', Number(b.dataset.s) === n);
+  });
+  if (n === 3) renderTabelaDesc();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.step').forEach(b => {
+  b.addEventListener('click', () => goto(Number(b.dataset.s)));
+});
+
+async function init() {
+  try {
+    const h = await (await fetch(API + '/api/health')).json();
+    document.getElementById('status').textContent =
+      `assets: mascote ${h.assets.mascote ? '✓' : '✗'} · logo ${h.assets.logo_dark ? '✓' : '✗'}`;
+    await loadFiltros();
+    await loadProdutos();
+  } catch (e) {
+    document.getElementById('status').textContent = 'erro: ' + e.message;
+    toast('Falha ao conectar com o backend. O servidor está rodando?', true);
+  }
+}
+
+async function loadFiltros(grupo) {
+  const url = grupo ? `${API}/api/filtros?grupo=${encodeURIComponent(grupo)}` : `${API}/api/filtros`;
+  const r = await (await fetch(url)).json();
+  if (!grupo) {
+    FILTROS_CACHE = r;
+    fillSelect('f-grupo', r.grupos, 'Todos os grupos');
+  }
+  fillSelect('f-subgrupo', r.subgrupos, 'Subgrupo: todos');
+  fillSelect('f-grade',    r.grades,    'Grade: todas');
+  fillSelect('f-marca',    r.marcas,    'Marca: todas');
+}
+
+function fillSelect(id, items, placeholder) {
+  const s = document.getElementById(id);
+  const cur = s.value;
+  s.innerHTML = `<option value="">${placeholder}</option>` +
+    items.map(x => `<option value="${x}">${x}</option>`).join('');
+  if (items.includes(cur)) s.value = cur;
+}
+
+async function reloadFilters() {
+  const grupo = document.getElementById('f-grupo').value;
+  await loadFiltros(grupo);
+}
+
+async function loadProdutos() {
+  const params = new URLSearchParams({
+    grupo: document.getElementById('f-grupo').value,
+    subgrupo: document.getElementById('f-subgrupo').value,
+    grade: document.getElementById('f-grade').value,
+    marca: document.getElementById('f-marca').value,
+    busca: document.getElementById('f-busca').value,
+    limit: '500',
+  });
+  const r = await (await fetch(API + '/api/produtos?' + params)).json();
+  TODOS_PRODUTOS = r.produtos;
+  document.getElementById('prod-counter').textContent =
+    `${r.produtos.length} de ${r.total} produtos exibidos`;
+  renderProdList();
+}
+
+function applyFilters() {
+  loadProdutos();
+}
+
+function clearFilters() {
+  document.getElementById('f-grupo').value = '';
+  document.getElementById('f-subgrupo').value = '';
+  document.getElementById('f-grade').value = '';
+  document.getElementById('f-marca').value = '';
+  document.getElementById('f-busca').value = '';
+  loadFiltros();
+  loadProdutos();
+}
+
+function renderProdList() {
+  const list = document.getElementById('prod-list');
+  if (!TODOS_PRODUTOS.length) {
+    list.innerHTML = '<div class="loading" style="border:0">nenhum produto encontrado com esses filtros</div>';
+    return;
+  }
+  list.innerHTML = TODOS_PRODUTOS.map(p => {
+    const sel = SELECIONADOS.find(s => s.codigo === p.codigo) ? 'sel' : '';
+    return `
+    <div class="prod-row ${sel}" onclick="toggleSel('${p.codigo}')">
+      <input type="checkbox" ${sel ? 'checked' : ''} onclick="event.stopPropagation();toggleSel('${p.codigo}')">
+      <img class="prod-foto" src="${API}/api/produto/${p.codigo}/foto" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><rect width=%2236%22 height=%2236%22 fill=%22%23F4F2EE%22/></svg>'">
+      <div class="prod-name">${escapeHtml(p.nome)} <span class="prod-cod">· ${p.codigo} · ${p.marca || ''}</span></div>
+      <div class="prod-prc">${p.valorvenda ? 'R$ ' + Number(p.valorvenda).toFixed(2).replace('.', ',') : '—'}</div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toggleSel(codigo) {
+  const idx = SELECIONADOS.findIndex(s => s.codigo === codigo);
+  if (idx >= 0) {
+    SELECIONADOS.splice(idx, 1);
+  } else {
+    const p = TODOS_PRODUTOS.find(p => p.codigo === codigo);
+    if (!p) return;
+    SELECIONADOS.push({
+      ...p,
+      desconto_pct: Number(document.getElementById('f-desc-geral').value) || 20,
+      parcelas: Number(document.getElementById('f-parc-geral').value) || 10,
+      destaque: SELECIONADOS.length < 3,  // primeiros 3 viram destaques por default
+    });
+  }
+  renderSelStrip();
+  renderProdList();
+}
+
+function renderSelStrip() {
+  const strip = document.getElementById('selstrip');
+  document.getElementById('sel-counter').textContent = `${SELECIONADOS.length} selecionados`;
+  const chips = SELECIONADOS.map(s =>
+    `<div class="chip">
+       <img class="chip-foto" src="${API}/api/produto/${s.codigo}/foto" onerror="this.style.display='none'">
+       ${escapeHtml(s.codigo)} ${escapeHtml((s.nome||'').slice(0,18))}
+       <span class="chip-x" onclick="toggleSel('${s.codigo}')">×</span>
+     </div>`
+  ).join('');
+  strip.innerHTML = `<span class="pill pill-pri" id="sel-counter">${SELECIONADOS.length} selecionados</span>` + chips;
+}
+
+function aplicarDescGeral() {
+  const d = Number(document.getElementById('f-desc-geral').value) || 20;
+  const pa = Number(document.getElementById('f-parc-geral').value) || 10;
+  SELECIONADOS.forEach(s => { s.desconto_pct = d; s.parcelas = pa; });
+  renderTabelaDesc();
+}
+
+function renderTabelaDesc() {
+  const wrap = document.getElementById('desc-table-wrap');
+  if (!SELECIONADOS.length) {
+    wrap.innerHTML = '<div class="loading" style="border:0">nenhum produto selecionado. Volte para a tela 2.</div>';
+    return;
+  }
+  wrap.innerHTML = `<table>
+    <thead><tr><th>★ destaque</th><th>produto</th><th>de</th><th>desc %</th><th>por (à vista)</th><th>parcela</th></tr></thead>
+    <tbody>
+    ${SELECIONADOS.map((s, i) => {
+      const av = Number(s.valorvenda || 0);
+      const pct = Number(s.desconto_pct || 0);
+      const promo = av * (1 - pct / 100);
+      const parc = promo / (s.parcelas || 10);
+      return `<tr>
+        <td style="text-align:center"><span class="star ${s.destaque?'on':''}" onclick="toggleStar(${i})">★</span></td>
+        <td>${escapeHtml(s.nome.slice(0,40))}<div class="prod-cod">${s.codigo} · ${s.marca||''}</div></td>
+        <td>R$ ${av.toFixed(2).replace('.',',')}</td>
+        <td><input class="num" type="number" value="${pct}" oninput="setDesc(${i}, this.value)"/>%</td>
+        <td>R$ ${promo.toFixed(2).replace('.',',')}</td>
+        <td>1+${(s.parcelas||10)-1}× R$ ${parc.toFixed(2).replace('.',',')}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
+  updateResumo();
+}
+
+function setDesc(i, v) {
+  SELECIONADOS[i].desconto_pct = Number(v) || 0;
+  // re-render so the calculated columns update
+  renderTabelaDesc();
+}
+function toggleStar(i) {
+  SELECIONADOS[i].destaque = !SELECIONADOS[i].destaque;
+  renderTabelaDesc();
+}
+function updateResumo() {
+  const n = SELECIONADOS.length;
+  const d = SELECIONADOS.filter(s => s.destaque).length;
+  document.getElementById('resumo-counts').innerHTML =
+    `<span class="pill pill-pri">${n} no catálogo</span>
+     <span class="pill pill-amber" style="margin-left:6px">${d} destaques · ${d*4} peças avulsas</span>`;
+}
+
+async function gerarCampanha() {
+  if (!SELECIONADOS.length) { toast('Selecione produtos primeiro', true); return; }
+  document.getElementById('s4-content').innerHTML = '<div class="loading">renderizando peças... isso leva ~10-30s</div>';
+  document.getElementById('s4-sub').textContent = 'gerando...';
+  const payload = {
+    nome: document.getElementById('f-nome').value || 'Campanha',
+    headline: document.getElementById('f-headline').value || 'PROMOÇÃO',
+    subtitulo: document.getElementById('f-sub').value || 'LOJAS MSC',
+    layout_catalogo: document.getElementById('f-layout').value,
+    itens: SELECIONADOS.map(s => ({
+      codigo: s.codigo,
+      desconto_pct: Number(s.desconto_pct || 0),
+      parcelas: Number(s.parcelas || 10),
+      destaque: !!s.destaque,
+    })),
+  };
+  try {
+    const r = await fetch(API + '/api/campanha/gerar', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) {
+      const err = await r.text();
+      throw new Error(err);
+    }
+    const data = await r.json();
+    renderPreview(data);
+    toast(`✓ Campanha gerada · ${data.arquivos.length} arquivos`);
+  } catch (e) {
+    document.getElementById('s4-content').innerHTML =
+      `<div style="color:var(--red-ink);padding:20px;background:var(--red-soft);border-radius:8px">
+        Erro ao gerar campanha: ${escapeHtml(e.message)}
+      </div>`;
+    toast('Erro: ' + e.message, true);
+  }
+}
+
+function renderPreview(data) {
+  document.getElementById('s4-sub').innerHTML =
+    `Pasta: <code style="background:#f4f2ee;padding:2px 6px;border-radius:4px">${escapeHtml(data.out_dir)}</code> · ${data.arquivos.length} arquivos · ${data.n_destaques} destaques · catálogo de ${data.n_paginas_catalogo} página(s)`;
+
+  // Group by tipo
+  const groups = {};
+  data.arquivos.forEach(a => {
+    if (!groups[a.tipo]) groups[a.tipo] = [];
+    groups[a.tipo].push(a);
+  });
+
+  const titles = {
+    'catalogo_pdf': 'Catálogo (PDF)',
+    'catalogo_png': 'Catálogo (PNG por página)',
+    'ig': 'Instagram Feed (1080×1080)',
+    'story': 'Stories (1080×1920)',
+    'wa': 'WhatsApp (1080×1920)',
+    'tv': 'TV (1920×1080)',
+  };
+  const order = ['catalogo_pdf','catalogo_png','ig','story','wa','tv'];
+
+  let html = '';
+  order.forEach(tipo => {
+    const arr = groups[tipo];
+    if (!arr || !arr.length) return;
+    html += `<h3 style="margin:18px 0 8px;font-size:14px;font-weight:600">${titles[tipo]||tipo} <span class="pill" style="margin-left:6px">${arr.length} arquivo${arr.length>1?'s':''}</span></h3>`;
+    html += '<div class="preview-grid">';
+    arr.forEach(a => {
+      const url = `${API}/${a.rel}`;
+      if (tipo === 'catalogo_pdf') {
+        html += `<a class="preview-tile" href="${url}" target="_blank" style="text-decoration:none;color:inherit;display:flex;flex-direction:column">
+          <div style="aspect-ratio:7/9;background:linear-gradient(180deg,#F5A8B8,#DC5070);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;text-align:center;padding:10px">
+            PDF<br>${a.n_pages || ''} pág.
+          </div>
+          <div class="tile-label">abrir PDF →</div>
+        </a>`;
+      } else {
+        html += `<div class="preview-tile" onclick="abrirImagem('${url}')">
+          <img src="${url}" alt="${tipo}" loading="lazy">
+          <div class="tile-label">${tipo === 'catalogo_png' ? 'pág ' + (a.page||'') : (a.codigo||'')}</div>
+        </div>`;
+      }
+    });
+    html += '</div>';
+  });
+
+  // Bottom bar
+  html += `<div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="pill pill-green">✓ Concluído</span>
+    <span class="muted">Os arquivos estão em <code style="font-size:11px">${escapeHtml(data.out_dir)}</code></span>
+    <span style="flex:1"></span>
+    <button class="btn" onclick="goto(3)">← editar descontos</button>
+    <button class="btn btn-pri" onclick="gerarCampanha()">Gerar de novo</button>
+  </div>`;
+
+  document.getElementById('s4-content').innerHTML = html;
+}
+
+function abrirImagem(url) {
+  document.getElementById('modal-content').innerHTML =
+    `<img src="${url}" style="max-width:100%;max-height:85vh;display:block">`;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(e) {
+  if (!e || e.target.id === 'modal' || e.target.classList.contains('modal-close')) {
+    document.getElementById('modal').classList.remove('show');
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
