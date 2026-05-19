@@ -8,9 +8,22 @@ purpose: "Validações + medições + pré-requisitos a fechar antes de começar
 
 # Sprint 0 — Pré-MVP Checklist
 
+> ⚡ **Atualizado 2026-05-12 (Amelia)** — Pós Visual Spike. A arquitetura virou: agora o output final é gerado pela API `gpt-image-2` da OpenAI (img2img sobre sketch programático). Validado tecnicamente. Items refletem nova realidade.
+
 Este documento materializa as **premissas a validar** + **achados que viraram tarefas operacionais** durante a fase de brief. **Nenhuma linha de código do MVP-1 deve começar antes destes itens estarem fechados** (ou explicitamente aceitos como risco).
 
 Cadência sugerida: 1-2 semanas. Maior parte é conversa com Amanda (que é casa) + 1-2 chamadas externas (gráfica). Sem código.
+
+## ⚡ Track 0 — NOVO: OpenAI / IA generativa (P0)
+
+| # | Tarefa | Output esperado | Status |
+|---|---|---|---|
+| 0.1 | **Rotacionar chave OpenAI exposta no chat** (12/05) — revogar atual, gerar nova | Chave segura | 🚨 URGENTE |
+| 0.2 | Configurar **hard cap de gasto** em platform.openai.com → Usage limits → $20/mês | Proteção contra abuse | ⚠️ |
+| 0.3 | Cravar `gpt-image-2` como modelo definitivo (validado em 12/05) | Decisão escrita no spec | ✅ feito |
+| 0.4 | Testar consistência multi-página (sketch → IA gera 4 pgs catálogo coerentes) | Resultado documentado | ⚠️ |
+| 0.5 | Validação visual cega com **outputs do gpt-image-2** (não mais do Python) — Amanda + 1 externo | "Profissional?" → GO/NO-GO | ⚠️ |
+| 0.6 | Decidir política "selo modernizado" (10X SEM JUROS → 0% SEM JUROS): Amanda aceita? | Decisão escrita | ⚠️ |
 
 ---
 

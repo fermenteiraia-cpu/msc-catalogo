@@ -532,9 +532,11 @@
   <a class="tab" href="#screen-briefing">✨ Briefing por IA</a>
   <a class="tab" href="#screen-produtos">🛒 Produtos</a>
   <a class="tab" href="#screen-editor">🎨 Editor</a>
-  <a class="tab" href="#screen-apresentacao">🖥️ Modo apresentação</a>
+  <a class="tab" href="#screen-apresentacao">🖥️ Apresentação</a>
   <a class="tab" href="#screen-exportar">📤 Exportar</a>
-  <a class="tab" href="#screen-config">⚙️ Configurações</a>
+  <a class="tab" href="#screen-config" style="opacity: 0.5; text-decoration: line-through;">⚙️ Config (v4: redirecionada pra Admin)</a>
+  <a class="tab" href="#screen-admin-house" style="background: linear-gradient(90deg, #fef3c7, white);">🏛️ Admin: Casa MSC</a>
+  <a class="tab" href="#screen-admin-templates" style="background: linear-gradient(90deg, #fef3c7, white);">📋 Admin: Templates</a>
 </nav>
 
 <!-- ============ SCREEN: HOME ============ -->
@@ -584,8 +586,8 @@
   <main class="main">
     <div class="main-header">
       <div>
-        <h1>Olá Amanda 👋</h1>
-        <p class="subtitle">Você tem 1 campanha em rascunho e 4 publicadas este mês.</p>
+        <h1>Oi, Amanda 👋</h1>
+        <p class="subtitle">Você tem <strong>1 campanha em rascunho</strong> e <strong>4 publicadas</strong> este mês. <a href="#" style="color: var(--msc-blue);">Como funciona?</a></p>
       </div>
       <div class="actions">
         <button class="btn btn-secondary">
@@ -597,6 +599,16 @@
           Nova campanha
         </button>
       </div>
+    </div>
+
+    <!-- Card "Continuar de onde parou" (fix John #9 - Próxima Ação) -->
+    <div style="background: linear-gradient(135deg, var(--msc-blue) 0%, #4A4A8E 100%); color: white; border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div>
+        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">📌 Continue de onde você parou</div>
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">Mês das Mães 2026</div>
+        <div style="font-size: 13px; opacity: 0.85;">Você estava em <strong>Produtos</strong> — faltam <strong>3 destaques</strong> pra escolher. Salvo há 2h.</div>
+      </div>
+      <button class="btn" style="background: white; color: var(--msc-blue); white-space: nowrap;">Continuar →</button>
     </div>
 
     <!-- Grid de campanhas (cada card mostra última edição; abrir = continua de onde parou) -->
@@ -718,10 +730,10 @@
     <div class="main-header">
       <div>
         <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">
-          <span style="color: var(--msc-blue); font-weight: 500;">Início</span> · Nova campanha · <span style="color: var(--foreground);">Briefing</span>
+          <span style="color: var(--msc-blue); font-weight: 500;">Início</span> · Nova campanha
         </div>
-        <h1>Como vamos começar?</h1>
-        <p class="subtitle">A IA monta o briefing inteiro. Você refina o que precisar.</p>
+        <h1>Vamos montar sua campanha</h1>
+        <p class="subtitle">Conta o tema, a IA prepara tudo. Você ajusta o que quiser depois.</p>
       </div>
       <div class="actions">
         <span class="save-indicator">
@@ -735,22 +747,15 @@
 
       <div class="briefing-form">
 
-        <!-- Modos de iniciar -->
+        <!-- Modos de iniciar — v4: duplicar como default + outros recolhidos (fix John #6 + Paige microcopy 2-5) -->
         <div>
-          <label class="label">Modo de início</label>
+          <label class="label">Por onde a gente começa?</label>
           <div class="briefing-modes">
-            <div class="briefing-mode">
+            <div class="briefing-mode selected" style="padding: 16px 18px;">
               <div class="radio"></div>
               <div class="info">
-                <strong>📄 Partir do zero</strong>
-                <p>A IA cria tudo a partir do tema</p>
-              </div>
-            </div>
-            <div class="briefing-mode selected">
-              <div class="radio"></div>
-              <div class="info">
-                <strong>📋 Duplicar campanha anterior <span class="badge badge-accent" style="margin-left: 6px;">⭐ mais comum</span></strong>
-                <p>Parte de uma campanha pronta e adapta</p>
+                <strong>📋 Aproveitar uma campanha anterior <span class="badge badge-accent" style="margin-left: 6px;">⭐ jeito mais rápido</span></strong>
+                <p>Parte de uma campanha pronta e ajusta o necessário</p>
                 <select class="select" style="margin-top: 8px; max-width: 280px;">
                   <option>Mês das Mães 2025</option>
                   <option>Abril do Descontão 2025</option>
@@ -758,104 +763,209 @@
                 </select>
               </div>
             </div>
-            <div class="briefing-mode">
-              <div class="radio"></div>
-              <div class="info">
-                <strong>🎨 Inspirar em referência externa</strong>
-                <p>Anexa até 3 imagens (JPG/PNG/PDF). Slider define quão fiel à inspiração.</p>
+          </div>
+          <details style="margin-top: 12px;">
+            <summary style="cursor: pointer; font-size: 12px; color: var(--muted-foreground); padding: 6px 0;">Começar de outro jeito (raro)</summary>
+            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+              <div class="briefing-mode" style="padding: 12px 16px;">
+                <div class="radio"></div>
+                <div class="info">
+                  <strong>📄 Começar do zero</strong>
+                  <p>A IA cria tudo só com o tema</p>
+                </div>
+              </div>
+              <div class="briefing-mode" style="padding: 12px 16px;">
+                <div class="radio"></div>
+                <div class="info">
+                  <strong>🎨 Me inspirar numa imagem</strong>
+                  <p>Anexa até 3 imagens. Você escolhe quão fiel a IA será.</p>
+                </div>
               </div>
             </div>
-          </div>
+          </details>
         </div>
 
-        <!-- Tema -->
+        <!-- Tema (v4) -->
         <div class="form-row">
           <label class="label">Tema da campanha</label>
           <textarea class="textarea" rows="2" placeholder="Ex.: campanha mês das mães 2026">campanha mês das mães 2026</textarea>
-          <small class="text-muted text-xs" style="margin-top: 6px; display: block;">A IA usa isso pra inferir paleta, decoração, lettering e mood.</small>
+          <small class="text-muted text-xs" style="margin-top: 6px; display: block;">Com isso a IA já adivinha as cores, os enfeites, o estilo das letras e o clima da campanha.</small>
         </div>
 
         <button class="btn btn-primary btn-lg" style="align-self: flex-start;">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" transform="translate(7 -1)"/></svg>
-          Gerar briefing
+          Montar minha campanha
         </button>
 
       </div>
 
-      <!-- Resultado da IA — mostrando STREAMING EM PROGRESSO (3 campos prontos, paleta chegando, restantes skeleton) -->
+      <!-- Resultado da IA — v4: vocabulário 100% humano em PT-BR -->
       <div class="ai-result">
 
         <div class="ai-status">
-          <div class="dot" style="background: var(--warning); animation: pulse 1.5s infinite;"></div>
-          ⚡ Ajustando tipografia e mood... <small style="margin-left: auto; color: var(--muted-foreground);">7s</small>
+          <div class="dot"></div>
+          ✅ Pronto! A IA já preencheu tudo. Dá uma olhada e mexe no que precisar.
         </div>
         <style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }</style>
 
-        <!-- Textos -->
-        <div class="ai-field">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Título · gerado por IA
+        <!-- 🖼️ MINI-VISUALIZAÇÃO (wireframe low-fi v5.1 - fix David: preview pra perfil visual) -->
+        <div style="margin: 4px 0 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground);">🖼️ Como vai parecer (rascunho)</div>
+            <span class="badge badge-muted" style="font-size: 9px;">não é a peça final</span>
           </div>
-          <div class="value">MÊS DAS MÃES</div>
+
+          <!-- Wireframe da capa com decisões refletidas -->
+          <div style="background: linear-gradient(135deg, #FFE0EC 0%, #FF87B3 100%); border-radius: var(--radius); padding: 16px 14px; aspect-ratio: 11/14; position: relative; overflow: hidden; box-shadow: var(--shadow-md);">
+
+            <!-- Faixa LOJAS MSC topo (🔒 Casa MSC) -->
+            <div style="background: rgba(192,36,106,0.85); color: white; padding: 3px 6px; font-size: 7px; font-weight: 700; letter-spacing: 0.1em; text-align: center; display: flex; justify-content: space-around; border-radius: 2px; margin: -8px -4px 8px;">
+              <span>LOJAS msc</span><span>LOJAS msc</span><span>LOJAS msc</span><span>LOJAS msc</span><span>LOJAS msc</span>
+            </div>
+
+            <!-- Grid principal: mascote esquerda + headline centro + CTA direita -->
+            <div style="display: grid; grid-template-columns: 60px 1fr 70px; gap: 8px; align-items: center; min-height: 110px;">
+
+              <!-- Mascote placeholder (esquerda) -->
+              <div style="background: rgba(255,255,255,0.5); border-radius: 4px; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 1px dashed rgba(255,255,255,0.8);">👴</div>
+
+              <!-- Headline (centro) - reflete decisões reais -->
+              <div style="text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: white; text-shadow: 1px 1px 0 #C0246A; letter-spacing: 0.05em;">MÊS DAS</div>
+                <div style="font-size: 30px; font-weight: 900; color: white; text-shadow: 2px 2px 0 #C0246A, 4px 4px 0 #A0204C; line-height: 1; margin-top: -2px;">m<span style="position: relative;">ã<span style="position: absolute; top: -8px; left: 1px; font-size: 14px;">❤️</span></span>es</div>
+                <div style="font-size: 7px; color: rgba(48,48,96,0.7); font-weight: 700; margin-top: 6px;">LOJAS msc</div>
+              </div>
+
+              <!-- CTA (direita) - "50% DE DESCONTO" -->
+              <div style="background: rgba(245,200,75,0.95); border: 1.5px dashed #B8860B; border-radius: 8px; padding: 4px 2px; text-align: center;">
+                <div style="font-size: 6px; color: #78350F; font-weight: 600;">Toda loja com até</div>
+                <div style="font-size: 18px; font-weight: 900; color: #DC2626; line-height: 1;">50%</div>
+                <div style="font-size: 6px; color: #78350F; font-weight: 700;">DE DESCONTO</div>
+              </div>
+            </div>
+
+            <!-- 4 termos parcelamento (abaixo) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 10px; font-size: 6px; color: rgba(48,48,96,0.85);">
+              <div style="background: rgba(255,255,255,0.6); padding: 3px 5px; border-radius: 2px;">💳 Parcelamento facilitado</div>
+              <div style="background: rgba(255,255,255,0.6); padding: 3px 5px; border-radius: 2px;">📒 Em 16x no carnê</div>
+              <div style="background: rgba(255,255,255,0.6); padding: 3px 5px; border-radius: 2px;">💳 Ou 1+9x sem juros</div>
+              <div style="background: rgba(255,255,255,0.6); padding: 3px 5px; border-radius: 2px;">🚚 Entrega e montagem grátis</div>
+            </div>
+
+            <!-- Footer período -->
+            <div style="background: rgba(192,36,106,0.85); color: white; padding: 4px 6px; font-size: 7px; font-weight: 600; text-align: center; border-radius: 2px; margin: 10px -4px -8px; position: absolute; bottom: 8px; left: 4px; right: 4px;">
+              Sorteio para as compras efetuadas · 01/05 ao 09/05
+            </div>
+          </div>
+
+          <p style="font-size: 11px; color: var(--muted-foreground); margin-top: 8px; line-height: 1.5;">
+            💡 Esse rascunho atualiza quando você muda as opções abaixo. Não vai sair exatamente assim — só serve pra você ter ideia de como as decisões se encaixam.
+          </p>
         </div>
 
-        <div class="ai-field">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Slogan · gerado por IA
-          </div>
-          <div class="value-multiline">Para quem sempre cuidou de você</div>
-        </div>
+        <!-- 🎨 CRIATIVO -->
+        <div style="padding: 6px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); border-bottom: 1px solid var(--border);">🎨 Arte e estilo (livre pra mexer)</div>
 
         <div class="ai-field">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            CTA principal · gerado por IA
-          </div>
-          <div class="value-multiline">TUDO EM 10X SEM JUROS · OU EM 16X NO CARNÊ DA LOJA</div>
+          <div class="label-ai"><svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Texto de cima</div>
+          <div class="value">MÊS DAS</div>
+        </div>
+        <div class="ai-field">
+          <div class="label-ai"><svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Palavra grande do centro</div>
+          <div class="value">mães</div>
+        </div>
+        <div class="ai-field">
+          <div class="label-ai">Enfeite ao redor da palavra</div>
+          <select class="select" style="font-size: 12px; padding: 4px 8px; min-height: 28px;">
+            <option selected>❤️ Coração no til do "ã"</option>
+            <option>🎈 Balões</option>
+            <option>🎉 Bandeirinhas</option>
+            <option>💵 Chuva de dinheiro</option>
+            <option>Nenhum</option>
+          </select>
+        </div>
+        <div class="ai-field">
+          <div class="label-ai">Estilo das letras</div>
+          <select class="select" style="font-size: 12px; padding: 4px 8px; min-height: 28px;">
+            <option selected>3D brilhante (estilo balão)</option>
+            <option>3D em relevo</option>
+            <option>Letreiro neon</option>
+            <option>Letra grossa chapada</option>
+          </select>
         </div>
 
-        <!-- Paleta -->
+        <!-- PALETA -->
         <div class="ai-field">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Paleta · gerado por IA
-          </div>
+          <div class="label-ai">Cores da campanha</div>
           <div class="swatches">
-            <div class="swatch" style="background: #FF6FA0;" data-hex="#FF6FA0"></div>
-            <div class="swatch" style="background: #FFC107;" data-hex="#FFC107"></div>
-            <div class="swatch" style="background: #FFB6C1;" data-hex="#FFB6C1"></div>
+            <div class="swatch" style="background: #FF1E7A;" data-hex="principal"></div>
+            <div class="swatch" style="background: #FFB6C1;" data-hex="secundária"></div>
+            <div class="swatch" style="background: #F5C84B;" data-hex="selos"></div>
           </div>
           <div style="height: 18px;"></div>
+          <div style="font-size: 12px; color: var(--foreground); margin-top: 4px; font-weight: 500;">Tons claros e quentes</div>
+          <div style="font-size: 11px; color: var(--muted-foreground); margin-top: 2px; font-style: italic;">"Rosa pop com brilhos de coração"</div>
         </div>
 
-        <!-- Decoração -->
+        <!-- DECORAÇÃO -->
         <div class="ai-field">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Decoração · gerado por IA
-          </div>
+          <div class="label-ai">Enfeites da campanha</div>
           <div class="chips">
             <span class="chip">corações 3D</span>
-            <span class="chip">fitas suaves</span>
-            <span class="chip">pétalas</span>
+            <span class="chip">balões coração</span>
+            <span class="chip">brilhos rosa</span>
           </div>
+          <div style="font-size: 12px; color: var(--foreground); margin-top: 6px;"><strong>Quantidade:</strong> equilibrada · <strong>Sentimento:</strong> carinho de mãe</div>
         </div>
 
-        <!-- Mood + Tipografia: AINDA EM SKELETON (streaming não terminou) -->
-        <div class="ai-field" style="border-style: dashed; opacity: 0.7;">
-          <div class="label-ai">
-            <svg class="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Mood + Tipografia · aguardando IA...
+        <!-- 📋 FRASES PRONTAS -->
+        <div style="padding: 6px 0; margin-top: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #78350f; border-bottom: 1px solid #fcd34d;">📋 Frases prontas que vão na capa</div>
+
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: var(--radius-sm); padding: 10px 12px;">
+          <div style="font-size: 11px; color: #78350f; margin-bottom: 8px;">A IA escolheu 4 frases da nossa biblioteca:</div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 12px;">💳 Parcelamento facilitado</div>
+            <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 12px;">📒 Em <strong>16</strong>x no carnê da loja</div>
+            <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 12px;">💳 Ou 1+<strong>9</strong>x sem juros nos cartões</div>
+            <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 12px;">🚚 Entrega e montagem grátis</div>
           </div>
-          <div class="skeleton" style="height: 14px; width: 80%; margin-top: 4px;"></div>
-          <div class="skeleton" style="height: 14px; width: 60%; margin-top: 4px;"></div>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 8px; background: white; width: 100%;">+ Trocar ou adicionar frase</button>
         </div>
 
-        <p class="text-xs text-muted" style="text-align: center; margin-top: 8px; font-style: italic;">
-          ⏳ Streaming em progresso — campos vão aparecendo um a um. Ao terminar, botões "Continuar" aparecem aqui.
-        </p>
+        <!-- SELO DESCONTO PRINCIPAL -->
+        <div class="ai-field">
+          <div class="label-ai">Selo de desconto principal</div>
+          <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
+            <div style="font-size: 11px; color: #78350f;">Toda loja com até</div>
+            <div style="font-size: 32px; font-weight: 900; color: #DC2626; line-height: 1;">50%</div>
+            <div style="font-size: 11px; font-weight: 700; color: #78350f;">DE DESCONTO</div>
+          </div>
+          <div style="font-size: 11px; color: var(--muted-foreground); margin-top: 6px;"><strong>Formato:</strong> empilhado · 1 selo grande na capa</div>
+        </div>
+
+        <!-- PERÍODO -->
+        <div class="ai-field">
+          <div class="label-ai">Quando a promoção vale</div>
+          <div style="font-size: 13px; font-weight: 500;">01/05/2026 → 09/05/2026</div>
+          <div style="font-size: 11px; color: var(--muted-foreground); margin-top: 4px; font-style: italic;">Mostrar na capa: "Sorteio para as compras efetuadas do dia 01/05 ao dia 09/05"</div>
+        </div>
+
+        <!-- SLOGAN -->
+        <div class="ai-field">
+          <div class="label-ai">Frase de campanha</div>
+          <div style="font-size: 11px; color: var(--muted-foreground); font-style: italic;">(essa campanha não tem frase própria, e tudo bem)</div>
+        </div>
+
+        <!-- 🔒 CASA MSC -->
+        <div style="padding: 6px 0; margin-top: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); border-bottom: 1px solid var(--border);">🔒 Coisas da marca MSC que entram sozinhas</div>
+
+        <div style="background: var(--muted); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--muted-foreground); line-height: 1.5;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">🔒 <strong style="color: var(--foreground);">A gente já cuida.</strong></div>
+          <p style="font-size: 11px;">Mascote, logo, endereço das 9 lojas, redes sociais e textos legais entram automaticamente em toda campanha — sem você precisar mexer.</p>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top: 8px;">Tudo certo, escolher os produtos →</button>
+        <button class="btn btn-ghost" style="font-size: 12px;">Não gostei, pedir pra IA tentar de novo</button>
 
       </div>
 
@@ -941,108 +1051,357 @@
       <button class="btn btn-secondary" style="margin-bottom: 0;">Limpar filtros</button>
     </div>
 
-    <!-- Bulk actions (32 selecionados) -->
-    <div class="bulk-actions">
-      <div class="selected-count">
-        ✓ <strong>32 produtos selecionados</strong> · 3 destaques
-      </div>
-      <div class="actions">
-        <input class="input" style="width: 110px; min-height: 28px; padding: 4px 10px; font-size: 12px;" placeholder="Desconto %" value="30">
-        <input class="input" style="width: 90px; min-height: 28px; padding: 4px 10px; font-size: 12px;" placeholder="Parcelas" value="10">
-        <button class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">Aplicar a todos</button>
-      </div>
-    </div>
+    <!-- Layout 2 colunas: grid de cards (esq) + carrinho persistente (dir) -->
+    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px;">
 
-    <!-- Tabela de produtos -->
-    <div class="product-table">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 32px;"></th>
-            <th style="width: 56px;">Foto</th>
-            <th>Produto</th>
-            <th style="width: 100px;">À vista</th>
-            <th style="width: 100px;">Desconto</th>
-            <th style="width: 100px;">Parcelas</th>
-            <th style="width: 100px;">Promo</th>
-            <th style="width: 60px; text-align: center;">⭐</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="checkbox checked">✓</span></td>
-            <td><div class="photo">📱</div></td>
-            <td>
-              <div class="name">CELULAR XIAOMI REDMI 15C 256GB</div>
-              <div class="codigo">Cód. 3245 / 2741 / 3029</div>
-            </td>
-            <td class="price">R$ 1.190,00</td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="30%"></td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
-            <td class="price discount">R$ 833,00</td>
-            <td style="text-align: center;"><span class="star active">⭐</span></td>
-          </tr>
-          <tr>
-            <td><span class="checkbox checked">✓</span></td>
-            <td><div class="photo">📱</div></td>
-            <td>
-              <div class="name">CELULAR SAMSUNG GALAXY A07 128GB</div>
-              <div class="codigo">Cód. 4012</div>
-            </td>
-            <td class="price">R$ 1.490,00</td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="30%"></td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
-            <td class="price discount">R$ 1.043,00</td>
-            <td style="text-align: center;"><span class="star">⭐</span></td>
-          </tr>
-          <tr>
-            <td><span class="checkbox checked">✓</span></td>
-            <td><div class="photo">🧊</div></td>
-            <td>
-              <div class="name">REFRIGERADOR MIDEA 463L 02 PORTAS INOX 127V</div>
-              <div class="codigo">Cód. 0002</div>
-              <span class="badge badge-secondary text-xs" style="margin-top: 4px; display: inline-block;">A: 1.80m · L: 0.65m · P: 0.70m</span>
-            </td>
-            <td class="price">R$ 5.525,70</td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="24%"></td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
-            <td class="price discount">R$ 4.199,53</td>
-            <td style="text-align: center;"><span class="star active">⭐</span></td>
-          </tr>
-          <tr>
-            <td><span class="checkbox checked">✓</span></td>
-            <td><div class="photo">🛋️</div></td>
-            <td>
-              <div class="name">ESTOFADO PREMIER SOFT 2,40M Retrátil/Reclinável</div>
-              <div class="codigo">Cód. 1857 / 1860 / 1861</div>
-              <span class="badge badge-secondary text-xs" style="margin-top: 4px; display: inline-block;">A: 0.95m · L: 2.40m · P: 1.10m</span>
-            </td>
-            <td class="price">R$ 3.500,00</td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 70px;" value="32%"></td>
-            <td><input class="input" style="min-height: 32px; padding: 4px 8px; width: 60px;" value="10x"></td>
-            <td class="price discount">R$ 2.380,00</td>
-            <td style="text-align: center;"><span class="star active">⭐</span></td>
-          </tr>
-          <tr style="opacity: 0.5;">
-            <td><span class="checkbox"></span></td>
-            <td><div class="photo">🌬️</div></td>
-            <td>
-              <div class="name">VENTILADOR VENTISOL TURBO 6 40CM</div>
-              <div class="codigo">Cód. 2972</div>
-            </td>
-            <td class="price">R$ 219,00</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-            <td style="text-align: center;"><span class="star">⭐</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- COLUNA ESQUERDA: LISTA densa (v5.3 — fix David: voltar pra lista) -->
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <h2 style="font-size: 15px; font-weight: 600;">Catálogo Terasoft <span class="text-muted text-xs" style="font-weight: 400;">(451 produtos batendo com seus filtros)</span></h2>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-sm" style="background: var(--primary); color: white;">☰ Lista</button>
+            <button class="btn btn-ghost btn-sm">▦ Galeria</button>
+          </div>
+        </div>
 
-    <p class="text-muted text-xs" style="margin-top: 12px; text-align: center;">
-      Mostrando 5 de 32 selecionados · 451 produtos disponíveis no Terasoft com filtros aplicados
-    </p>
+        <!-- Lista densa: tabela com 18-20 linhas visíveis sem scroll -->
+        <div class="product-table" style="font-size: 12px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 32px; text-align: center; padding: 6px 4px;">#</th>
+                <th style="width: 36px; padding: 6px;"></th>
+                <th style="padding: 6px;">Produto</th>
+                <th style="width: 90px; padding: 6px;">À vista</th>
+                <th style="width: 75px; padding: 6px;">Desconto</th>
+                <th style="width: 65px; padding: 6px;">Parc.</th>
+                <th style="width: 90px; padding: 6px;">Final</th>
+                <th style="width: 36px; text-align: center; padding: 6px;">⭐</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- Linha SELECIONADA #1: Redmi 15C (ordem 1) -->
+              <tr style="background: rgba(48,48,96,0.05); border-left: 3px solid var(--msc-blue);">
+                <td style="text-align: center; padding: 6px 4px;"><span style="display: inline-flex; width: 20px; height: 20px; background: var(--msc-blue); color: white; border-radius: 999px; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">1</span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📱</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 600; font-size: 12px;">CELULAR XIAOMI REDMI 15C 256GB</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 3245 / 2741 / 3029</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.190,00</td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 60px; font-size: 11px;" value="30%"></td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 50px; font-size: 11px;" value="10x"></td>
+                <td style="color: var(--destructive); font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px;">R$ 833,00</td>
+                <td style="text-align: center; padding: 6px;"><span class="star active" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha SELECIONADA #2: Refrigerador Midea (ordem 2) -->
+              <tr style="background: rgba(48,48,96,0.05); border-left: 3px solid var(--msc-blue);">
+                <td style="text-align: center; padding: 6px 4px;"><span style="display: inline-flex; width: 20px; height: 20px; background: var(--msc-blue); color: white; border-radius: 999px; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">2</span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🧊</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 600; font-size: 12px;">REFRIGERADOR MIDEA 463L 02 PORTAS INOX 127V</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 0002 · A: 1.80m · L: 0.65m · P: 0.70m</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 5.525,70</td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 60px; font-size: 11px;" value="24%"></td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 50px; font-size: 11px;" value="10x"></td>
+                <td style="color: var(--destructive); font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px;">R$ 4.199,53</td>
+                <td style="text-align: center; padding: 6px;"><span class="star active" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha NÃO selecionada: Ventilador -->
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🌬️</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 500; font-size: 12px;">VENTILADOR VENTISOL TURBO 6 40CM</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 2972</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 219,00</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha SELECIONADA #3: Sofá Premier (ordem 3) -->
+              <tr style="background: rgba(48,48,96,0.05); border-left: 3px solid var(--msc-blue);">
+                <td style="text-align: center; padding: 6px 4px;"><span style="display: inline-flex; width: 20px; height: 20px; background: var(--msc-blue); color: white; border-radius: 999px; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">3</span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🛋️</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 600; font-size: 12px;">ESTOFADO PREMIER SOFT 2,40M Retrátil/Reclinável</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 1857 / 1860 / 1861 · A: 0.95m · L: 2.40m · P: 1.10m</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 3.500,00</td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 60px; font-size: 11px;" value="32%"></td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 50px; font-size: 11px;" value="10x"></td>
+                <td style="color: var(--destructive); font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px;">R$ 2.380,00</td>
+                <td style="text-align: center; padding: 6px;"><span class="star active" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha NÃO selecionada: Microondas LG -->
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📦</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 500; font-size: 12px;">MICROONDAS LG 30L NEOCHEF SOLAR PANEL</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 1872</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 689,00</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha SELECIONADA #4: Galaxy A07 (ordem 4) -->
+              <tr style="background: rgba(48,48,96,0.05); border-left: 3px solid var(--msc-blue);">
+                <td style="text-align: center; padding: 6px 4px;"><span style="display: inline-flex; width: 20px; height: 20px; background: var(--msc-blue); color: white; border-radius: 999px; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">4</span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📱</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 600; font-size: 12px;">CELULAR SAMSUNG GALAXY A07 128GB</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 4012</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.490,00</td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 60px; font-size: 11px;" value="30%"></td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 50px; font-size: 11px;" value="10x"></td>
+                <td style="color: var(--destructive); font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.043,00</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linha SELECIONADA #5: Consul 334L (ordem 5) -->
+              <tr style="background: rgba(48,48,96,0.05); border-left: 3px solid var(--msc-blue);">
+                <td style="text-align: center; padding: 6px 4px;"><span style="display: inline-flex; width: 20px; height: 20px; background: var(--msc-blue); color: white; border-radius: 999px; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">5</span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🧊</div></td>
+                <td style="padding: 6px;">
+                  <div style="font-weight: 600; font-size: 12px;">REFRIGERADOR CONSUL 334L 02PTS BRANCO 127V</div>
+                  <div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 0003</div>
+                </td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 3.259,00</td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 60px; font-size: 11px;" value="24%"></td>
+                <td style="padding: 4px;"><input class="input" style="min-height: 26px; padding: 2px 6px; width: 50px; font-size: 11px;" value="10x"></td>
+                <td style="color: var(--destructive); font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px;">R$ 247,68</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+
+              <!-- Linhas não selecionadas (compactas) -->
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📺</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">TV SAMSUNG 50" UHD 4K SMART</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 1234</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 2.890,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">💧</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">PURIFICADOR COLORMAQ ELETRÔNICO GRAFITE 127V</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 0014</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 549,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🚲</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">BICICLETA CALOI ALUMINUM SPORT 26"</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 2050</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 890,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🧹</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">ASPIRADOR DE PÓ GAARBOX VERTICAL 1200W</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 2925</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 199,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🪑</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">CONJUNTO MESA RUSALEM C/ 6 CADEIRAS</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 5395 · A: 0.78m · L: 1.60m · P: 0.90m</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.290,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🛏️</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">COLCHÃO ORTOPÉDICO ORTOBOM CASAL D33</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 6201 · 110 kg / 24 cm</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.499,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🍳</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">FOGÃO ATLAS MÔNACO PLUS 5 BOCAS INOX</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 1545</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.890,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🎮</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">PLAYSTATION 5 SLIM 1TB DIGITAL</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 7100</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 3.999,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🎧</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">FONE JBL TUNE 510BT BLUETOOTH</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 8050</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 249,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📡</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">ROTEADOR MULTILASER WIRELESS DUAL BAND</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 9012</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 149,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📺</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">TV PHILCO 43" SMART ANDROID PLEDIPRO</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 8855 · TV ATÉ 43"</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 1.799,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; padding: 6px 4px;"><span class="checkbox" style="width: 16px; height: 16px;"></span></td>
+                <td style="padding: 4px;"><div style="width: 28px; height: 28px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🧊</div></td>
+                <td style="padding: 6px;"><div style="font-weight: 500; font-size: 12px;">FREEZER CONSUL HORIZONTAL 309LTS BRANCO</div><div style="font-size: 10px; color: var(--muted-foreground); font-family: monospace;">Cód. 0024</div></td>
+                <td style="font-variant-numeric: tabular-nums; padding: 6px;">R$ 3.870,00</td>
+                <td colspan="3" style="padding: 6px; color: var(--muted-foreground); font-size: 11px;">—</td>
+                <td style="text-align: center; padding: 6px;"><span class="star" style="font-size: 16px;">⭐</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-muted text-xs" style="margin-top: 12px; text-align: center;">
+          Mostrando <strong>18 de 451</strong> · Role pra ver mais · <strong>5 já estão no seu carrinho à direita</strong>
+        </p>
+      </div>
+
+      <!-- COLUNA DIREITA: Carrinho persistente -->
+      <aside style="position: sticky; top: 80px; align-self: start; background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; max-height: calc(100vh - 100px); display: flex; flex-direction: column;">
+
+        <!-- Header carrinho -->
+        <div style="background: var(--msc-blue); color: white; padding: 12px 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <strong style="font-size: 14px;">🛒 Seus produtos</strong>
+            <span class="badge badge-accent" style="font-size: 10px;">32 selecionados</span>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; opacity: 0.9;">
+            <span>⭐ 3 destaques</span>
+            <span>·</span>
+            <span>Total esperado em peças: 17 (4 catálogo + 12 sociais + 1 hero)</span>
+          </div>
+        </div>
+
+        <!-- Bulk actions compacto -->
+        <div style="background: var(--secondary); padding: 10px 14px; border-bottom: 1px solid var(--border);">
+          <div style="font-size: 11px; color: var(--muted-foreground); font-weight: 600; margin-bottom: 6px;">APLICAR A TODOS OS 32:</div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <input class="input" style="width: 60px; min-height: 28px; padding: 4px 8px; font-size: 12px;" value="30%">
+            <input class="input" style="width: 60px; min-height: 28px; padding: 4px 8px; font-size: 12px;" value="10x">
+            <button class="btn btn-primary btn-sm" style="flex: 1;">Aplicar</button>
+          </div>
+        </div>
+
+        <!-- Lista vertical de selecionados (scroll) -->
+        <div style="flex: 1; overflow-y: auto; padding: 6px 8px;">
+          <div style="font-size: 10px; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 4px;">Ordem de escolha (clique pra ver no grid)</div>
+
+          <!-- Item 1: Redmi 15C -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); margin-bottom: 2px; cursor: pointer; background: white; border: 1px solid transparent; transition: all 80ms;" onmouseover="this.style.background='var(--secondary)'" onmouseout="this.style.background='white'">
+            <div style="width: 18px; height: 18px; background: var(--msc-blue); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">1</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">📱</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Redmi 15C 256GB</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 833,00 · ⭐</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;" title="Remover">✕</button>
+          </div>
+
+          <!-- Item 2: Refrigerador Midea -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); margin-bottom: 2px; cursor: pointer;">
+            <div style="width: 18px; height: 18px; background: var(--msc-blue); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">2</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🧊</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Refrig. Midea 463L</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 4.199,53 · ⭐</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;">✕</button>
+          </div>
+
+          <!-- Item 3: Sofá Premier -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); margin-bottom: 2px; cursor: pointer;">
+            <div style="width: 18px; height: 18px; background: var(--msc-blue); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">3</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🛋️</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sofá Premier 2,40m</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 2.380,00 · ⭐</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;">✕</button>
+          </div>
+
+          <!-- Item 4: Galaxy A07 -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); margin-bottom: 2px; cursor: pointer;">
+            <div style="width: 18px; height: 18px; background: var(--msc-blue); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">4</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">📱</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Galaxy A07 128GB</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 1.043,00</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;">✕</button>
+          </div>
+
+          <!-- Item 5: Consul 334L -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); margin-bottom: 2px; cursor: pointer;">
+            <div style="width: 18px; height: 18px; background: var(--msc-blue); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">5</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🧊</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Consul 334L Branco</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 247,68</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;">✕</button>
+          </div>
+
+          <!-- ... + 27 itens cinza-foreground (esses só representam os outros 27) -->
+          <div style="padding: 12px 4px; text-align: center; color: var(--muted-foreground); font-size: 11px; font-style: italic;">
+            ⋮<br>
+            +27 produtos abaixo<br>
+            <span style="font-size: 10px;">(role pra ver)</span>
+          </div>
+
+          <!-- Item 30 (último) — mostra que tá no fim -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: var(--radius-sm); cursor: pointer; opacity: 0.85;">
+            <div style="width: 18px; height: 18px; background: var(--muted-foreground); color: white; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">32</div>
+            <div style="width: 32px; height: 32px; background: var(--muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🍳</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Fogão Atlas 5 Bocas</div>
+              <div style="font-size: 10px; color: var(--destructive); font-weight: 600;">R$ 1.890,00</div>
+            </div>
+            <button style="background: none; border: none; color: var(--muted-foreground); font-size: 14px; cursor: pointer; padding: 2px 4px;">✕</button>
+          </div>
+        </div>
+
+        <!-- Footer carrinho -->
+        <div style="border-top: 1px solid var(--border); padding: 10px 14px; background: var(--secondary); font-size: 11px; color: var(--muted-foreground);">
+          💡 Clique num produto pra <strong>pular pro grid</strong> e ver detalhes. Marque ⭐ pra virar peça avulsa.
+        </div>
+      </aside>
+    </div>
   </main>
 </div>
 
@@ -1118,86 +1477,298 @@
       </div>
     </div>
 
-    <div class="editor-grid">
+    <!-- Custo agregado + estado (fix John #9) -->
+    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;">
+      <span class="badge badge-outline" style="font-size: 12px;">📄 Catálogo: 4 páginas (32 produtos)</span>
+      <span class="badge badge-outline" style="font-size: 12px;">⭐ Peças avulsas: 3 destaques × 4 formatos = 12 peças</span>
+      <span class="badge badge-accent" style="font-size: 12px;">💰 Custo estimado se gerar agora: R$ 17,15</span>
+    </div>
 
-      <!-- Canvas -->
-      <div style="position: relative;">
-        <div class="editor-toolbar">
-          <button>↩</button>
-          <button>↪</button>
-          <div class="divider"></div>
-          <button>📷 Trocar foto</button>
-          <button>🎨 Cor</button>
-          <button>📏 Tamanho</button>
-          <div class="divider"></div>
-          <button class="text-destructive">🗑 Excluir</button>
-        </div>
+    <!-- Legend das 3 zonas (v4: vocab humano) -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px; font-size: 12px; flex-wrap: wrap;">
+      <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #e8e8ee; border-radius: var(--radius-sm); color: var(--muted-foreground);"><span style="font-size: 14px;">🔒</span> Cinza: marca MSC (não mexe)</span>
+      <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #fef3c7; border-radius: var(--radius-sm); color: #78350f;"><span style="font-size: 14px;">📋</span> Amarelo: frases prontas (dá pra ajustar números)</span>
+      <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: white; border: 1px solid var(--border); border-radius: var(--radius-sm);"><span style="font-size: 14px;">🎨</span> Branco: arte livre (mexe à vontade)</span>
+    </div>
 
-        <div class="editor-canvas">
-          <div class="label">PÁGINA 2 · 2200×2540 · zoom 25%</div>
-          <div class="preview-content">
-            <h2>MÊS DAS</h2>
-            <div class="maes">mães</div>
-            <div class="product-area selectable selected" style="margin-top: 30px;">
-              <div class="placeholder">Foto do produto</div>
-              <h3>REFRIGERADOR MIDEA 463L</h3>
-              <p style="font-size: 11px; color: var(--muted-foreground); margin-bottom: 8px;">DE: R$ 5.525,70 · POR: 1+9X SEM JUROS</p>
-              <span class="price-pill">R$ 419,95</span>
-              <p style="font-size: 11px; color: var(--muted-foreground); margin-top: 8px;">OU À VISTA: R$ 4.199,53</p>
-            </div>
-          </div>
+    <!-- Status bar: esboço pronto (v4: vocab humano) -->
+    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 18px;">📐</span>
+        <div>
+          <strong style="font-size: 13px; color: #78350f;">Esboço pronto! Agora a IA dá o acabamento 3D premium.</strong>
+          <p style="font-size: 12px; color: #78350f; margin-top: 2px;">Demora uns 3 minutos. Custa cerca de R$ 1,00 por peça. Vai e pega um café — a gente te chama quando ficar pronto.</p>
         </div>
       </div>
+      <button class="btn btn-primary btn-lg" style="white-space: nowrap;">
+        ✨ Gerar arte final
+      </button>
+    </div>
 
-      <!-- Sidebar de propriedades -->
-      <div class="editor-sidebar">
+    <!-- Navegação entre páginas do catálogo (fix John #1 + #8) -->
+    <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center; font-size: 13px;">
+      <span style="color: var(--muted-foreground); margin-right: 8px;">Página do catálogo:</span>
+      <button class="btn btn-ghost btn-sm">1</button>
+      <button class="btn btn-primary btn-sm">2 (atual)</button>
+      <button class="btn btn-ghost btn-sm">3</button>
+      <button class="btn btn-ghost btn-sm">4</button>
+      <span style="margin-left: 16px; color: var(--muted-foreground);">·</span>
+      <span style="color: var(--muted-foreground);">Peças avulsas marcadas:</span>
+      <button class="btn btn-ghost btn-sm" style="background: var(--secondary);">⭐ Redmi 15C</button>
+      <button class="btn btn-ghost btn-sm" style="background: var(--secondary);">⭐ Refrigerador Midea</button>
+      <button class="btn btn-ghost btn-sm" style="background: var(--secondary);">⭐ Sofá Premier</button>
+    </div>
 
-        <div class="panel">
-          <h3>📦 Refrigerador Midea</h3>
-          <small>Produto selecionado</small>
-          <div class="form-row mt-4">
-            <label class="label">Posição</label>
-            <div class="flex gap-2">
-              <input class="input" value="X: 1100" style="font-size: 12px;">
-              <input class="input" value="Y: 1200" style="font-size: 12px;">
+    <!-- Editor grid 2 colunas: Sketch (editável) | IA Output (read-only viewer) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+
+      <!-- Coluna esquerda: ESBOÇO (editável) — fix John #1 + #2 + Paige microcopy -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="font-size: 13px; font-weight: 600;">📐 Esboço da página (editável)</h3>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn-secondary btn-sm" title="Desfazer">↩</button>
+            <button class="btn btn-secondary btn-sm" title="Refazer">↪</button>
+            <span class="badge badge-secondary">zoom 35%</span>
+          </div>
+        </div>
+        <div style="position: relative;">
+          <div class="editor-toolbar" style="top: -10px;">
+            <button>📷 Trocar foto</button>
+            <button>📏 Tamanho</button>
+            <button>↔ Mover</button>
+            <div class="divider"></div>
+            <button class="text-destructive">🗑 Excluir</button>
+          </div>
+          <!-- Esboço com grid REAL 4×3 + TODOS os textos -->
+          <div style="background: linear-gradient(135deg, #FFC4D6, #FF87B3); border-radius: var(--radius-lg); aspect-ratio: 11/14; position: relative; padding: 12px; box-shadow: var(--shadow-md);">
+            <div class="label" style="position: absolute; top: 4px; left: 8px; font-size: 9px; color: rgba(255,255,255,0.85); z-index: 2;">PÁGINA 2 de 4 · 2200×2540 · zoom 35%</div>
+
+            <!-- Faixa MSC topo (🔒 Casa MSC) -->
+            <div style="background: #C0246A; color: white; padding: 3px 6px; font-size: 7px; font-weight: 700; letter-spacing: 0.1em; text-align: center; display: flex; justify-content: space-around; border-radius: 2px; margin-bottom: 6px;">
+              <span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span>
+            </div>
+
+            <!-- Layout MISTO v5 — cards de tamanhos diferentes (fix David sobre tamanho de cards) -->
+
+            <!-- Fileira 1: 1 DESTAQUE (sofá premium, full-width) -->
+            <div style="margin-bottom: 6px;">
+              <div style="background: white; padding: 8px; border-radius: 4px; text-align: left; position: relative; display: flex; gap: 8px; align-items: center;">
+                <div style="position: absolute; top: -3px; left: -3px; background: #F5C84B; color: #1A1A1A; font-size: 7px; font-weight: 700; padding: 2px 4px; border-radius: 999px;">★ 10x</div>
+                <div style="background: var(--muted); width: 80px; height: 60px; border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 28px;">🛋️</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 8px; font-weight: 700; line-height: 1.1;">ESTOFADO PREMIER SOFT 2,40M — RETRÁTIL/RECLINÁVEL</div>
+                  <div style="font-size: 6px; color: var(--muted-foreground); margin-top: 2px;">A: 0.95m · L: 2.40m · P: 1.10m · DE: R$ 3.500,00</div>
+                  <div style="font-size: 6px; color: var(--msc-blue); font-weight: 700;">1+9X SEM JUROS</div>
+                  <div style="font-size: 14px; font-weight: 800; color: #DC2626;">R$ 2.380,00 <span style="font-size: 6px; color: var(--muted-foreground); font-weight: 400;">À VISTA: R$ 23.800,00</span></div>
+                </div>
+                <div style="position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.9); color: white; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 700;">D · Destaque</div>
+              </div>
+            </div>
+
+            <!-- Fileira 2: 2 GRANDES (cozinhas modulares) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+              <div style="background: white; padding: 8px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -3px; left: -3px; background: #F5C84B; color: #1A1A1A; font-size: 7px; font-weight: 700; padding: 2px 4px; border-radius: 999px;">★ 10x</div>
+                <div style="position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 700;">G · Grande</div>
+                <div style="background: var(--muted); height: 70px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🏠</div>
+                <div style="font-size: 8px; font-weight: 600;">COZINHA MODULAR 11 PEÇAS</div>
+                <div style="font-size: 6px; color: var(--muted-foreground); margin-top: 2px;">100% MDF · 1+9X SEM JUROS</div>
+                <div style="font-size: 12px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 389,00</div>
+              </div>
+              <div style="background: white; padding: 8px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -3px; left: -3px; background: #F5C84B; color: #1A1A1A; font-size: 7px; font-weight: 700; padding: 2px 4px; border-radius: 999px;">★ 10x</div>
+                <div style="position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 700;">G · Grande</div>
+                <div style="background: var(--muted); height: 70px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🛏️</div>
+                <div style="font-size: 8px; font-weight: 600;">GUARDA-ROUPA OLIVIA 6P</div>
+                <div style="font-size: 6px; color: var(--muted-foreground); margin-top: 2px;">100% MDF · 1+9X SEM JUROS</div>
+                <div style="font-size: 12px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 279,00</div>
+              </div>
+            </div>
+
+            <!-- Fileira 3: 4 MÉDIOS (geladeiras) — Refrigerador Midea SELECIONADO -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 6px;">
+              <div style="background: white; padding: 6px 4px; border-radius: 4px; text-align: center; position: relative; outline: 2px solid #4ADE80; outline-offset: 2px;">
+                <div style="position: absolute; top: -3px; left: -3px; background: #F5C84B; color: #1A1A1A; font-size: 7px; font-weight: 700; padding: 2px 4px; border-radius: 999px;">★ 10x</div>
+                <div style="position: absolute; top: 4px; right: 4px; background: rgba(34,94,80,0.7); color: white; padding: 1px 5px; border-radius: 4px; font-size: 6px; font-weight: 700;">M · Médio</div>
+                <div style="background: var(--muted); height: 50px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px;">🧊</div>
+                <div style="font-size: 7px; font-weight: 600;">REFRIG. MIDEA 463L INOX</div>
+                <div style="font-size: 6px; color: var(--muted-foreground);">DE: R$ 5.525,70</div>
+                <div style="font-size: 6px; color: var(--msc-blue); font-weight: 700;">1+9X SEM JUROS</div>
+                <div style="font-size: 11px; font-weight: 800; color: #DC2626;">R$ 419,95</div>
+                <div style="font-size: 6px; color: var(--muted-foreground);">À VISTA: R$ 4.199,53</div>
+              </div>
+              <div style="background: white; padding: 6px 4px; border-radius: 4px; text-align: center;">
+                <div style="background: var(--muted); height: 50px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px;">🧊</div>
+                <div style="font-size: 7px; font-weight: 600;">CONSUL 334L BRANCO</div>
+                <div style="font-size: 11px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 247,68</div>
+              </div>
+              <div style="background: white; padding: 6px 4px; border-radius: 4px; text-align: center;">
+                <div style="background: var(--muted); height: 50px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px;">🧊</div>
+                <div style="font-size: 7px; font-weight: 600;">CONSUL 340L EVOX</div>
+                <div style="font-size: 11px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 361,34</div>
+              </div>
+              <div style="background: white; padding: 6px 4px; border-radius: 4px; text-align: center;">
+                <div style="background: var(--muted); height: 50px; border-radius: 2px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px;">🧊</div>
+                <div style="font-size: 7px; font-weight: 600;">CONSUL 451L PAINEL</div>
+                <div style="font-size: 11px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 433,12</div>
+              </div>
+            </div>
+
+            <!-- Fileira 4: 5 PEQUENOS (smartphones em linha) -->
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 6px;">
+              <div style="background: white; padding: 4px 3px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -2px; left: -2px; background: #F5C84B; color: #1A1A1A; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 999px;">★ 10x</div>
+                <div style="position: absolute; top: 3px; right: 3px; background: rgba(48,48,96,0.7); color: white; padding: 1px 4px; border-radius: 3px; font-size: 5px; font-weight: 700;">P</div>
+                <div style="background: var(--muted); height: 40px; border-radius: 2px; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📱</div>
+                <div style="font-size: 6px; font-weight: 600;">REDMI 15C 256GB</div>
+                <div style="font-size: 9px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 119,00</div>
+              </div>
+              <div style="background: white; padding: 4px 3px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -2px; left: -2px; background: #F5C84B; color: #1A1A1A; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 999px;">★ 10x</div>
+                <div style="background: var(--muted); height: 40px; border-radius: 2px; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📱</div>
+                <div style="font-size: 6px; font-weight: 600;">MOTO G06 128GB</div>
+                <div style="font-size: 9px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 94,90</div>
+              </div>
+              <div style="background: white; padding: 4px 3px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -2px; left: -2px; background: #F5C84B; color: #1A1A1A; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 999px;">★ 10x</div>
+                <div style="background: var(--muted); height: 40px; border-radius: 2px; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📱</div>
+                <div style="font-size: 6px; font-weight: 600;">REALME NOTE 60</div>
+                <div style="font-size: 9px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 129,00</div>
+              </div>
+              <div style="background: white; padding: 4px 3px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -2px; left: -2px; background: #F5C84B; color: #1A1A1A; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 999px;">★ 10x</div>
+                <div style="background: var(--muted); height: 40px; border-radius: 2px; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📱</div>
+                <div style="font-size: 6px; font-weight: 600;">GALAXY A07 128GB</div>
+                <div style="font-size: 9px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 99,00</div>
+              </div>
+              <div style="background: white; padding: 4px 3px; border-radius: 4px; text-align: center; position: relative;">
+                <div style="position: absolute; top: -2px; left: -2px; background: #F5C84B; color: #1A1A1A; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 999px;">★ 10x</div>
+                <div style="background: var(--muted); height: 40px; border-radius: 2px; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📱</div>
+                <div style="font-size: 6px; font-weight: 600;">GALAXY A17 128GB</div>
+                <div style="font-size: 9px; font-weight: 800; color: #DC2626; margin-top: 2px;">R$ 114,90</div>
+              </div>
+            </div>
+
+            <!-- Faixa MSC rodapé + página (🔒 Casa MSC) -->
+            <div style="background: #C0246A; color: white; padding: 4px 6px; font-size: 7px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; border-radius: 2px;">
+              <span style="font-weight: 700;">LOJAS MSC · TODA LOJA EM ATÉ 10X SEM JUROS</span>
+              <span style="opacity: 0.8;">página 2 de 4</span>
             </div>
           </div>
-          <div class="form-row">
-            <label class="label">Tamanho</label>
-            <input class="input" value="800 × 1000 px" style="font-size: 12px;">
-          </div>
-          <div class="form-row">
-            <label class="label">Foto</label>
-            <button class="btn btn-secondary" style="width: 100%; justify-content: center;">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-              Trocar foto do produto
-            </button>
+
+          <!-- Marcador zona destacado (card 1 selecionado) -->
+          <div style="position: absolute; bottom: -28px; left: 8px; background: white; border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; font-size: 11px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 6px;">
+            <span style="width: 8px; height: 8px; background: #4ADE80; border-radius: 999px;"></span>
+            Selecionado: <strong>Refrigerador Midea 463L</strong> <span style="color: var(--muted-foreground);">· Zona criativa (mexe à vontade)</span>
           </div>
         </div>
+        <p style="font-size: 11px; color: var(--muted-foreground); margin-top: 32px; line-height: 1.5;">
+          💡 <strong>Tudo que vai aparecer na peça final está aqui no esboço.</strong> Textos, preços, selos, faixas MSC. A IA só vai dar acabamento 3D — não escreve nem inventa nada.
+        </p>
+      </div>
 
-        <div class="panel">
-          <h3>🤖 Editar com IA <small>· MVP-2 (preview)</small></h3>
-          <small>Mude pele, decoração ou layout via prompt. <strong>Nunca preço.</strong></small>
-          <div class="ai-edit-input">
-            <div class="label-ai-edit">Prompt</div>
-            <textarea class="textarea" rows="2" placeholder="Ex: deixa o mascote maior · muda o fundo pra coral mais claro" style="background: white;"></textarea>
-            <button class="btn btn-primary btn-sm" style="margin-top: 8px;">✨ Aplicar</button>
-          </div>
+      <!-- Coluna direita: ARTE FINAL viewer (v4: vocab humano) -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="font-size: 13px; font-weight: 600;">✨ Arte final (acabamento 3D)</h3>
+          <span class="badge badge-muted">esperando você</span>
         </div>
-
-        <div class="panel">
-          <h3>🔒 Auditoria de preços</h3>
-          <small>Confira antes de exportar</small>
-          <div class="mt-4 text-xs flex flex-col gap-2">
-            <div class="flex justify-between"><span>Produtos no catálogo</span><strong>32</strong></div>
-            <div class="flex justify-between"><span>Valores conferem com Terasoft</span><span class="text-success font-medium">✓ todos</span></div>
-            <div class="flex justify-between"><span>Edições manuais de preço</span><strong>0</strong></div>
-          </div>
+        <div style="aspect-ratio: 11/14; background: repeating-linear-gradient(45deg, #f4f4f8, #f4f4f8 10px, #e8e8ee 10px, #e8e8ee 20px); border-radius: var(--radius-lg); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; padding: 32px; text-align: center;">
+          <svg style="width: 48px; height: 48px; color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <strong style="font-size: 14px; color: var(--muted-foreground);">A arte final 3D vai aparecer aqui</strong>
+          <p style="font-size: 12px; color: var(--muted-foreground); max-width: 240px; line-height: 1.5;">Quando você apertar "✨ Gerar arte final", a IA pega seu esboço e transforma em peça 3D premium. Vai e pega um café — em uns 3 minutos a gente te chama.</p>
+          <p style="font-size: 11px; color: var(--muted-foreground); font-style: italic; max-width: 240px; line-height: 1.4;">A IA é a maquiadora da peça: deixa bonita, mas não muda nem uma palavra do que você escreveu.</p>
         </div>
-
       </div>
 
     </div>
+
+    <!-- Sidebar de propriedades + audit (3 colunas embaixo) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+
+      <!-- Painel 1: Elemento selecionado (v5: + tamanho de card P/M/G/D) -->
+      <div class="panel" style="background: white; border-color: var(--border);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="font-size: 18px;">🎨</span>
+          <h3>Refrigerador Midea 463L</h3>
+        </div>
+        <small><span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: white; border: 1px solid var(--border); border-radius: 999px; font-size: 10px; font-weight: 500;">Arte livre · mexe à vontade</span></small>
+
+        <!-- Seletor de tamanho (NOVO v5 - fix David) -->
+        <div class="form-row mt-4" style="background: var(--secondary); padding: 12px; border-radius: var(--radius); border: 1px solid var(--border);">
+          <label class="label" style="font-weight: 600; color: var(--foreground);">Tamanho do card</label>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 6px;">
+            <button class="btn btn-secondary btn-sm" style="background: white; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;">
+              <span style="font-size: 16px; font-weight: 800;">P</span>
+              <span style="font-size: 9px; color: var(--muted-foreground);">Pequeno</span>
+            </button>
+            <button class="btn btn-primary btn-sm" style="padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;">
+              <span style="font-size: 16px; font-weight: 800;">M ⭐</span>
+              <span style="font-size: 9px; opacity: 0.85;">Médio</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" style="background: white; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;">
+              <span style="font-size: 16px; font-weight: 800;">G</span>
+              <span style="font-size: 9px; color: var(--muted-foreground);">Grande</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" style="background: white; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;">
+              <span style="font-size: 16px; font-weight: 800;">D</span>
+              <span style="font-size: 9px; color: var(--muted-foreground);">Destaque</span>
+            </button>
+          </div>
+          <div style="margin-top: 8px; padding: 8px 10px; background: white; border-radius: var(--radius-sm); font-size: 11px;">
+            <div style="color: var(--foreground); font-weight: 500;">Atual: <strong style="color: var(--msc-blue);">Médio (M)</strong></div>
+            <div style="color: var(--muted-foreground); margin-top: 2px;">📐 540 × 680 px <span style="opacity: 0.7;">(~7 × 9 cm na impressão)</span></div>
+          </div>
+          <small class="text-muted text-xs" style="margin-top: 6px; display: block;">💡 Quando você muda, o catálogo reorganiza sozinho.</small>
+        </div>
+
+        <div class="form-row mt-4">
+          <label class="label">Posição na página</label>
+          <input class="input" value="Fileira 3 · coluna 1 (de 4)" style="font-size: 12px;" readonly>
+          <small class="text-muted text-xs" style="margin-top: 4px; display: block;">Arrasta o card no esboço pra mudar</small>
+        </div>
+        <div class="form-row">
+          <label class="label">Preço final</label>
+          <input class="input" value="R$ 419,95" style="font-size: 12px;">
+          <small class="text-muted text-xs" style="margin-top: 4px; display: block;">Edita aqui se Marcos pediu mudança</small>
+        </div>
+        <div class="form-row">
+          <label class="label">Foto do produto</label>
+          <button class="btn btn-secondary" style="width: 100%;">📷 Trocar foto</button>
+        </div>
+      </div>
+
+      <!-- Painel 2: Frases prontas (v4: vocab humano) -->
+      <div class="panel" style="background: #fef3c7; border-color: #fcd34d;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="font-size: 18px;">📋</span>
+          <h3 style="color: #78350f;">Frases prontas da capa</h3>
+        </div>
+        <small style="color: #78350f;"><span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 999px; font-size: 10px; font-weight: 500; color: #78350f;">Frase pronta · ajustável</span></small>
+        <div class="mt-4" style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 11px;">💳 Parcelamento facilitado</div>
+          <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 11px;">📒 Em <strong>16</strong>x no carnê da loja</div>
+          <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 11px;">💳 Ou 1+<strong>9</strong>x sem juros nos cartões</div>
+          <div style="background: white; padding: 6px 8px; border-radius: var(--radius-sm); font-size: 11px;">🚚 Entrega e montagem grátis</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 8px; background: white;">+ Adicionar frase pronta</button>
+      </div>
+
+      <!-- Painel 3: Conferência de preços (v4: vocab humano) -->
+      <div class="panel" style="background: white; border-color: var(--border);">
+        <h3>🔒 Conferência dos preços</h3>
+        <small>Pra Marcos não pegar erro depois</small>
+        <div class="mt-4 text-xs" style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; justify-content: space-between;"><span>Produtos no catálogo</span><strong>32</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Batem com o estoque</span><span class="text-success font-medium">✓ todos</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Você ajustou na mão</span><strong>0</strong></div>
+          <div style="display: flex; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--border); margin-top: 4px;"><span>Conferência final</span><span class="badge badge-muted" style="font-size: 9px;">depois da IA</span></div>
+        </div>
+      </div>
+
+    </div>
+
   </main>
 </div>
 
@@ -1236,15 +1807,16 @@
       </div>
     </div>
 
-    <!-- Hint de teclado -->
-    <div style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(255,255,255,0.6);">
+    <!-- Hint de teclado v4 — tecla E adicionada (fix John #5) -->
+    <div style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(255,255,255,0.6); flex-wrap: wrap; justify-content: center;">
       <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">←</kbd> <kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">→</kbd> navegar</span>
+      <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.15); border-radius: 4px; font-family: monospace; color: white;">E</kbd> <strong style="color: white;">editar essa página</strong> sem sair do modo apresentação</span>
       <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">ESC</kbd> sair</span>
       <span><kbd style="padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">F</kbd> tela cheia</span>
     </div>
 
-    <p style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; max-width: 500px;">
-      💡 Sem chrome, sem sidebar, sem toolbar — só a peça. Amanda vira o monitor pro Marcos, ele aprova com um aceno.
+    <p style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; max-width: 540px;">
+      💡 Marcos pediu mudança? Aperta <kbd style="padding: 1px 5px; background: rgba(255,255,255,0.15); border-radius: 3px; font-family: monospace; color: white;">E</kbd> e edita ali mesmo. Continua aqui depois — sem perder a página.
     </p>
   </main>
 </div>
@@ -1288,12 +1860,84 @@
       </div>
     </div>
 
-    <!-- ALERTA de auditoria bloqueante -->
+    <!-- Conferência final v4 — vocabulário humano + opção edit sketch -->
+    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">Conferência final dos preços e textos</h2>
+    <p class="text-xs text-muted" style="margin-bottom: 16px;">A gente leu cada peça gerada pela IA e comparou letrinha por letrinha com o que você aprovou. Resultado:</p>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;">
+
+      <!-- Card 1: Textos obrigatórios -->
+      <div class="card" style="border-left: 3px solid var(--success);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <strong style="font-size: 12px;">🔒 Textos obrigatórios</strong>
+          <span class="badge badge-success">✓ tudo no lugar</span>
+        </div>
+        <div style="font-size: 11px; color: var(--muted-foreground); line-height: 1.5;">
+          <div>Esperados: <strong>34 textos</strong></div>
+          <div>Encontrados: <strong>34</strong></div>
+          <div style="color: var(--success); margin-top: 4px;">Marca MSC + frases prontas intactas</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Textos proibidos -->
+      <div class="card" style="border-left: 3px solid var(--destructive);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <strong style="font-size: 12px;">⛔ Textos proibidos</strong>
+          <span class="badge" style="background: #FEE2E2; color: #991B1B;">✕ achei um problema</span>
+        </div>
+        <div style="font-size: 11px; color: var(--muted-foreground); line-height: 1.5;">
+          <div>Lista negra: <strong>5 termos</strong></div>
+          <div style="color: var(--destructive); margin-top: 4px;">⚠ "<strong>0%</strong>" achado em 3 peças</div>
+          <a href="#" style="color: var(--msc-blue); font-size: 11px;">Ver detalhes →</a>
+        </div>
+      </div>
+
+      <!-- Card 3: Preços -->
+      <div class="card" style="border-left: 3px solid var(--success);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <strong style="font-size: 12px;">💰 Preços</strong>
+          <span class="badge badge-success">✓ batem com o sistema</span>
+        </div>
+        <div style="font-size: 11px; color: var(--muted-foreground); line-height: 1.5;">
+          <div>Produtos: <strong>32</strong></div>
+          <div>Conferência: <strong>32/32 OK</strong></div>
+          <div style="color: var(--success); margin-top: 4px;">Tudo igual ao estoque</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Visual -->
+      <div class="card" style="border-left: 3px solid var(--warning);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <strong style="font-size: 12px;">🎨 Visual</strong>
+          <span class="badge badge-warning">⚠ pequena diferença</span>
+        </div>
+        <div style="font-size: 11px; color: var(--muted-foreground); line-height: 1.5;">
+          <div>Título: <strong>97% igual</strong></div>
+          <div>Frase de campanha: <strong>89%</strong> ⚠</div>
+          <a href="#" style="color: var(--msc-blue); font-size: 11px;">Você decide →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bloco de detalhamento do problema — voz humana + 3 opções (fix John #8) -->
+    <div style="background: #FEE2E2; border: 1px solid #FCA5A5; border-radius: var(--radius); padding: 16px; margin-bottom: 24px;">
+      <strong style="color: #991B1B;">⛔ A IA mudou um detalhe importante por conta própria</strong>
+      <p style="font-size: 13px; color: #7F1D1D; margin-top: 6px;">No selo da capa, ela trocou <strong>"10X SEM JUROS"</strong> por <strong>"0% SEM JUROS"</strong> em 3 peças (catálogo pgs 1, 2 e 4). Parece bobo, mas comercialmente é diferente — e sempre é a <em>sua</em> palavra que vai pra rua, não a da IA. O que você quer fazer?</p>
+      <div class="flex gap-2 mt-2" style="flex-wrap: wrap;">
+        <button class="btn btn-destructive btn-sm">Refazer essas 3 peças (R$ 0,57)</button>
+        <button class="btn btn-secondary btn-sm">Editar o esboço dessas peças</button>
+        <button class="btn btn-secondary btn-sm">Não, deixa assim mesmo</button>
+      </div>
+      <p style="font-size: 11px; color: #7F1D1D; margin-top: 8px; font-style: italic;">💡 Tentativa 1 de 3 — depois de 3 refazimentos sem sucesso, eu te aviso pra chamar o David.</p>
+    </div>
+
+    <!-- ALERTA preços manuais -->
     <div style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: var(--radius); padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; align-items: flex-start;">
       <svg style="width: 20px; height: 20px; color: #B45309; flex-shrink: 0; margin-top: 2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <div>
-        <strong style="color: #78350F;">Auditoria de preços obrigatória</strong>
-        <p style="font-size: 13px; color: #78350F; margin-top: 2px;">Confira que todos os preços batem com a Terasoft antes de exportar. <strong>Preço errado em catálogo é vinculante (CDC art. 30).</strong></p>
+        <strong style="color: #78350F;">Detalhe da auditoria de preços (Card 3)</strong>
+        <p style="font-size: 13px; color: #78350F; margin-top: 2px;">Lista detalhada abaixo. Tudo dentro do esperado, mas confira a TV Samsung 50" que teve edição manual.</p>
       </div>
     </div>
 
@@ -1418,8 +2062,8 @@
 </div>
 
 <!-- ============ SCREEN: CONFIG ============ -->
-<div id="screen-config" class="screen">
-  <div class="screen-divider"><span class="num">7</span> Tela 7 — Configurações da Casa MSC</div>
+<div id="screen-config" class="screen" style="opacity: 0.5;">
+  <div class="screen-divider" style="background: var(--muted-foreground);"><span class="num">7</span> Tela 7 — Config (v4: DEPRECADA — duplicava Admin → Casa MSC. Mantida no mockup pra referência. <strong>Admin tem TUDO.</strong>)</div>
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-mark">M</div>
@@ -1580,6 +2224,286 @@
     </div>
   </div>
 </div>
+
+<!-- ============ SCREEN: ADMIN > HOUSE CONFIG (v3 NOVA) ============ -->
+<div id="screen-admin-house" class="screen" style="background: #fffbeb;">
+  <div class="screen-divider" style="background: #78350f;"><span class="num">8</span> Tela 8 — Admin · Casa MSC (apenas admin · v3)</div>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text"><strong>MSC-Catalogo</strong><small>Admin</small></div>
+    </div>
+
+    <div class="nav-section" style="color: #78350f;">🏛️ Admin</div>
+    <a class="nav-item active">🏢 Casa MSC</a>
+    <a class="nav-item">📋 Term Templates</a>
+    <a class="nav-item">📜 Audit Log</a>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar" style="background: linear-gradient(135deg, #78350f, #b45309);">D</div><div class="info"><strong>David</strong><small>admin</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">Admin › <span style="color: var(--foreground);">Casa MSC</span></div>
+        <h1>Configurações da Casa MSC <span class="badge badge-secondary" style="margin-left: 8px; font-size: 11px;">v2026.05.13</span></h1>
+        <p class="subtitle">Constantes da marca: aparecem em <strong>todas</strong> as campanhas geradas. <strong>Toda edição cria nova versão + audit log.</strong></p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary">Ver histórico de versões</button>
+        <button class="btn btn-primary" disabled style="opacity: 0.5;">Salvar nova versão</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" style="margin-bottom: 24px;">
+      <button class="active">Brand</button>
+      <button>Lojas (8/9)</button>
+      <button>Legal Strings</button>
+      <button>Redes Sociais</button>
+      <button>Brand Strip</button>
+    </div>
+
+    <!-- Brand tab -->
+    <div class="card" style="margin-bottom: 16px;">
+      <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">Identidade da Marca</h3>
+      <p class="text-xs text-muted" style="margin-bottom: 16px;">Read-only no fluxo de geração. Sketch generator usa esses valores direto.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-row">
+          <label class="label">Nome da marca</label>
+          <input class="input" value="LOJAS MSC">
+        </div>
+        <div class="form-row">
+          <label class="label">Tagline oficial</label>
+          <input class="input" value="Sempre perto de você!">
+        </div>
+        <div class="form-row">
+          <label class="label">Logo (PNG colorido)</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 48px; height: 48px; background: white; border: 1px solid var(--border); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--msc-blue); font-size: 11px;">msc</div>
+            <button class="btn btn-secondary btn-sm">Substituir</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="label">Mascote (PNG)</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 48px; height: 48px; background: white; border: 1px solid var(--border); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 24px;">👴</div>
+            <button class="btn btn-secondary btn-sm">Substituir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal Strings card -->
+    <div class="card" style="margin-bottom: 16px;">
+      <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">Textos Legais</h3>
+      <p class="text-xs text-muted" style="margin-bottom: 16px;">⚠️ Mudanças aqui afetam <strong>todas</strong> as próximas campanhas. CDC art. 30 — sempre confirme com jurídico.</p>
+
+      <div class="form-row">
+        <label class="label">credit_disclaimer</label>
+        <input class="input" value="VENDA SUJEITA A APROVAÇÃO DE CRÉDITO.">
+      </div>
+      <div class="form-row">
+        <label class="label">payment_terms</label>
+        <textarea class="textarea" rows="2">CONDIÇÕES DE PAGAMENTOS PARA MÓVEIS, ELETROS E CELULARES À PRAZO 10X (1+9) SEM JUROS NOS CARTÕES.</textarea>
+      </div>
+      <div class="form-row">
+        <label class="label">image_disclaimer</label>
+        <input class="input" value="Imagens ilustrativas. Salvo erros de impressão.">
+      </div>
+      <div class="form-row">
+        <label class="label">cta_more_offers</label>
+        <textarea class="textarea" rows="2">PARA MAIS OFERTAS
+siga as nossas redes sociais</textarea>
+      </div>
+    </div>
+
+    <!-- Modal aviso -->
+    <div style="background: #FEE2E2; border: 1px solid #FCA5A5; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 24px; display: flex; gap: 10px; align-items: flex-start;">
+      <svg style="width: 18px; height: 18px; color: #991B1B; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>
+        <strong style="color: #991B1B; font-size: 13px;">Mudança detectada: image_disclaimer</strong>
+        <p style="font-size: 12px; color: #7F1D1D; margin-top: 4px;">"Imagens ilustrativas. Salvo erros de impressão." → "Imagens são ilustrativas. Erros de impressão são possíveis."</p>
+        <p style="font-size: 12px; color: #7F1D1D; margin-top: 2px;">Isso vai afetar <strong>TODAS as próximas campanhas</strong>. Esse texto está no rodapé legal e foi aprovado pelo jurídico. Tem certeza?</p>
+        <div class="flex gap-2 mt-2">
+          <button class="btn btn-destructive btn-sm">Salvar nova versão (cria v2026.05.14)</button>
+          <button class="btn btn-secondary btn-sm">Reverter</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+
+<!-- ============ SCREEN: ADMIN > TERM TEMPLATES (v3 NOVA) ============ -->
+<div id="screen-admin-templates" class="screen" style="background: #fffbeb;">
+  <div class="screen-divider" style="background: #78350f;"><span class="num">9</span> Tela 9 — Admin · Term Templates (apenas admin · v3)</div>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-text"><strong>MSC-Catalogo</strong><small>Admin</small></div>
+    </div>
+
+    <div class="nav-section" style="color: #78350f;">🏛️ Admin</div>
+    <a class="nav-item">🏢 Casa MSC</a>
+    <a class="nav-item active">📋 Term Templates</a>
+    <a class="nav-item">📜 Audit Log</a>
+
+    <div class="nav-section" style="margin-top: 16px;">Filtros</div>
+    <a class="nav-item">Todos (12)</a>
+    <a class="nav-item">📋 parcelamento (4)</a>
+    <a class="nav-item">🚚 entrega (1)</a>
+    <a class="nav-item">⚖️ legal (3)</a>
+    <a class="nav-item">🏷️ selo_produto (4)</a>
+
+    <div class="spacer"></div>
+    <div class="user-card"><div class="avatar" style="background: linear-gradient(135deg, #78350f, #b45309);">D</div><div class="info"><strong>David</strong><small>admin</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px;">Admin › <span style="color: var(--foreground);">Term Templates</span></div>
+        <h1>Templates de Texto Curados</h1>
+        <p class="subtitle">A IA briefer só pode usar templates dessa lista. Cada template tem <strong>pattern fixo</strong> + <strong>params validados por JSONSchema</strong>.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary">+ Novo template</button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="filters-bar" style="grid-template-columns: 2fr 1fr 1fr 1fr auto;">
+      <div>
+        <label class="label">Buscar template</label>
+        <input class="input" placeholder="carne_msc, legal_validity...">
+      </div>
+      <div>
+        <label class="label">Categoria</label>
+        <select class="select"><option>Todas</option><option>parcelamento</option><option>entrega</option><option>legal</option><option>selo_produto</option></select>
+      </div>
+      <div>
+        <label class="label">Scope</label>
+        <select class="select"><option>Todos</option><option>cover_terms</option><option>footer_legal</option><option>product_seal</option></select>
+      </div>
+      <div>
+        <label class="label">Status</label>
+        <select class="select"><option>Ativos</option><option>Todos</option><option>Inativos</option></select>
+      </div>
+      <button class="btn btn-secondary" style="margin-bottom: 0;">Limpar</button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="product-table">
+      <table>
+        <thead>
+          <tr>
+            <th>template_id</th>
+            <th>Pattern</th>
+            <th style="width: 130px;">Params</th>
+            <th style="width: 110px;">Categoria</th>
+            <th style="width: 110px;">Scope</th>
+            <th style="width: 70px;">Versão</th>
+            <th style="width: 70px;">Status</th>
+            <th style="width: 60px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">parc_facilitado</code></td>
+            <td style="font-size: 12px;">Parcelamento facilitado</td>
+            <td><span class="text-xs text-muted">—</span></td>
+            <td><span class="badge badge-secondary">parcelamento</span></td>
+            <td><span class="badge badge-outline">cover_terms</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">carne_msc</code></td>
+            <td style="font-size: 12px;">Em <strong>{parcelas}</strong>X no carnê da loja</td>
+            <td><code class="text-xs">parcelas: int (1-24)</code></td>
+            <td><span class="badge badge-secondary">parcelamento</span></td>
+            <td><span class="badge badge-outline">cover_terms</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">cartao_sem_juros</code></td>
+            <td style="font-size: 12px;">Ou <strong>{entrada}</strong>+<strong>{parcelas}</strong>x sem juros nos cartões</td>
+            <td><code class="text-xs">entrada: int, parcelas: int</code></td>
+            <td><span class="badge badge-secondary">parcelamento</span></td>
+            <td><span class="badge badge-outline">cover_terms</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">entrega_montagem_gratis</code></td>
+            <td style="font-size: 12px;">Entrega e montagem grátis</td>
+            <td><span class="text-xs text-muted">—</span></td>
+            <td><span class="badge badge-secondary">entrega</span></td>
+            <td><span class="badge badge-outline">cover_terms</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">legal_validity</code></td>
+            <td style="font-size: 12px;">VALIDADE DA PROMOÇÃO: <strong>{start}</strong> À <strong>{end}</strong> OU ATÉ ENQUANTO DURAREM OS ESTOQUES.</td>
+            <td><code class="text-xs">start, end: date</code></td>
+            <td><span class="badge badge-secondary">legal</span></td>
+            <td><span class="badge badge-outline">footer_legal</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">tv_polegadas</code></td>
+            <td style="font-size: 12px;">TV ATÉ <strong>{polegadas}</strong>"</td>
+            <td><code class="text-xs">polegadas: int</code></td>
+            <td><span class="badge badge-secondary">selo_produto</span></td>
+            <td><span class="badge badge-outline">product_seal</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">selo_mdf</code></td>
+            <td style="font-size: 12px;">100% MDF<strong>{subtitle?}</strong></td>
+            <td><code class="text-xs">subtitle: string?</code></td>
+            <td><span class="badge badge-secondary">selo_produto</span></td>
+            <td><span class="badge badge-outline">product_seal</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><code style="font-size: 11px; color: var(--msc-blue);">peso_colchao</code></td>
+            <td style="font-size: 12px;"><strong>{kg}</strong> kg / <strong>{altura}</strong> cm</td>
+            <td><code class="text-xs">kg, altura: int</code></td>
+            <td><span class="badge badge-secondary">selo_produto</span></td>
+            <td><span class="badge badge-outline">product_seal</span></td>
+            <td>v1</td>
+            <td><span class="badge badge-success">ativo</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-xs text-muted" style="margin-top: 12px; text-align: center;">
+      8 templates ativos. Quando MSC mudar política comercial (ex.: parcelamento 16x → 12x), edita aqui e <strong>todas as próximas campanhas</strong> herdam. Peças antigas mantêm a versão usada (snapshot).
+    </p>
+  </main>
+</div>
+
 
 <!-- Sem JS: tabs são âncoras puras (#screen-X), todas as telas visíveis empilhadas com scroll-behavior smooth. -->
 <script>

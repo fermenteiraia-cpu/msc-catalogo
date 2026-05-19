@@ -1,0 +1,51 @@
+name: Sync Terasoft products
+
+on:
+  # Diário às 03:00 BRT (06:00 UTC)
+  schedule:
+    - cron: "0 6 * * *"
+
+  # Manual: pelo painel do GitHub OU via API (Edge Function trigger-sync)
+  workflow_dispatch:
+    inputs:
+      sync_run_id:
+        description: "UUID of pre-created sync_runs row (sent by trigger-sync Edge Function)"
+        required: false
+        type: string
+      triggered_by_user_id:
+        description: "UUID of the user who triggered the sync"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install scripts dependencies
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Run sync
+        working-directory: scripts
+        env:
+          TERASOFT_USER: ${{ secrets.TERASOFT_USER }}
+          TERASOFT_PASS: ${{ secrets.TERASOFT_PASS }}
+          TERASOFT_URL: ${{ secrets.TERASOFT_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SYNC_RUN_ID: ${{ inputs.sync_run_id }}
+          TRIGGERED_BY_USER_ID: ${{ inputs.triggered_by_user_id }}
+        run: node sync-terasoft.mjs

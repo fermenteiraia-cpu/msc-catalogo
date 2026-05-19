@@ -5,6 +5,9 @@
 *.env
 !.env.example
 
+# MCP config contains tokens — NEVER commit
+.mcp.json
+
 # Python
 __pycache__/
 *.py[cod]

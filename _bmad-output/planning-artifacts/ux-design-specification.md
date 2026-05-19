@@ -23,7 +23,51 @@ visualReferences:
 **Author:** David
 **Date:** 2026-05-08
 **UX Facilitator:** Sally
+**Updated by:** Amelia, 2026-05-12 (post Visual Spike pivot)
 **Status:** Em construção
+
+---
+
+## ⚡ Atualização 2026-05-12 (Amelia) — virada arquitetural
+
+Esse documento foi finalizado pela Sally em 11/05 assumindo **renderer programático determinístico** (PIL/Canvas) como output final. O Visual Spike (12/05) provou tecnicamente que **essa arquitetura não atinge a régua de qualidade exigida** (Pixar/Octane premium).
+
+A virada validada substitui o output final por **IA generativa via OpenAI `gpt-image-2`** preservando o renderer como **gerador de sketch** (intermediate representation).
+
+### O que MUDA nessa spec
+
+| Seção | Antes | Agora |
+|---|---|---|
+| **Step 3 — Defining Experience** | Renderer programático produz output final em ~1-3s | Renderer produz **sketch** em ~1-3s + **gpt-image-2** produz output final em ~170s (background) |
+| **Step 6 — Design System** | Konva (client) + canvas-native (server) pra renderizar peça final | Konva continua no client pro **editor de sketch**; output final = imagem retornada pela API OpenAI |
+| **Step 7 — Loop principal** | "Subiu lista → preview imediato" | "Subiu lista → preview do sketch imediato → 'Gerar arte final' dispara gpt-image-2 em background → Amanda recebe notificação" |
+| **Step 11 — Component Strategy** | `CampaignPreviewCanvas` renderiza output final | `CampaignSketchCanvas` renderiza sketch; `FinalArtPreview` exibe output da IA quando pronto |
+| **Estratégia de auditoria** | OCR-overlay opcional sobre output | OCR auditor **obrigatório** (Tesseract local) compara texto do output da IA com texto do sketch — flag se divergir |
+| **Custo operacional** | ~$0 incremental | ~$12/mês (gpt-image-2 high quality × 64 peças/mês) |
+
+### O que NÃO muda
+
+✅ Tese central "dados → arte sem arte-finalista" — preservada
+✅ Governança "IA não toca em preço" — **MAIS robusta** (preço vem do sketch literal, gpt-image-2 preserva caracter-por-caracter)
+✅ Loop em 6 paradas — preservado
+✅ Princípios emocionais (alívio/orgulho/confiança) — preservado
+✅ Stack base (Next.js + Supabase + Vercel + shadcn) — preservado
+✅ 7 telas — preservado
+✅ Modo apresentação, edição inline, auditoria de preço — todos preservados
+
+### Implicações pro Sprint 0 (atualizadas)
+
+- 🚨 **Cravar `gpt-image-2` como modelo definitivo** (validado em 12/05, 3 testes 100% sucesso)
+- 🚨 Configurar **hard cap de gasto** em OpenAI Dashboard ($20/mês) ANTES de produção
+- 🚨 **Rotacionar chave** OpenAI exposta no chat de 12/05 (David)
+- ⚠️ Validação visual cega adicional: agora mostra **3 outputs gerados pelo gpt-image-2** pra Amanda + 1 externo (não mais peças do renderer Python)
+- ⚠️ Testar **consistência multi-página** (sketch → IA gera N páginas de catálogo coerentes)
+- ✅ Custo, latência e qualidade validados — Sprint 0 reduzido
+
+### Validações novas que aparecem
+
+- O `gpt-image-2` ocasionalmente "moderniza" elementos semânticos (ex.: selo "10X SEM JUROS" → "0% SEM JUROS"). Política do produto: **se Amanda não quer essa modernização, ela remove o elemento do sketch antes de gerar**. Princípio: "**subtração no sketch, não no output**".
+- Latência 170s/peça em background é confortável (Amanda gera, vai tomar café). Mas precisa de **UX de fila visual** clara (toasts "✓ peça X pronta") pra ela acompanhar progresso.
 
 ---
 

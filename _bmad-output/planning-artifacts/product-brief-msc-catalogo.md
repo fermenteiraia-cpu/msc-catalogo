@@ -19,6 +19,45 @@ inputs:
 
 # Product Brief: MSC-Catalogo
 
+## ⚡ Atualização arquitetural 2026-05-12 (Amelia, pós Visual Spike)
+
+**A tese central foi PRESERVADA, mas a implementação técnica VIROU.**
+
+Validamos durante o Visual Spike (5 dias) que **renderer programático determinístico** (PIL/Canvas) **NÃO chega na régua de qualidade** exigida (Pixar/Octane premium 3D). Mesmo com asset "mães" extraído, paleta coral, estrela 12-pontas, etc., o output era "algorítmico" — Amanda fugiria pro Canva.
+
+**Solução validada**: arquitetura **"sketch + IA generativa"** — analogia do arquiteto:
+
+```
+SketchUp (volumetria)   →  V-Ray (renderização final)
+Renderer programático    →  gpt-image-2 (OpenAI img2img)
+(garante dados corretos)    (entrega qualidade Pixar)
+```
+
+**Como funciona**:
+1. **Renderer Python** (já existe) gera **sketch** com todos os elementos posicionados, preços/SKUs/textos corretos, paleta MSC, mascote, logo. Output rápido e barato.
+2. **Amanda aprova o sketch** — se algo errado, ajusta antes de gastar token.
+3. **API OpenAI `gpt-image-2`** transforma o sketch em **arte final 3D premium** preservando dados.
+4. **Auditor OCR** (Tesseract, opcional) confirma preservação de texto.
+
+**Validação técnica** (3 testes em 12/05): catálogo 12 produtos, hero paisagem, IG quadrado — **todos passaram com 100% de preservação de preços/nomes/identidade visual**.
+
+**Métricas atualizadas**:
+- Custo: ~**$12/mês** (gpt-image-2 high quality, ~16 peças × 4 campanhas)
+- Latência: ~**170s por peça** em background (Amanda não percebe)
+- Qualidade: **nível agência profissional** (validado em Pixar style retail)
+
+**Impacto nos princípios**:
+- Tese "dados → arte sem arte-finalista" ✅ **preservada**
+- Governança "IA não toca em preço" ✅ **preservada** (preço vem do sketch, IA preserva caracter-por-caracter)
+- "1 semana → 1 manhã" ✅ **preservado** (latência IA não impacta tempo total da Amanda; gera em paralelo)
+
+**Validações remanescentes** (Sprint 0):
+- Cliente-âncora Lojas MSC aprova a estética IA gerada (Amanda + Marcos)
+- Auditor OCR confirma preservação em N peças sem flag
+- Limite de gasto OpenAI configurado ($20/mês hard cap)
+
+---
+
 ## Tagline
 
 > **"O ERP fala, a campanha sai."**
