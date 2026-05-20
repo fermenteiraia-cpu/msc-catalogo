@@ -7,6 +7,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { LoginPage } from "@/routes/login";
 import { SignupPage } from "@/routes/signup";
 import { HomePlaceholder } from "@/routes/home";
+import { ProdutosPage } from "@/routes/produtos";
 import { useAuthStore } from "@/stores/auth";
 
 const queryClient = new QueryClient({
@@ -44,6 +45,10 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route element={<AppLayout />}>
                 <Route path="/" element={<HomePlaceholder />} />
+                <Route
+                  path="/catalogos/:id/produtos"
+                  element={<ProdutosPage />}
+                />
               </Route>
             </Route>
           </Routes>
