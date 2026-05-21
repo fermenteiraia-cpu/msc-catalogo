@@ -7,6 +7,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { LoginPage } from "@/routes/login";
 import { SignupPage } from "@/routes/signup";
 import { HomePage } from "@/routes/home";
+import { BriefingPage } from "@/routes/briefing";
 import { ProdutosPage } from "@/routes/produtos";
 import { NotFoundPage } from "@/routes/not-found";
 import { useAuthStore } from "@/stores/auth";
@@ -48,6 +49,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
               </Route>
               <Route element={<AppLayout mode="campaign" />}>
+                <Route path="/catalogos/novo" element={<BriefingPage />} />
                 <Route
                   path="/catalogos/:id/produtos"
                   element={<ProdutosPage />}
