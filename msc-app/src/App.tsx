@@ -9,6 +9,7 @@ import { SignupPage } from "@/routes/signup";
 import { HomePage } from "@/routes/home";
 import { BriefingPage } from "@/routes/briefing";
 import { ProdutosPage } from "@/routes/produtos";
+import { EditorPage } from "@/routes/editor";
 import { NotFoundPage } from "@/routes/not-found";
 import { useAuthStore } from "@/stores/auth";
 
@@ -53,6 +54,10 @@ function App() {
                 <Route
                   path="/catalogos/:id/produtos"
                   element={<ProdutosPage />}
+                />
+                <Route
+                  path="/catalogos/:id/editor"
+                  element={<EditorPage />}
                 />
               </Route>
             </Route>

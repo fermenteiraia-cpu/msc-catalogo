@@ -176,6 +176,39 @@ export function useLastDraftCatalog() {
   });
 }
 
+/** Single catalog detail, used by the Produtos and Editor screens. */
+export interface CatalogDetail {
+  id: string;
+  name: string;
+  slug: string;
+  status: CatalogStatus;
+  theme_key: string | null;
+  campaign_spec: unknown;
+  updated_at: string;
+}
+
+/**
+ * Fetches one catalog by id. Returns null when no row matches (so the page
+ * can render a not-found state instead of throwing).
+ */
+export function useCatalog(id: string | undefined) {
+  return useQuery({
+    queryKey: ["catalog-detail", id ?? null],
+    enabled: Boolean(id),
+    queryFn: async (): Promise<CatalogDetail | null> => {
+      if (!id) return null;
+      const { data, error } = await supabase
+        .from("catalogs")
+        .select("id,name,slug,status,theme_key,campaign_spec,updated_at")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      return (data as unknown as CatalogDetail | null) ?? null;
+    },
+  });
+}
+
 /**
  * Defensively extracts a `creative.palette.primary` hex color from the
  * free-form `campaign_spec` jsonb. Returns null when absent or malformed.

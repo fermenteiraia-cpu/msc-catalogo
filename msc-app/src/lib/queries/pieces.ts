@@ -6,6 +6,16 @@ import { supabase } from "@/lib/supabase";
 import { err, ok, type AppError, type Result } from "@/lib/result";
 import type { ProductRow } from "@/lib/queries/products";
 
+/** Card size classes used by the Editor layout: P/M/G/D (mockup Tela 4). */
+export type SizeClass = "P" | "M" | "G" | "D";
+
+const SIZE_CLASSES: ReadonlyArray<SizeClass> = ["P", "M", "G", "D"];
+
+/** Normalizes the free-text `size_class` column into the P/M/G/D union. */
+function normalizeSizeClass(raw: unknown): SizeClass {
+  return SIZE_CLASSES.includes(raw as SizeClass) ? (raw as SizeClass) : "M";
+}
+
 export interface PieceRow {
   id: string;
   catalog_id: string;
@@ -13,10 +23,12 @@ export interface PieceRow {
   position: number;
   size_class: string;
   status: string;
+  render_url: string | null;
   product_codes: string[];
   desconto_percent: number;
   parcelas: number;
   is_destaque: boolean;
+  preco_final_override: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -29,9 +41,13 @@ export interface PieceWithProduct {
   id: string;
   catalog_id: string;
   position: number;
+  size_class: SizeClass;
+  status: string;
+  render_url: string | null;
   desconto_percent: number;
   parcelas: number;
   is_destaque: boolean;
+  preco_final_override: number | null;
   product_codes: string[];
   product: ProductRow | null;
 }
@@ -50,7 +66,7 @@ export function useCatalogPieces(catalogId: string | undefined) {
       const { data: pieceData, error: pieceError } = await supabase
         .from("pieces")
         .select(
-          "id,catalog_id,tenant_id,position,size_class,status,product_codes,desconto_percent,parcelas,is_destaque,created_at,updated_at",
+          "id,catalog_id,tenant_id,position,size_class,status,render_url,product_codes,desconto_percent,parcelas,is_destaque,preco_final_override,created_at,updated_at",
         )
         .eq("catalog_id", catalogId)
         .order("position", { ascending: true });
@@ -91,9 +107,17 @@ export function useCatalogPieces(catalogId: string | undefined) {
           id: piece.id,
           catalog_id: piece.catalog_id,
           position: piece.position,
+          size_class: normalizeSizeClass(piece.size_class),
+          status: piece.status ?? "pending",
+          render_url: piece.render_url ?? null,
           desconto_percent: Number(piece.desconto_percent ?? 0),
           parcelas: Number(piece.parcelas ?? 10),
           is_destaque: Boolean(piece.is_destaque),
+          preco_final_override:
+            piece.preco_final_override === null ||
+            piece.preco_final_override === undefined
+              ? null
+              : Number(piece.preco_final_override),
           product_codes: piece.product_codes ?? [],
           product: firstCode ? (byCode.get(firstCode) ?? null) : null,
         };
@@ -144,9 +168,13 @@ export function useAddPieceToCatalog() {
         id: `optimistic-${input.terasoftCode}`,
         catalog_id: input.catalogId,
         position: nextPosition,
+        size_class: "M",
+        status: "pending",
+        render_url: null,
         desconto_percent: 0,
         parcelas: 10,
         is_destaque: false,
+        preco_final_override: null,
         product_codes: [input.terasoftCode],
         product: null, // server-side join will fill this in
       };
@@ -304,12 +332,16 @@ export const piecePatchSchema = z
     desconto_percent: z.number().min(0).max(100).optional(),
     parcelas: z.number().int().min(1).max(24).optional(),
     is_destaque: z.boolean().optional(),
+    size_class: z.enum(["P", "M", "G", "D"]).optional(),
+    preco_final_override: z.number().min(0).nullable().optional(),
   })
   .refine(
     (patch) =>
       patch.desconto_percent !== undefined ||
       patch.parcelas !== undefined ||
-      patch.is_destaque !== undefined,
+      patch.is_destaque !== undefined ||
+      patch.size_class !== undefined ||
+      patch.preco_final_override !== undefined,
     { message: "É preciso fornecer ao menos um campo pra atualizar." },
   );
 
@@ -346,6 +378,12 @@ export function useUpdatePiece() {
                 }),
                 ...(input.patch.is_destaque !== undefined && {
                   is_destaque: input.patch.is_destaque,
+                }),
+                ...(input.patch.size_class !== undefined && {
+                  size_class: input.patch.size_class,
+                }),
+                ...(input.patch.preco_final_override !== undefined && {
+                  preco_final_override: input.patch.preco_final_override,
                 }),
               }
             : p,
