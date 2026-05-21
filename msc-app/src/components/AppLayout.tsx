@@ -1,10 +1,16 @@
 import { useState, useCallback, useMemo } from "react";
 import { Outlet } from "react-router-dom";
 
-import { Sidebar } from "@/components/Sidebar";
+import { Sidebar, type SidebarMode } from "@/components/Sidebar";
 import type { CampaignStep, CampaignStepperProps } from "@/components/CampaignStepper";
 
 export interface AppLayoutProps {
+  /**
+   * Selects the sidebar content block:
+   *   'home'     → Workspace/Recursos nav (Tela 1).
+   *   'campaign' → CampaignStepper (catalog flow). Defaults to 'campaign'.
+   */
+  mode?: SidebarMode;
   /** Defaults to step 1 (Briefing) during Phase 2 — later routes will set this. */
   currentStep?: CampaignStep;
   stepSubtitles?: CampaignStepperProps["stepSubtitles"];
@@ -29,6 +35,7 @@ export interface AppLayoutContext {
  * via the outlet context.
  */
 export function AppLayout({
+  mode = "campaign",
   currentStep: defaultCurrentStep = 1,
   stepSubtitles: defaultStepSubtitles,
 }: AppLayoutProps) {
@@ -65,6 +72,7 @@ export function AppLayout({
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar
+        mode={mode}
         currentStep={stepper.currentStep}
         stepSubtitles={stepper.stepSubtitles}
       />

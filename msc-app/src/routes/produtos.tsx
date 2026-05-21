@@ -126,8 +126,10 @@ export function ProdutosPage() {
           </p>
         </div>
         <div className="flex flex-shrink-0 items-center gap-2">
+          {/* Volta pra Home — a Tela de Detalhe do catálogo (4c) ainda não
+              existe. Quando existir, este link passa a apontar pra ela. */}
           <Link
-            to={`/catalogos/${catalog.id}`}
+            to="/"
             className={cn(buttonVariants({ variant: "secondary" }))}
           >
             ← Voltar

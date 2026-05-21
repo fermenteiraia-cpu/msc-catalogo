@@ -6,8 +6,9 @@ import { AppLayout } from "@/components/AppLayout";
 import { RequireAuth } from "@/components/RequireAuth";
 import { LoginPage } from "@/routes/login";
 import { SignupPage } from "@/routes/signup";
-import { HomePlaceholder } from "@/routes/home";
+import { HomePage } from "@/routes/home";
 import { ProdutosPage } from "@/routes/produtos";
+import { NotFoundPage } from "@/routes/not-found";
 import { useAuthStore } from "@/stores/auth";
 
 const queryClient = new QueryClient({
@@ -43,14 +44,19 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route element={<RequireAuth />}>
-              <Route element={<AppLayout />}>
-                <Route path="/" element={<HomePlaceholder />} />
+              <Route element={<AppLayout mode="home" />}>
+                <Route path="/" element={<HomePage />} />
+              </Route>
+              <Route element={<AppLayout mode="campaign" />}>
                 <Route
                   path="/catalogos/:id/produtos"
                   element={<ProdutosPage />}
                 />
               </Route>
             </Route>
+            {/* Catch-all: qualquer rota não mapeada cai aqui em vez de
+                desmontar a árvore e mostrar tela branca. */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthInitializer>
       </BrowserRouter>

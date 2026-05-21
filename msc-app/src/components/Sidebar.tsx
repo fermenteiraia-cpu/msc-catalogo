@@ -5,10 +5,15 @@ import {
   type CampaignStep,
   type CampaignStepperProps,
 } from "@/components/CampaignStepper";
+import { HomeSidebar } from "@/components/HomeSidebar";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth";
 
+/** Which content block the sidebar renders. */
+export type SidebarMode = "home" | "campaign";
+
 export interface SidebarProps {
+  mode: SidebarMode;
   currentStep: CampaignStep;
   stepSubtitles?: CampaignStepperProps["stepSubtitles"];
 }
@@ -32,13 +37,13 @@ function avatarInitial(email: string | null | undefined): string {
 
 /**
  * Application sidebar. Visual structure mirrors ux-design-directions.html:
- *   - Logo block (lines 690-696, 135-147)
- *   - "Etapas da campanha" section label (line 698, 149)
- *   - <CampaignStepper /> (lines 699-716)
- *   - Spacer (line 718, 165)
- *   - User card (lines 720-726, 166-178)
+ *   - Logo block (lines 546-552 home / 690-696 campaign)
+ *   - mode='home'    → "Workspace"/"Recursos" nav (<HomeSidebar />, lines 554-573)
+ *   - mode='campaign'→ "Etapas da campanha" + <CampaignStepper /> (lines 698-716)
+ *   - Spacer (line 575 home / 718 campaign)
+ *   - User card (lines 577-583 home / 720-726 campaign)
  */
-export function Sidebar({ currentStep, stepSubtitles }: SidebarProps) {
+export function Sidebar({ mode, currentStep, stepSubtitles }: SidebarProps) {
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const [signingOut, setSigningOut] = useState(false);
@@ -71,15 +76,22 @@ export function Sidebar({ currentStep, stepSubtitles }: SidebarProps) {
         </div>
       </div>
 
-      {/* Section: Etapas da campanha */}
-      <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        Etapas da campanha
-      </div>
+      {/* Mode-specific content block */}
+      {mode === "home" ? (
+        <HomeSidebar />
+      ) : (
+        <>
+          {/* Section: Etapas da campanha */}
+          <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Etapas da campanha
+          </div>
 
-      <CampaignStepper
-        currentStep={currentStep}
-        stepSubtitles={stepSubtitles}
-      />
+          <CampaignStepper
+            currentStep={currentStep}
+            stepSubtitles={stepSubtitles}
+          />
+        </>
+      )}
 
       {/* Spacer pushes the user card to the bottom */}
       <div className="flex-1" />

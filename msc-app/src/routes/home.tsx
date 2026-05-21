@@ -1,27 +1,43 @@
-import { useAuthStore } from "@/stores/auth";
+import { useState } from "react";
+
+import { CatalogGrid } from "@/components/home/CatalogGrid";
+import { CatalogTabs } from "@/components/home/CatalogTabs";
+import { ContinueCard } from "@/components/home/ContinueCard";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import {
+  useCatalogsList,
+  useLastDraftCatalog,
+  type CatalogFilter,
+} from "@/lib/queries/catalogs";
 
 /**
- * Phase 2 landing page rendered inside <AppLayout />.
- * The real Briefing / Produtos / Editor flows arrive in Phase 4.
+ * Tela 1 — Home / Lista de catálogos.
+ * Mirrors ux-design-directions.html lines 542-684.
+ *
+ * Owns the active tab filter; everything else is composed from the
+ * `home/` components and the `queries/catalogs` hooks.
  */
-export function HomePlaceholder() {
-  const user = useAuthStore((s) => s.user);
-  const emailPrefix = user?.email?.split("@")[0] ?? "Usuário";
-  const displayName =
-    emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+export function HomePage() {
+  const [filter, setFilter] = useState<CatalogFilter>("todas");
+
+  const listQuery = useCatalogsList(filter);
+  const lastDraftQuery = useLastDraftCatalog();
+
+  const catalogs = listQuery.data ?? [];
+  const continueDraftId = lastDraftQuery.data?.id ?? null;
 
   return (
-    <div className="max-w-2xl space-y-4">
-      <h1 className="text-2xl font-semibold text-foreground">
-        Bem-vindo, {displayName}
-      </h1>
-      <p className="text-sm text-muted-foreground">
-        Em construção — Fase 4 vai trazer os fluxos completos (catálogos,
-        briefing, produtos, editor).
-      </p>
-      <p className="text-xs text-muted-foreground">
-        Status atual: Fase 2 (fundação) concluída — auth, layout, navegação.
-      </p>
+    <div className="space-y-6">
+      <HomeHeader />
+      <ContinueCard />
+      <div className="space-y-4">
+        <CatalogTabs active={filter} onChange={setFilter} />
+        <CatalogGrid
+          catalogs={catalogs}
+          continueDraftId={continueDraftId}
+          isLoading={listQuery.isLoading}
+        />
+      </div>
     </div>
   );
 }
