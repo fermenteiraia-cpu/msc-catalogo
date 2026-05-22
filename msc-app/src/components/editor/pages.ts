@@ -47,19 +47,6 @@ export const SIZE_COLUMNS: Record<SizeClass, number> = {
   P: 5,
 };
 
-/**
- * Vertical weight of one visual line per size class. The sketch sheet has a
- * fixed print ratio (11/14); rows stretch to fill it so a page is never half
- * empty (Sally, 2026-05-21). A Destaque line is the tallest, a Pequeno line
- * the shortest.
- */
-const SIZE_ROW_WEIGHT: Record<SizeClass, number> = {
-  D: 4,
-  G: 3,
-  M: 2,
-  P: 1.5,
-};
-
 /** Human label for each size class. */
 export const SIZE_LABEL: Record<SizeClass, string> = {
   P: "Pequeno",
@@ -80,27 +67,18 @@ export interface SizeRow {
   size: SizeClass;
   /** Columns actually used — capped at the item count so few cards fill width. */
   columns: number;
-  /** Flex weight so the row stretches to fill the sheet height. */
-  weight: number;
   items: PieceWithProduct[];
 }
 
 /**
  * Groups one page's pieces into size rows, in print order (D, G, M, P).
- * Each row carries the column count (capped at its item count so a handful
- * of cards spread across the full width) and a flex weight (size weight ×
- * number of visual lines) so the rows together fill the whole sheet.
+ * Each row carries the column count, capped at its item count so a handful
+ * of cards spread across the full width instead of leaving empty cells.
  */
 export function groupBySize(pieces: ReadonlyArray<PieceWithProduct>): SizeRow[] {
   return SIZE_ORDER.map<SizeRow>((size) => {
     const items = pieces.filter((p) => p.size_class === size);
     const columns = Math.min(SIZE_COLUMNS[size], Math.max(items.length, 1));
-    const visualLines = Math.max(Math.ceil(items.length / columns), 1);
-    return {
-      size,
-      columns,
-      weight: SIZE_ROW_WEIGHT[size] * visualLines,
-      items,
-    };
+    return { size, columns, items };
   }).filter((row) => row.items.length > 0);
 }

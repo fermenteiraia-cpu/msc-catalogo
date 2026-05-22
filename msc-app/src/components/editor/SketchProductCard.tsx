@@ -10,40 +10,40 @@ interface SketchProductCardProps {
   onSelect: (pieceId: string) => void;
 }
 
-/** Per-size text scale (px). The photo area is elastic; only text is fixed. */
+/** Per-size text scale (px). Cards keep a sane print proportion — never strips. */
 const SIZE_STYLE: Record<
   SizeClass,
   { nameSize: number; priceSize: number; badge: { bg: string; label: string } }
 > = {
   D: {
-    nameSize: 11,
-    priceSize: 19,
-    badge: { bg: "rgba(220,38,38,0.9)", label: "D · Destaque" },
+    nameSize: 13,
+    priceSize: 26,
+    badge: { bg: "rgba(220,38,38,0.92)", label: "Destaque" },
   },
   G: {
-    nameSize: 10,
-    priceSize: 15,
-    badge: { bg: "rgba(220,38,38,0.7)", label: "G · Grande" },
+    nameSize: 11,
+    priceSize: 18,
+    badge: { bg: "rgba(220,38,38,0.78)", label: "Grande" },
   },
   M: {
-    nameSize: 9,
-    priceSize: 13,
-    badge: { bg: "rgba(34,94,80,0.75)", label: "M · Médio" },
+    nameSize: 10,
+    priceSize: 16,
+    badge: { bg: "rgba(34,94,80,0.8)", label: "Médio" },
   },
   P: {
-    nameSize: 8,
-    priceSize: 11,
-    badge: { bg: "rgba(48,48,96,0.75)", label: "P" },
+    nameSize: 9,
+    priceSize: 13,
+    badge: { bg: "rgba(48,48,96,0.8)", label: "Pequeno" },
   },
 };
 
-/** Muted photo placeholder that fills whatever space the card gives it. */
+/** Muted photo placeholder that fills the photo box. */
 function PhotoPlaceholder() {
   return (
-    <div className="flex h-full w-full items-center justify-center rounded-sm bg-muted text-muted-foreground">
+    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
       <svg
-        width="22"
-        height="22"
+        width="26"
+        height="26"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -59,11 +59,11 @@ function PhotoPlaceholder() {
 
 /**
  * One product card inside the editor sketch page (mockup Tela 4, linhas
- * 1554-1651). The card fills 100% of its row's height — the photo area is the
- * elastic element so a page with few products never leaves dead space
- * (Sally, 2026-05-21). Layout adapts to the piece's size class:
- *   D → horizontal (photo + info side by side)
- *   G/M/P → vertical (photo on top, name + price fixed below).
+ * 1554-1651). The card keeps a real catalog proportion — a square photo on a
+ * white field plus a name+price strip — and NEVER stretches into a tall
+ * sliver (correção David, 2026-05-22). Layout per size class:
+ *   D → horizontal banner (photo left, info right)
+ *   G/M/P → vertical card (square photo on top, name + price below).
  * Clicking selects the piece; the selected card gets a green outline.
  */
 export function SketchProductCard({
@@ -78,33 +78,45 @@ export function SketchProductCard({
   const finalPrice = pieceFinalPrice(piece);
 
   const outline: CSSProperties = selected
-    ? { outline: "2px solid #4ADE80", outlineOffset: 2 }
+    ? { outline: "2.5px solid #16A34A", outlineOffset: 2 }
     : {};
-
-  const sizeBadge = (
-    <div
-      className="absolute right-1 top-1 z-10 rounded font-bold text-white"
-      style={{ background: style.badge.bg, fontSize: 6, padding: "1px 5px" }}
-    >
-      {style.badge.label}
-    </div>
-  );
 
   const parcelasBadge = piece.parcelas > 0 && (
     <div
       className="absolute z-10 font-bold"
       style={{
-        top: -3,
-        left: -3,
+        top: -6,
+        left: -6,
         background: "#F5C84B",
         color: "#1A1A1A",
-        fontSize: 6,
-        padding: "1px 4px",
+        fontSize: 9,
+        padding: "2px 7px",
         borderRadius: 999,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
       }}
     >
-      ★ {piece.parcelas}x
+      ★ 1+{Math.max(piece.parcelas - 1, 1)}x
     </div>
+  );
+
+  const sizeBadge = (
+    <div
+      className="absolute right-1.5 top-1.5 z-10 rounded font-bold uppercase tracking-wide text-white"
+      style={{ background: style.badge.bg, fontSize: 7, padding: "2px 6px" }}
+    >
+      {style.badge.label}
+    </div>
+  );
+
+  const photo = product?.image_url ? (
+    <img
+      src={product.image_url}
+      alt=""
+      loading="lazy"
+      className="h-full w-full object-contain"
+    />
+  ) : (
+    <PhotoPlaceholder />
   );
 
   const priceNode = (
@@ -116,77 +128,73 @@ export function SketchProductCard({
     </div>
   );
 
-  const photo = product?.image_url ? (
-    <img
-      src={product.image_url}
-      alt=""
-      loading="lazy"
-      className="h-full w-full rounded-sm object-cover"
-    />
-  ) : (
-    <PhotoPlaceholder />
-  );
-
-  /* ---- Destaque: horizontal layout ---- */
+  /* ---- Destaque: horizontal banner ---- */
   if (size === "D") {
     return (
       <button
         type="button"
         onClick={() => onSelect(piece.id)}
-        className="relative flex h-full w-full items-stretch gap-2 rounded bg-white p-2 text-left"
+        className="relative flex w-full items-stretch gap-3 overflow-hidden rounded-md bg-white p-2.5 text-left shadow-sm"
         style={outline}
         aria-pressed={selected}
       >
         {parcelasBadge}
         {sizeBadge}
-        <div className="h-full w-[38%] flex-shrink-0">{photo}</div>
-        <div className="flex min-w-0 flex-1 flex-col justify-center">
+        <div className="aspect-[4/3] w-[40%] flex-shrink-0 overflow-hidden rounded bg-white">
+          {photo}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
           <div
-            className="font-bold leading-tight"
+            className="font-bold leading-tight text-foreground"
             style={{ fontSize: style.nameSize }}
           >
             {name}
           </div>
           {piece.desconto_percent > 0 && product?.price_cash != null && (
-            <div className="text-muted-foreground" style={{ fontSize: 7 }}>
-              DE: {brl.format(product.price_cash)}
+            <div
+              className="text-muted-foreground line-through"
+              style={{ fontSize: 9 }}
+            >
+              de {brl.format(product.price_cash)}
             </div>
           )}
+          {priceNode}
           <div
-            className="font-bold text-[hsl(var(--primary))]"
-            style={{ fontSize: 7 }}
+            className="font-bold uppercase text-[hsl(var(--primary))]"
+            style={{ fontSize: 8 }}
           >
-            1+{Math.max(piece.parcelas - 1, 1)}X SEM JUROS
+            1+{Math.max(piece.parcelas - 1, 1)}x sem juros
           </div>
-          <div className="mt-0.5">{priceNode}</div>
         </div>
       </button>
     );
   }
 
-  /* ---- Grande / Médio / Pequeno: vertical layout ---- */
+  /* ---- Grande / Médio / Pequeno: vertical card ---- */
   return (
     <button
       type="button"
       onClick={() => onSelect(piece.id)}
       className={cn(
-        "relative flex h-full w-full flex-col rounded bg-white text-center",
-        size === "P" ? "p-1" : "p-1.5",
+        "relative flex w-full max-w-[230px] flex-col overflow-hidden rounded-md bg-white shadow-sm",
+        size === "P" ? "p-1.5" : "p-2",
       )}
       style={outline}
       aria-pressed={selected}
     >
       {parcelasBadge}
       {sizeBadge}
-      <div className="min-h-0 flex-1">{photo}</div>
-      <div className="flex-shrink-0 pt-1">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded bg-white">
+        {photo}
+      </div>
+      <div className="flex flex-col items-center pt-1.5 text-center">
         <div
-          className="line-clamp-2 font-semibold leading-tight"
+          className="line-clamp-2 font-semibold leading-tight text-foreground"
           style={{ fontSize: style.nameSize }}
         >
           {name}
         </div>
-        <div className="mt-0.5">{priceNode}</div>
+        <div className="mt-1">{priceNode}</div>
       </div>
     </button>
   );

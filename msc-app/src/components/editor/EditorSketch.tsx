@@ -27,8 +27,8 @@ function MscStrip({
   if (variant === "top") {
     return (
       <div
-        className="flex flex-shrink-0 justify-around rounded-sm bg-[#C0246A] px-1.5 py-1 font-bold uppercase tracking-widest text-white"
-        style={{ fontSize: 7 }}
+        className="flex flex-shrink-0 justify-around rounded-sm bg-[#C0246A] px-1.5 py-1.5 font-bold uppercase tracking-widest text-white"
+        style={{ fontSize: 8 }}
       >
         {Array.from({ length: 6 }).map((_, i) => (
           <span key={i}>LOJAS MSC</span>
@@ -38,8 +38,8 @@ function MscStrip({
   }
   return (
     <div
-      className="flex flex-shrink-0 items-center justify-between rounded-sm bg-[#C0246A] px-1.5 py-1 font-semibold text-white"
-      style={{ fontSize: 7 }}
+      className="flex flex-shrink-0 items-center justify-between rounded-sm bg-[#C0246A] px-2 py-1.5 font-semibold text-white"
+      style={{ fontSize: 8 }}
     >
       <span className="font-bold">
         LOJAS MSC · TODA LOJA EM ATÉ 10X SEM JUROS
@@ -51,10 +51,10 @@ function MscStrip({
 
 /**
  * The editable sketch of one interior catalog page (mockup Tela 4, linhas
- * 1544-1658). A print-aspect (11/14) sheet on the campaign gradient with the
- * locked MSC strips top and bottom. The product rows STRETCH to fill the
- * sheet — a page with few products shows generous cards instead of dead space
- * (Sally, 2026-05-21).
+ * 1544-1658). A print-aspect (11/14) sheet with the locked MSC strips top and
+ * bottom. The product cards keep real catalog proportions; the grid of rows is
+ * centered vertically so a page reads as a curated highlights spread instead
+ * of cramming cards in a corner or stretching them (correção David, 2026-05-22).
  */
 export function EditorSketch({
   pieces,
@@ -70,17 +70,17 @@ export function EditorSketch({
 
   return (
     <div
-      className="relative flex flex-col gap-1.5 rounded-xl p-3 shadow-md"
+      className="relative flex flex-col gap-2 overflow-hidden rounded-xl p-3 shadow-md"
       style={{
         aspectRatio: "11 / 14",
         background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
       }}
     >
       <div
-        className="absolute left-2 top-0.5 z-10 text-white/85"
+        className="absolute right-3 top-1 z-10 text-white/80"
         style={{ fontSize: 9 }}
       >
-        PÁGINA {pageNumber} de {pageCount} · 2200×2540
+        {pageLabel}
       </div>
 
       <MscStrip variant="top" />
@@ -93,14 +93,14 @@ export function EditorSketch({
           Esta página ainda não tem produtos.
         </div>
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col gap-1.5">
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 py-2">
           {rows.map((row) => (
             <div
               key={row.size}
-              className="grid min-h-0 gap-1.5"
+              className="grid items-start gap-3"
               style={{
-                flex: row.weight,
                 gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
+                justifyItems: "center",
               }}
             >
               {row.items.map((piece) => (

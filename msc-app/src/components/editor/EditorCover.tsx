@@ -1,5 +1,6 @@
 import type { CampaignSpec } from "@/lib/schemas/campaign-spec";
-import { renderTermPattern, type TermTemplate } from "@/lib/queries/briefing";
+import type { TermTemplate } from "@/lib/queries/briefing";
+import { resolveTermText } from "@/components/editor/term-display";
 
 interface EditorCoverProps {
   spec: CampaignSpec;
@@ -40,7 +41,7 @@ function MainWord({
       <>
         {word}
         {emoji && ornament !== "none" ? (
-          <span className="ml-1 text-base">{emoji}</span>
+          <span className="ml-1 align-middle text-2xl">{emoji}</span>
         ) : null}
       </>
     );
@@ -50,7 +51,7 @@ function MainWord({
       {word.slice(0, tildeIndex)}
       <span className="relative">
         ã
-        <span className="absolute -top-3 left-px text-base">{emoji}</span>
+        <span className="absolute -top-4 left-0.5 text-xl">{emoji}</span>
       </span>
       {word.slice(tildeIndex + 1)}
     </>
@@ -59,9 +60,10 @@ function MainWord({
 
 /**
  * Página 1 do Editor — a CAPA do catálogo (mockup Tela 1 / wireframe da capa).
- * Desenha a folha de impressão (11/14) a partir do `campaign_spec`: gradiente
- * da paleta, faixa MSC, headline grande, selo de CTA, frases prontas e
- * período. É o esboço da capa — a IA depois dá o acabamento 3D.
+ * Desenha a folha de impressão (11/14) a partir do `campaign_spec`. O bloco do
+ * headline ocupa o miolo da folha (flex-1) pra capa nunca ficar com um vazio
+ * gigante no topo (correção David, 2026-05-22): faixa MSC, hero (mascote +
+ * headline grande + selo), frases prontas e período.
  */
 export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
   const { creative, cta_blocks, terms_on_cover, period } = spec;
@@ -73,14 +75,14 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
 
   const termById = new Map(termTemplates.map((t) => [t.template_id, t]));
   const termPhrases = terms_on_cover.items
-    .map((item) => {
-      const tpl = termById.get(item.template_id);
-      if (!tpl) return item.template_id;
-      return renderTermPattern(
-        tpl.pattern,
-        item.params as Record<string, unknown>,
-      );
-    })
+    .map((item) =>
+      resolveTermText(
+        termById.get(item.template_id),
+        { template_id: item.template_id, params: item.params },
+        spec,
+      ),
+    )
+    .filter((phrase) => phrase.length > 0)
     .slice(0, 4);
 
   const periodLine =
@@ -88,7 +90,7 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
     period.display_on_cover.lines &&
     period.display_on_cover.lines.length > 0
       ? period.display_on_cover.lines[0]
-      : `${shortDate(period.start_date)} ao ${shortDate(period.end_date)}`;
+      : `Válido de ${shortDate(period.start_date)} a ${shortDate(period.end_date)}`;
 
   return (
     <div
@@ -97,77 +99,88 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
     >
       {/* Faixa LOJAS MSC topo */}
       <div
-        className="-mx-1 mb-3 flex flex-shrink-0 justify-around rounded-sm px-1.5 py-1 text-center font-bold tracking-widest text-white"
-        style={{ background: "rgba(0,0,0,0.28)", fontSize: 8 }}
+        className="flex flex-shrink-0 justify-around rounded-sm px-2 py-1.5 font-bold uppercase tracking-widest text-white"
+        style={{ background: "rgba(0,0,0,0.3)", fontSize: 9 }}
       >
         {Array.from({ length: 6 }).map((_, i) => (
           <span key={i}>LOJAS MSC</span>
         ))}
       </div>
 
-      {/* Mascote · headline · CTA */}
-      <div
-        className="grid flex-1 items-center gap-3"
-        style={{ gridTemplateColumns: "80px 1fr 96px" }}
-      >
-        <div className="flex h-[120px] items-center justify-center rounded border border-dashed border-white/80 bg-white/50 text-[44px]">
-          👴
-        </div>
-
-        <div className="text-center">
-          {headline.top && (
-            <div
-              className="text-sm font-bold uppercase tracking-wide text-white"
-              style={{ textShadow: `1px 1px 0 ${palette.primary}` }}
-            >
-              {headline.top}
-            </div>
-          )}
-          <div
-            className="-mt-0.5 text-[40px] font-black leading-none text-white"
-            style={{
-              textShadow: `2px 2px 0 ${palette.primary}, 5px 5px 0 rgba(0,0,0,0.35)`,
-            }}
-          >
-            <MainWord word={headline.main} ornament={headline.ornament} />
+      {/* HERO — ocupa o miolo da folha */}
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 py-4">
+        <div
+          className="grid w-full items-center gap-3"
+          style={{ gridTemplateColumns: "88px 1fr 108px" }}
+        >
+          {/* Mascote */}
+          <div className="flex h-[150px] items-center justify-center rounded-lg border-2 border-dashed border-white/70 bg-white/45 text-[58px]">
+            👴
           </div>
-          {headline.sub && (
-            <div className="mt-2 text-[9px] font-bold text-foreground/70">
-              {headline.sub}
-            </div>
-          )}
-        </div>
 
-        {cta && (
-          <div
-            className="rounded-lg border-[1.5px] border-dashed px-1 py-1.5 text-center"
-            style={{
-              background: palette.accent_seal,
-              borderColor: "rgba(0,0,0,0.4)",
-            }}
-          >
-            {cta.topline && (
-              <div className="text-[7px] font-semibold text-[#78350F]">
-                {cta.topline}
+          {/* Headline */}
+          <div className="text-center">
+            {headline.top && (
+              <div
+                className="text-base font-bold uppercase tracking-wide text-white"
+                style={{ textShadow: `1px 1px 0 ${palette.primary}` }}
+              >
+                {headline.top}
               </div>
             )}
-            <div className="text-[22px] font-black leading-none text-[#DC2626]">
-              {cta.value}
+            <div
+              className="text-[54px] font-black uppercase leading-[0.95] text-white"
+              style={{
+                textShadow: `3px 3px 0 ${palette.primary}, 6px 6px 0 rgba(0,0,0,0.35)`,
+              }}
+            >
+              <MainWord word={headline.main} ornament={headline.ornament} />
             </div>
-            <div className="text-[7px] font-bold text-[#78350F]">
-              {cta.label}
+            {headline.sub && (
+              <div className="mt-2 text-xs font-bold uppercase tracking-wide text-white/85">
+                {headline.sub}
+              </div>
+            )}
+          </div>
+
+          {/* Selo de CTA */}
+          {cta && (
+            <div
+              className="rounded-xl border-2 border-dashed px-1.5 py-2.5 text-center"
+              style={{
+                background: palette.accent_seal,
+                borderColor: "rgba(0,0,0,0.4)",
+              }}
+            >
+              {cta.topline && (
+                <div className="text-[8px] font-semibold uppercase text-[#78350F]">
+                  {cta.topline}
+                </div>
+              )}
+              <div className="text-[30px] font-black leading-none text-[#DC2626]">
+                {cta.value}
+              </div>
+              <div className="text-[8px] font-bold uppercase text-[#78350F]">
+                {cta.label}
+              </div>
             </div>
+          )}
+        </div>
+
+        {creative.slogan_on_cover && (
+          <div className="rounded-full bg-white/80 px-4 py-1 text-center text-xs font-semibold italic text-foreground">
+            {creative.slogan_on_cover}
           </div>
         )}
       </div>
 
       {/* Frases prontas */}
       {termPhrases.length > 0 && (
-        <div className="mt-3 grid flex-shrink-0 grid-cols-2 gap-1.5 text-[8px] text-foreground/85">
+        <div className="grid flex-shrink-0 grid-cols-2 gap-2 text-[10px] font-medium text-foreground/90">
           {termPhrases.map((phrase, i) => (
             <div
               key={`${phrase}-${i}`}
-              className="rounded-sm bg-white/60 px-2 py-1"
+              className="rounded-sm bg-white/75 px-2.5 py-1.5 text-center"
             >
               {phrase}
             </div>
@@ -175,17 +188,10 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
         </div>
       )}
 
-      {/* Slogan opcional */}
-      {creative.slogan_on_cover && (
-        <div className="mt-2 flex-shrink-0 text-center text-[9px] font-semibold italic text-white">
-          {creative.slogan_on_cover}
-        </div>
-      )}
-
       {/* Footer período */}
       <div
-        className="mt-3 flex-shrink-0 rounded-sm px-2 py-1.5 text-center font-semibold text-white"
-        style={{ background: "rgba(0,0,0,0.28)", fontSize: 9 }}
+        className="mt-2.5 flex-shrink-0 rounded-sm px-2 py-2 text-center font-bold uppercase tracking-wide text-white"
+        style={{ background: "rgba(0,0,0,0.3)", fontSize: 10 }}
       >
         {periodLine}
       </div>

@@ -2,11 +2,8 @@ import { useState } from "react";
 import { Check, Plus, X } from "lucide-react";
 
 import type { CampaignSpec } from "@/lib/schemas/campaign-spec";
-import {
-  renderTermPattern,
-  useTermTemplates,
-  type TermTemplate,
-} from "@/lib/queries/briefing";
+import { useTermTemplates, type TermTemplate } from "@/lib/queries/briefing";
+import { resolveTermText } from "@/components/editor/term-display";
 
 interface EditorReadyPhrasesProps {
   /** Campaign spec parsed from the catalog, or null when it failed to parse. */
@@ -77,12 +74,14 @@ export function EditorReadyPhrases({ spec, onChange }: EditorReadyPhrasesProps) 
             )}
             {items.map((item, i) => {
               const tpl = termById.get(item.template_id);
-              const text = tpl
-                ? renderTermPattern(
-                    tpl.pattern,
-                    item.params as Record<string, unknown>,
-                  )
-                : item.template_id;
+              const text = resolveTermText(
+                tpl,
+                {
+                  template_id: item.template_id,
+                  params: item.params as Record<string, unknown>,
+                },
+                spec,
+              );
               return (
                 <div
                   key={`${item.template_id}-${i}`}
@@ -129,7 +128,13 @@ export function EditorReadyPhrases({ spec, onChange }: EditorReadyPhrasesProps) 
                     onClick={() => toggleTemplate(tpl)}
                     className="flex items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-left text-[11px] hover:bg-secondary"
                   >
-                    <span>{renderTermPattern(tpl.pattern, {})}</span>
+                    <span>
+                      {resolveTermText(
+                        tpl,
+                        { template_id: tpl.template_id, params: {} },
+                        spec,
+                      )}
+                    </span>
                     {selected && (
                       <Check className="h-3.5 w-3.5 flex-shrink-0 text-success" />
                     )}
