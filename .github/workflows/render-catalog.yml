@@ -1,0 +1,50 @@
+name: Render catalog art
+
+on:
+  # Disparado pela Edge Function trigger-render (botão "Gerar arte final").
+  workflow_dispatch:
+    inputs:
+      render_run_id:
+        description: "UUID da linha render_runs criada pela trigger-render"
+        required: true
+        type: string
+      catalog_id:
+        description: "UUID do catálogo a renderizar"
+        required: true
+        type: string
+      triggered_by_user_id:
+        description: "UUID do usuário que disparou o render"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Install scripts dependencies
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Render catalog
+        working-directory: scripts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          RENDER_RUN_ID: ${{ inputs.render_run_id }}
+          CATALOG_ID: ${{ inputs.catalog_id }}
+          TRIGGERED_BY_USER_ID: ${{ inputs.triggered_by_user_id }}
+        run: node render-catalog.mjs

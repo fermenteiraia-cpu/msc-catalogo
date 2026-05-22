@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "sync-terasoft": "node sync-terasoft.mjs"
+    "sync-terasoft": "node sync-terasoft.mjs",
+    "render-catalog": "node render-catalog.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.0",
