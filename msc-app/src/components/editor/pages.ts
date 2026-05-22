@@ -1,37 +1,41 @@
 import type { PieceWithProduct, SizeClass } from "@/lib/queries/pieces";
 
 /**
- * How many product cards fit on one interior catalog page.
- * The mockup page (Tela 4) holds a mixed layout of 1 Destaque + 2 Grandes +
- * 4 Médios + 5 Pequenos = 12 cards.
+ * Quantos produtos cabem embaixo da faixa do hero, na capa (página 1).
+ * O catálogo real (Mês das Mães) traz ~12-14 produtos na capa, abaixo da
+ * faixa rosa do título.
  */
-export const PIECES_PER_PAGE = 12;
+export const COVER_PRODUCT_COUNT = 14;
 
-/** Custo estimado por página renderizada (gpt-image-2). Mockup linha 1484. */
+/** Quantos produtos cabem numa página interna densa. */
+export const PIECES_PER_PAGE = 24;
+
+/** Custo estimado por página renderizada (gpt-image-2). */
 export const CUSTO_RENDER_BRL = 1.07;
 
 /**
- * A page of the catalog as the Editor sees it. Page 1 is always the cover;
- * the rest are interior product pages.
+ * Uma página do catálogo como o Editor a enxerga. A página 1 é a capa
+ * (faixa do título + produtos); as demais são páginas internas de produtos.
  */
 export type EditorPage =
-  | { kind: "cover" }
+  | { kind: "cover"; pieces: PieceWithProduct[] }
   | { kind: "products"; pieces: PieceWithProduct[] };
 
 /**
- * Builds the Editor's page list: the cover first, then interior product pages
- * chunked by PIECES_PER_PAGE. A catalog with no products is just the cover.
+ * Monta a lista de páginas do Editor: a capa primeiro (com os primeiros
+ * COVER_PRODUCT_COUNT produtos), depois as páginas internas em blocos de
+ * PIECES_PER_PAGE.
  */
 export function buildEditorPages(
   pieces: ReadonlyArray<PieceWithProduct>,
 ): EditorPage[] {
   const sorted = [...pieces].sort((a, b) => a.position - b.position);
-  const pages: EditorPage[] = [{ kind: "cover" }];
-  for (let i = 0; i < sorted.length; i += PIECES_PER_PAGE) {
-    pages.push({
-      kind: "products",
-      pieces: sorted.slice(i, i + PIECES_PER_PAGE),
-    });
+  const coverPieces = sorted.slice(0, COVER_PRODUCT_COUNT);
+  const rest = sorted.slice(COVER_PRODUCT_COUNT);
+
+  const pages: EditorPage[] = [{ kind: "cover", pieces: coverPieces }];
+  for (let i = 0; i < rest.length; i += PIECES_PER_PAGE) {
+    pages.push({ kind: "products", pieces: rest.slice(i, i + PIECES_PER_PAGE) });
   }
   return pages;
 }
@@ -39,12 +43,15 @@ export function buildEditorPages(
 /** Top-to-bottom order of size rows on a page (mockup: D, G, M, P). */
 const SIZE_ORDER: ReadonlyArray<SizeClass> = ["D", "G", "M", "P"];
 
-/** Max cards side by side per size class (mockup grid). */
+/**
+ * Cards lado a lado por classe de tamanho — fixo, como num encarte real:
+ * Pequenos vão 6 por fileira, Médios 4, Grandes 2, Destaque ocupa a fileira.
+ */
 export const SIZE_COLUMNS: Record<SizeClass, number> = {
   D: 1,
   G: 2,
   M: 4,
-  P: 5,
+  P: 6,
 };
 
 /** Human label for each size class. */
@@ -65,20 +72,20 @@ export const SIZE_DIMENSIONS: Record<SizeClass, string> = {
 
 export interface SizeRow {
   size: SizeClass;
-  /** Columns actually used — capped at the item count so few cards fill width. */
   columns: number;
   items: PieceWithProduct[];
 }
 
 /**
- * Groups one page's pieces into size rows, in print order (D, G, M, P).
- * Each row carries the column count, capped at its item count so a handful
- * of cards spread across the full width instead of leaving empty cells.
+ * Agrupa os produtos de uma página em fileiras por tamanho, na ordem de
+ * impressão (D, G, M, P). As colunas são fixas por classe — uma fileira com
+ * poucos produtos deixa células livres à direita, igual a um encarte real
+ * meio preenchido (não estica os cards).
  */
 export function groupBySize(pieces: ReadonlyArray<PieceWithProduct>): SizeRow[] {
-  return SIZE_ORDER.map<SizeRow>((size) => {
-    const items = pieces.filter((p) => p.size_class === size);
-    const columns = Math.min(SIZE_COLUMNS[size], Math.max(items.length, 1));
-    return { size, columns, items };
-  }).filter((row) => row.items.length > 0);
+  return SIZE_ORDER.map<SizeRow>((size) => ({
+    size,
+    columns: SIZE_COLUMNS[size],
+    items: pieces.filter((p) => p.size_class === size),
+  })).filter((row) => row.items.length > 0);
 }

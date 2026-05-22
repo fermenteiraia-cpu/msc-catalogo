@@ -10,53 +10,76 @@ interface SketchProductCardProps {
   onSelect: (pieceId: string) => void;
 }
 
-/**
- * Per-size visual scale. `maxWidth` gives the P/M/G classes a real size
- * hierarchy (a Pequeno card is genuinely smaller than a Médio); D is a
- * full-width banner so it has no cap.
- */
+/** Per-size visual scale (px) — cards are small and dense, like a real encarte. */
 const SIZE_STYLE: Record<
   SizeClass,
-  {
-    nameSize: number;
-    priceSize: number;
-    maxWidth: number;
-    badge: { bg: string; label: string };
-  }
+  { nameSize: number; priceSize: number; burst: number; pad: string }
 > = {
-  D: {
-    nameSize: 13,
-    priceSize: 26,
-    maxWidth: 9999,
-    badge: { bg: "rgba(220,38,38,0.92)", label: "Destaque" },
-  },
-  G: {
-    nameSize: 12,
-    priceSize: 20,
-    maxWidth: 300,
-    badge: { bg: "rgba(220,38,38,0.78)", label: "Grande" },
-  },
-  M: {
-    nameSize: 11,
-    priceSize: 17,
-    maxWidth: 230,
-    badge: { bg: "rgba(34,94,80,0.8)", label: "Médio" },
-  },
-  P: {
-    nameSize: 9,
-    priceSize: 13,
-    maxWidth: 170,
-    badge: { bg: "rgba(48,48,96,0.8)", label: "Pequeno" },
-  },
+  D: { nameSize: 13, priceSize: 32, burst: 58, pad: "p-2.5" },
+  G: { nameSize: 10, priceSize: 23, burst: 50, pad: "p-2" },
+  M: { nameSize: 8, priceSize: 16, burst: 38, pad: "p-1.5" },
+  P: { nameSize: 6.5, priceSize: 12, burst: 30, pad: "p-1" },
 };
 
-/** Muted photo placeholder that fills the photo box. */
+/** Builds the SVG path of an N-point starburst inside a 100×100 box. */
+function burstPath(points: number, outer: number, inner: number): string {
+  const cx = 50;
+  const cy = 50;
+  let d = "";
+  for (let i = 0; i < points * 2; i++) {
+    const r = i % 2 === 0 ? outer : inner;
+    const a = (Math.PI / points) * i - Math.PI / 2;
+    d += `${i === 0 ? "M" : "L"}${(cx + r * Math.cos(a)).toFixed(2)},${(
+      cy +
+      r * Math.sin(a)
+    ).toFixed(2)}`;
+  }
+  return `${d}Z`;
+}
+
+const BURST_D = burstPath(14, 50, 36);
+
+/** Selo amarelo "Nx SEM JUROS" (estrela do encarte MSC). */
+function Starburst({ parcelas, size }: { parcelas: number; size: number }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      className="absolute -left-1.5 -top-1.5 z-10 drop-shadow"
+    >
+      <path d={BURST_D} fill="#F5C84B" stroke="#E0A800" strokeWidth="2.5" />
+      <text
+        x="50"
+        y="45"
+        textAnchor="middle"
+        fontSize="36"
+        fontWeight="900"
+        fill="#1A1A1A"
+      >
+        {parcelas}x
+      </text>
+      <text
+        x="50"
+        y="68"
+        textAnchor="middle"
+        fontSize="15"
+        fontWeight="800"
+        fill="#1A1A1A"
+      >
+        SEM JUROS
+      </text>
+    </svg>
+  );
+}
+
+/** Muted photo placeholder. */
 function PhotoPlaceholder() {
   return (
     <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
       <svg
-        width="26"
-        height="26"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -71,13 +94,11 @@ function PhotoPlaceholder() {
 }
 
 /**
- * One product card inside the editor sketch page (mockup Tela 4, linhas
- * 1554-1651). The card keeps a real catalog proportion — a square photo on a
- * white field plus a name+price strip — and NEVER stretches into a tall
- * sliver (correção David, 2026-05-22). Layout per size class:
- *   D → horizontal banner (photo left, info right)
- *   G/M/P → vertical card (square photo on top, name + price below).
- * Clicking selects the piece; the selected card gets a green outline.
+ * One product card inside a catalog page — modelado no encarte MSC real:
+ * card branco compacto, foto do produto, estrela amarela "Nx SEM JUROS",
+ * nome miúdo e preço grande vermelho. Cards são pequenos e densos.
+ *   D → banner horizontal (foto + info lado a lado)
+ *   G/M/P → card vertical (foto, nome, preço) em escala decrescente.
  */
 export function SketchProductCard({
   piece,
@@ -89,37 +110,12 @@ export function SketchProductCard({
   const product = piece.product;
   const name = product?.name ?? "Produto sem nome";
   const finalPrice = pieceFinalPrice(piece);
+  const hasDesconto =
+    piece.desconto_percent > 0 && product?.price_cash != null;
 
   const outline: CSSProperties = selected
-    ? { outline: "2.5px solid #16A34A", outlineOffset: 2 }
+    ? { outline: "2.5px solid #16A34A", outlineOffset: 1 }
     : {};
-
-  const parcelasBadge = piece.parcelas > 0 && (
-    <div
-      className="absolute z-10 font-bold"
-      style={{
-        top: -6,
-        left: -6,
-        background: "#F5C84B",
-        color: "#1A1A1A",
-        fontSize: 9,
-        padding: "2px 7px",
-        borderRadius: 999,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
-      }}
-    >
-      ★ 1+{Math.max(piece.parcelas - 1, 1)}x
-    </div>
-  );
-
-  const sizeBadge = (
-    <div
-      className="absolute right-1.5 top-1.5 z-10 rounded font-bold uppercase tracking-wide text-white"
-      style={{ background: style.badge.bg, fontSize: 7, padding: "2px 6px" }}
-    >
-      {style.badge.label}
-    </div>
-  );
 
   const photo = product?.image_url ? (
     <img
@@ -141,74 +137,79 @@ export function SketchProductCard({
     </div>
   );
 
-  /* ---- Destaque: horizontal banner ---- */
+  /* ---- Destaque: banner horizontal ---- */
   if (size === "D") {
     return (
       <button
         type="button"
         onClick={() => onSelect(piece.id)}
-        className="relative flex w-full items-stretch gap-3 overflow-hidden rounded-md bg-white p-2.5 text-left shadow-sm"
+        className={cn(
+          "relative flex w-full items-center gap-3 rounded-md border border-[#eee] bg-white text-left shadow-sm",
+          style.pad,
+        )}
         style={outline}
         aria-pressed={selected}
       >
-        {parcelasBadge}
-        {sizeBadge}
-        <div className="aspect-[4/3] w-[40%] flex-shrink-0 overflow-hidden rounded bg-white">
+        <Starburst parcelas={piece.parcelas} size={style.burst} />
+        <div className="aspect-[4/3] w-[34%] flex-shrink-0 overflow-hidden">
           {photo}
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <div
-            className="font-bold leading-tight text-foreground"
+            className="font-bold uppercase leading-tight text-foreground"
             style={{ fontSize: style.nameSize }}
           >
             {name}
           </div>
-          {piece.desconto_percent > 0 && product?.price_cash != null && (
+          {hasDesconto && (
             <div
               className="text-muted-foreground line-through"
               style={{ fontSize: 9 }}
             >
-              de {brl.format(product.price_cash)}
+              de {brl.format(product!.price_cash!)}
             </div>
           )}
           {priceNode}
           <div
-            className="font-bold uppercase text-[hsl(var(--primary))]"
+            className="font-bold uppercase text-[#225E50]"
             style={{ fontSize: 8 }}
           >
-            1+{Math.max(piece.parcelas - 1, 1)}x sem juros
+            ou {piece.parcelas}x sem juros nos cartões
           </div>
         </div>
       </button>
     );
   }
 
-  /* ---- Grande / Médio / Pequeno: vertical card ---- */
+  /* ---- Grande / Médio / Pequeno: card vertical ---- */
   return (
     <button
       type="button"
       onClick={() => onSelect(piece.id)}
       className={cn(
-        "relative flex w-full flex-col overflow-hidden rounded-md bg-white shadow-sm",
-        size === "P" ? "p-1.5" : "p-2",
+        "relative flex w-full flex-col items-center rounded border border-[#eee] bg-white text-center shadow-sm",
+        style.pad,
       )}
-      style={{ ...outline, maxWidth: style.maxWidth }}
+      style={outline}
       aria-pressed={selected}
     >
-      {parcelasBadge}
-      {sizeBadge}
-      <div className="aspect-[4/5] w-full overflow-hidden rounded bg-white">
-        {photo}
+      <Starburst parcelas={piece.parcelas} size={style.burst} />
+      <div className="aspect-square w-full overflow-hidden">{photo}</div>
+      <div
+        className="mt-0.5 line-clamp-2 w-full font-bold uppercase leading-tight text-foreground"
+        style={{ fontSize: style.nameSize }}
+      >
+        {name}
       </div>
-      <div className="flex flex-col items-center pt-1.5 text-center">
+      {hasDesconto && size !== "P" && (
         <div
-          className="line-clamp-2 font-semibold leading-tight text-foreground"
-          style={{ fontSize: style.nameSize }}
+          className="text-muted-foreground line-through"
+          style={{ fontSize: 7 }}
         >
-          {name}
+          de {brl.format(product!.price_cash!)}
         </div>
-        <div className="mt-1">{priceNode}</div>
-      </div>
+      )}
+      <div className="mt-0.5">{priceNode}</div>
     </button>
   );
 }

@@ -35,9 +35,6 @@ import { brl } from "@/lib/money";
 type SaveState = "idle" | "saving" | "saved";
 const SAVE_DEBOUNCE_MS = 900;
 
-/** Default page gradient when the campaign has no readable palette. */
-const DEFAULT_GRADIENT = { from: "#FFC4D6", to: "#FF87B3" };
-
 /**
  * Builds the "Fileira N · coluna C (de T)" label for the selected piece by
  * locating it inside its page's size-grouped layout.
@@ -59,11 +56,10 @@ function buildPositionLabel(
 }
 
 /**
- * Tela 4 — Editor inline. Página 1 é a CAPA; as demais são páginas de
- * produtos. Preview do esboço + auditoria de preços + acabamento 3D pela IA.
- * Implementa o mockup ux-design-directions.html linhas 1408-1773, com as
- * correções de UX da Sally (2026-05-21): capa como página 1 e folha sempre
- * preenchida.
+ * Tela 4 — Editor inline. Página 1 é a CAPA (faixa do título + produtos); as
+ * demais são páginas internas. Preview do esboço + auditoria + acabamento 3D.
+ * Implementa o mockup ux-design-directions.html linhas 1408-1773, fiel ao
+ * encarte MSC real (correção David, 2026-05-22).
  */
 export function EditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -88,9 +84,7 @@ export function EditorPage() {
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Seed the local spec from the catalog. Render-phase adjustment: only runs
-  // when the catalog id changes. `seededSpec` keeps the same reference so the
-  // save effect can tell a fresh seed apart from a real user edit.
+  // Seed the local spec from the catalog (render-phase adjustment).
   if (catalog && catalog.id !== specSeededFor) {
     setSpecSeededFor(catalog.id);
     const parsed = campaignSpecSchema.safeParse(catalog.campaign_spec);
@@ -108,12 +102,10 @@ export function EditorPage() {
   const safePageIndex = Math.min(pageIndex, editorPages.length - 1);
   const currentPage = editorPages[safePageIndex];
   const isCover = currentPage?.kind === "cover";
-  const currentPagePieces =
-    currentPage && currentPage.kind === "products" ? currentPage.pieces : [];
+  const currentPagePieces = currentPage?.pieces ?? [];
 
-  const selectedPiece = isCover
-    ? null
-    : (currentPagePieces.find((p) => p.id === selectedPieceId) ?? null);
+  const selectedPiece =
+    currentPagePieces.find((p) => p.id === selectedPieceId) ?? null;
 
   /* ---- Stepper ---- */
   useEffect(() => {
@@ -194,18 +186,13 @@ export function EditorPage() {
   }
 
   /* ---- Derived ---- */
-  const palette = spec?.creative.palette;
-  const gradient = palette
-    ? { from: palette.secondary, to: palette.primary }
-    : DEFAULT_GRADIENT;
   const productPageCount = editorPages.length - 1;
   const costEstimate = editorPages.length * CUSTO_RENDER_BRL;
   const positionLabel = selectedPiece
     ? buildPositionLabel(currentPagePieces, selectedPiece.id)
     : "—";
-  const currentArtUrl = isCover
-    ? null
-    : (currentPagePieces.find((p) => p.render_url)?.render_url ?? null);
+  const currentArtUrl =
+    currentPagePieces.find((p) => p.render_url)?.render_url ?? null;
 
   return (
     <div className="space-y-4">
@@ -255,9 +242,13 @@ export function EditorPage() {
       {/* Custo agregado + estado */}
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="outline" className="border-border text-xs font-normal">
-          📄 Catálogo: 1 capa + {productPageCount}{" "}
-          {productPageCount === 1 ? "página" : "páginas"} de produtos (
-          {pieces.length} produtos)
+          📄 Catálogo: 1 capa
+          {productPageCount > 0
+            ? ` + ${productPageCount} ${
+                productPageCount === 1 ? "página" : "páginas"
+              } de produtos`
+            : ""}{" "}
+          ({pieces.length} produtos)
         </Badge>
         <Badge className="text-xs font-normal">
           💰 Custo estimado se gerar agora: {brl.format(costEstimate)}
@@ -336,76 +327,78 @@ export function EditorPage() {
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-[13px] font-semibold">
               {isCover
-                ? "🖼️ Capa da campanha"
-                : "📐 Esboço da página (editável)"}
+                ? "🖼️ Capa do catálogo (editável)"
+                : `📐 Página ${safePageIndex + 1} (editável)`}
             </h3>
             <Badge variant="secondary">
-              {isCover
-                ? "página 1"
-                : `${currentPagePieces.length} ${
-                    currentPagePieces.length === 1 ? "produto" : "produtos"
-                  }`}
+              {currentPagePieces.length}{" "}
+              {currentPagePieces.length === 1 ? "produto" : "produtos"}
             </Badge>
           </div>
 
-          {/* Barra de ferramentas — só nas páginas de produtos */}
-          {!isCover && (
-            <div className="mb-2 flex flex-wrap items-center gap-1 rounded-md border border-border bg-white p-1.5 text-xs">
-              {selectedPiece ? (
-                <>
-                  <span className="px-1 font-medium text-muted-foreground">
-                    {selectedPiece.product?.name ?? "Produto"}:
-                  </span>
-                  <button
-                    type="button"
-                    disabled
-                    title="Troca de foto chega na próxima entrega"
-                    className="cursor-not-allowed rounded px-2 py-1 opacity-50"
-                  >
-                    📷 Trocar foto
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Use o painel “Tamanho do card” abaixo"
-                    className="cursor-not-allowed rounded px-2 py-1 opacity-50"
-                  >
-                    📏 Tamanho
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Arrastar pra mover chega na próxima entrega"
-                    className="cursor-not-allowed rounded px-2 py-1 opacity-50"
-                  >
-                    ↔ Mover
-                  </button>
-                  <span className="mx-1 h-4 w-px bg-border" />
-                  <button
-                    type="button"
-                    onClick={handleDeleteSelected}
-                    disabled={removePiece.isPending}
-                    className="inline-flex items-center gap-1 rounded px-2 py-1 font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Excluir
-                  </button>
-                </>
-              ) : (
-                <span className="px-1 text-muted-foreground">
-                  Clique num produto do esboço pra mexer nele.
+          {/* Barra de ferramentas do produto selecionado */}
+          <div className="mb-2 flex flex-wrap items-center gap-1 rounded-md border border-border bg-white p-1.5 text-xs">
+            {selectedPiece ? (
+              <>
+                <span className="px-1 font-medium text-muted-foreground">
+                  {selectedPiece.product?.name ?? "Produto"}:
                 </span>
-              )}
-            </div>
-          )}
+                <button
+                  type="button"
+                  disabled
+                  title="Troca de foto chega na próxima entrega"
+                  className="cursor-not-allowed rounded px-2 py-1 opacity-50"
+                >
+                  📷 Trocar foto
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  title="Use o painel “Tamanho do card” abaixo"
+                  className="cursor-not-allowed rounded px-2 py-1 opacity-50"
+                >
+                  📏 Tamanho
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  title="Arrastar pra mover chega na próxima entrega"
+                  className="cursor-not-allowed rounded px-2 py-1 opacity-50"
+                >
+                  ↔ Mover
+                </button>
+                <span className="mx-1 h-4 w-px bg-border" />
+                <button
+                  type="button"
+                  onClick={handleDeleteSelected}
+                  disabled={removePiece.isPending}
+                  className="inline-flex items-center gap-1 rounded px-2 py-1 font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Excluir
+                </button>
+              </>
+            ) : (
+              <span className="px-1 text-muted-foreground">
+                Clique num produto do esboço pra mexer nele.
+              </span>
+            )}
+          </div>
 
           {isCover ? (
             spec ? (
-              <EditorCover spec={spec} termTemplates={termTemplates} />
+              <EditorCover
+                spec={spec}
+                termTemplates={termTemplates}
+                pieces={currentPagePieces}
+                pageCount={editorPages.length}
+                selectedPieceId={selectedPieceId}
+                onSelectPiece={handleSelect}
+              />
             ) : (
               <div
                 className="flex items-center justify-center rounded-xl border border-dashed border-border bg-muted text-center text-sm text-muted-foreground"
-                style={{ aspectRatio: "11 / 14" }}
+                style={{ aspectRatio: "748 / 862" }}
               >
                 Não foi possível ler os dados da capa dessa campanha.
               </div>
@@ -417,14 +410,12 @@ export function EditorPage() {
               pageCount={editorPages.length}
               selectedPieceId={selectedPieceId}
               onSelectPiece={handleSelect}
-              gradientFrom={gradient.from}
-              gradientTo={gradient.to}
             />
           )}
 
           {selectedPiece && (
             <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-[#4ADE80]" />
+              <span className="h-2 w-2 rounded-full bg-[#16A34A]" />
               Selecionado:{" "}
               <strong>{selectedPiece.product?.name ?? "Produto"}</strong>
               <span className="text-muted-foreground">
@@ -437,8 +428,9 @@ export function EditorPage() {
             {isCover ? (
               <>
                 💡 <strong>Essa é a capa — a primeira página do catálogo.</strong>{" "}
-                A IA vai dar o acabamento 3D premium em cima desse esboço, sem
-                trocar nenhuma palavra.
+                O título e o selo vêm do Briefing; os produtos abaixo são os
+                primeiros da sua seleção. A IA dá o acabamento 3D em cima desse
+                esboço.
               </>
             ) : (
               <>
@@ -457,13 +449,19 @@ export function EditorPage() {
 
       {/* Painéis de propriedades + auditoria */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {isCover ? (
-          <CoverInfoPanel spec={spec} />
-        ) : (
+        {selectedPiece ? (
           <SelectedElementPanel
             piece={selectedPiece}
             catalogId={catalog.id}
             positionLabel={positionLabel}
+          />
+        ) : isCover ? (
+          <CoverInfoPanel spec={spec} />
+        ) : (
+          <SelectedElementPanel
+            piece={null}
+            catalogId={catalog.id}
+            positionLabel="—"
           />
         )}
         <EditorReadyPhrases spec={spec} onChange={setSpec} />
