@@ -15,6 +15,12 @@ import {
 } from "@/lib/queries/pieces";
 import { useTermTemplates, useUpdateCatalogSpec } from "@/lib/queries/briefing";
 import {
+  isRunActive,
+  useCatalogPageRenders,
+  useLatestRenderRun,
+  useTriggerRender,
+} from "@/lib/queries/render";
+import {
   campaignSpecSchema,
   type CampaignSpec,
 } from "@/lib/schemas/campaign-spec";
@@ -77,6 +83,21 @@ export function EditorPage() {
   const removePiece = useRemovePiece();
   const updateCatalogSpec = useUpdateCatalogSpec();
 
+  // Render da arte final 3D (gpt-image via GitHub Actions).
+  const renderRunQuery = useLatestRenderRun(catalog ? catalog.id : undefined);
+  const renderRun = renderRunQuery.data ?? null;
+  const runActive = isRunActive(renderRun);
+  const pageRendersQuery = useCatalogPageRenders(
+    catalog ? catalog.id : undefined,
+    runActive,
+  );
+  const pageRenders = useMemo(
+    () => pageRendersQuery.data ?? [],
+    [pageRendersQuery.data],
+  );
+  const triggerRender = useTriggerRender();
+  const [renderError, setRenderError] = useState<string | null>(null);
+
   /* ---- Campaign spec (parsed, locally editable for the phrases panel) ---- */
   const [spec, setSpec] = useState<CampaignSpec | null>(null);
   const [seededSpec, setSeededSpec] = useState<CampaignSpec | null>(null);
@@ -98,7 +119,6 @@ export function EditorPage() {
   const editorPages = useMemo(() => buildEditorPages(pieces), [pieces]);
   const [pageIndex, setPageIndex] = useState(0);
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
-  const [showRenderNotice, setShowRenderNotice] = useState(false);
 
   const safePageIndex = Math.min(pageIndex, editorPages.length - 1);
   const currentPage = editorPages[safePageIndex];
@@ -164,6 +184,18 @@ export function EditorPage() {
     setSelectedPieceId(null);
   }, []);
 
+  const handleGenerateArt = useCallback(() => {
+    if (!catalog) return;
+    setRenderError(null);
+    void triggerRender
+      .mutateAsync({ catalogId: catalog.id })
+      .then((result) => {
+        if (!result.ok && result.error.code !== "RENDER_ALREADY_RUNNING") {
+          setRenderError(result.error.message);
+        }
+      });
+  }, [catalog, triggerRender]);
+
   /* ---- Loading / not-found ---- */
   if (catalogQuery.isLoading) {
     return (
@@ -192,8 +224,16 @@ export function EditorPage() {
   const positionLabel = selectedPiece
     ? buildPositionLabel(currentPagePieces, selectedPiece.id)
     : "—";
+  const currentPageRender =
+    pageRenders.find((r) => r.page_index === safePageIndex) ?? null;
   const currentArtUrl =
-    currentPagePieces.find((p) => p.render_url)?.render_url ?? null;
+    currentPageRender?.status === "ready"
+      ? currentPageRender.image_url
+      : null;
+  const currentArtGenerating =
+    currentPageRender?.status === "rendering" ||
+    currentPageRender?.status === "pending" ||
+    (runActive && !currentArtUrl);
 
   return (
     <div className="space-y-4">
@@ -271,37 +311,86 @@ export function EditorPage() {
         </span>
       </div>
 
-      {/* Status bar: esboço pronto + gerar arte final */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[#fcd34d] bg-[#fef3c7] px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <span className="text-lg">📐</span>
-          <div>
-            <strong className="text-[13px] text-[#78350f]">
-              Esboço pronto! Agora a IA dá o acabamento 3D premium.
-            </strong>
-            <p className="mt-0.5 text-xs text-[#78350f]">
-              Demora uns 3 minutos. Custa cerca de {brl.format(CUSTO_RENDER_BRL)}{" "}
-              por página. Vai e pega um café — a gente te chama quando ficar
-              pronto.
-            </p>
+      {/* Status / geração da arte final 3D */}
+      {runActive ? (
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[#fcd34d] bg-[#fef3c7] px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <Loader2 className="h-5 w-5 animate-spin text-[#b45309]" />
+            <div>
+              <strong className="text-[13px] text-[#78350f]">
+                Gerando a arte final 3D…
+              </strong>
+              <p className="mt-0.5 text-xs text-[#78350f]">
+                {renderRun && renderRun.pages_total > 0
+                  ? `${renderRun.pages_done} de ${renderRun.pages_total} páginas prontas. `
+                  : ""}
+                Cada página leva alguns minutos — pode deixar rodando.
+              </p>
+            </div>
           </div>
+          <Button size="lg" disabled className="whitespace-nowrap">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Gerando…
+          </Button>
         </div>
-        <Button
-          size="lg"
-          className="whitespace-nowrap"
-          onClick={() => setShowRenderNotice(true)}
-        >
-          ✨ Gerar arte final
-        </Button>
-      </div>
+      ) : renderRun?.status === "success" ? (
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[hsl(var(--success))]/40 bg-[hsl(var(--success))]/10 px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">✅</span>
+            <div>
+              <strong className="text-[13px] text-foreground">
+                Arte final 3D gerada!
+              </strong>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Veja o resultado na coluna da direita. Dá pra gerar de novo se
+                quiser.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="whitespace-nowrap"
+            onClick={handleGenerateArt}
+            disabled={triggerRender.isPending}
+          >
+            ✨ Gerar de novo
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[#fcd34d] bg-[#fef3c7] px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">📐</span>
+            <div>
+              <strong className="text-[13px] text-[#78350f]">
+                Esboço pronto! Agora a IA dá o acabamento 3D premium.
+              </strong>
+              <p className="mt-0.5 text-xs text-[#78350f]">
+                Cada página custa cerca de {brl.format(CUSTO_RENDER_BRL)} e leva
+                alguns minutos. Pode ir pegar um café.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="lg"
+            className="whitespace-nowrap"
+            onClick={handleGenerateArt}
+            disabled={triggerRender.isPending}
+          >
+            {triggerRender.isPending && (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            )}
+            ✨ Gerar arte final
+          </Button>
+        </div>
+      )}
 
-      {showRenderNotice && (
-        <div className="rounded-md border border-primary/30 bg-secondary px-4 py-3 text-sm text-foreground">
-          <strong>Falta um passo pra ligar a geração 3D.</strong> O render usa o
-          gpt-image (cada página leva ~3 min) e precisa do plano{" "}
-          <strong>Supabase Pro</strong> — no plano grátis a função desliga antes
-          de terminar. Quando você ativar o Pro, me avise que eu ligo o botão e
-          a arte final passa a ser gerada de verdade.
+      {(renderError || renderRun?.status === "failed") && (
+        <div className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <strong>Não foi possível gerar a arte.</strong>{" "}
+          {renderError ??
+            renderRun?.error?.message ??
+            "Tente de novo em instantes."}
         </div>
       )}
 
@@ -451,7 +540,10 @@ export function EditorPage() {
         </div>
 
         {/* Coluna direita: arte final */}
-        <FinalArtViewer artUrl={currentArtUrl} isGenerating={false} />
+        <FinalArtViewer
+          artUrl={currentArtUrl}
+          isGenerating={currentArtGenerating}
+        />
       </div>
 
       {/* Painéis de propriedades + auditoria */}
