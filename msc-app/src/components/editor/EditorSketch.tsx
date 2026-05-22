@@ -3,11 +3,11 @@ import { groupBySize } from "@/components/editor/pages";
 import { SketchProductCard } from "@/components/editor/SketchProductCard";
 
 interface EditorSketchProps {
-  /** Pieces that belong to the page currently open. */
+  /** Pieces that belong to the interior page currently open (never the cover). */
   pieces: PieceWithProduct[];
-  /** 0-based index of the open page. */
-  pageIndex: number;
-  /** Total number of catalog pages. */
+  /** 1-based number of this page within the catalog (page 1 is the cover). */
+  pageNumber: number;
+  /** Total number of catalog pages (cover included). */
   pageCount: number;
   selectedPieceId: string | null;
   onSelectPiece: (pieceId: string) => void;
@@ -27,7 +27,7 @@ function MscStrip({
   if (variant === "top") {
     return (
       <div
-        className="mb-1.5 flex justify-around rounded-sm bg-[#C0246A] px-1.5 py-1 font-bold uppercase tracking-widest text-white"
+        className="flex flex-shrink-0 justify-around rounded-sm bg-[#C0246A] px-1.5 py-1 font-bold uppercase tracking-widest text-white"
         style={{ fontSize: 7 }}
       >
         {Array.from({ length: 6 }).map((_, i) => (
@@ -38,7 +38,7 @@ function MscStrip({
   }
   return (
     <div
-      className="flex items-center justify-between rounded-sm bg-[#C0246A] px-1.5 py-1 font-semibold text-white"
+      className="flex flex-shrink-0 items-center justify-between rounded-sm bg-[#C0246A] px-1.5 py-1 font-semibold text-white"
       style={{ fontSize: 7 }}
     >
       <span className="font-bold">
@@ -50,14 +50,15 @@ function MscStrip({
 }
 
 /**
- * The editable sketch of one catalog page (mockup Tela 4, linhas 1544-1658).
- * A print-aspect (11/14) page on the campaign gradient, with the locked MSC
- * strips top and bottom and the product cards laid out in mixed-size rows
- * (Destaque full-width, then Grandes, Médios, Pequenos).
+ * The editable sketch of one interior catalog page (mockup Tela 4, linhas
+ * 1544-1658). A print-aspect (11/14) sheet on the campaign gradient with the
+ * locked MSC strips top and bottom. The product rows STRETCH to fill the
+ * sheet — a page with few products shows generous cards instead of dead space
+ * (Sally, 2026-05-21).
  */
 export function EditorSketch({
   pieces,
-  pageIndex,
+  pageNumber,
   pageCount,
   selectedPieceId,
   onSelectPiece,
@@ -65,39 +66,40 @@ export function EditorSketch({
   gradientTo,
 }: EditorSketchProps) {
   const rows = groupBySize(pieces);
-  const pageLabel = `página ${pageIndex + 1} de ${pageCount}`;
+  const pageLabel = `página ${pageNumber} de ${pageCount}`;
 
   return (
     <div
-      className="relative rounded-xl p-3 shadow-md"
+      className="relative flex flex-col gap-1.5 rounded-xl p-3 shadow-md"
       style={{
         aspectRatio: "11 / 14",
         background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
       }}
     >
       <div
-        className="absolute left-2 top-1 z-10 text-white/85"
+        className="absolute left-2 top-0.5 z-10 text-white/85"
         style={{ fontSize: 9 }}
       >
-        PÁGINA {pageIndex + 1} de {pageCount} · 2200×2540
+        PÁGINA {pageNumber} de {pageCount} · 2200×2540
       </div>
 
       <MscStrip variant="top" />
 
       {pieces.length === 0 ? (
         <div
-          className="flex items-center justify-center rounded-md bg-white/85 text-center text-muted-foreground"
-          style={{ height: "70%", fontSize: 11 }}
+          className="flex flex-1 items-center justify-center rounded-md bg-white/85 text-center text-muted-foreground"
+          style={{ fontSize: 11 }}
         >
           Esta página ainda não tem produtos.
         </div>
       ) : (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex min-h-0 flex-1 flex-col gap-1.5">
           {rows.map((row) => (
             <div
               key={row.size}
-              className="grid gap-1.5"
+              className="grid min-h-0 gap-1.5"
               style={{
+                flex: row.weight,
                 gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
               }}
             >
@@ -114,9 +116,7 @@ export function EditorSketch({
         </div>
       )}
 
-      <div className="mt-1.5">
-        <MscStrip variant="footer" pageLabel={pageLabel} />
-      </div>
+      <MscStrip variant="footer" pageLabel={pageLabel} />
     </div>
   );
 }
