@@ -10,29 +10,42 @@ interface SketchProductCardProps {
   onSelect: (pieceId: string) => void;
 }
 
-/** Per-size text scale (px). Cards keep a sane print proportion — never strips. */
+/**
+ * Per-size visual scale. `maxWidth` gives the P/M/G classes a real size
+ * hierarchy (a Pequeno card is genuinely smaller than a Médio); D is a
+ * full-width banner so it has no cap.
+ */
 const SIZE_STYLE: Record<
   SizeClass,
-  { nameSize: number; priceSize: number; badge: { bg: string; label: string } }
+  {
+    nameSize: number;
+    priceSize: number;
+    maxWidth: number;
+    badge: { bg: string; label: string };
+  }
 > = {
   D: {
     nameSize: 13,
     priceSize: 26,
+    maxWidth: 9999,
     badge: { bg: "rgba(220,38,38,0.92)", label: "Destaque" },
   },
   G: {
-    nameSize: 11,
-    priceSize: 18,
+    nameSize: 12,
+    priceSize: 20,
+    maxWidth: 300,
     badge: { bg: "rgba(220,38,38,0.78)", label: "Grande" },
   },
   M: {
-    nameSize: 10,
-    priceSize: 16,
+    nameSize: 11,
+    priceSize: 17,
+    maxWidth: 230,
     badge: { bg: "rgba(34,94,80,0.8)", label: "Médio" },
   },
   P: {
     nameSize: 9,
     priceSize: 13,
+    maxWidth: 170,
     badge: { bg: "rgba(48,48,96,0.8)", label: "Pequeno" },
   },
 };
@@ -176,10 +189,10 @@ export function SketchProductCard({
       type="button"
       onClick={() => onSelect(piece.id)}
       className={cn(
-        "relative flex w-full max-w-[230px] flex-col overflow-hidden rounded-md bg-white shadow-sm",
+        "relative flex w-full flex-col overflow-hidden rounded-md bg-white shadow-sm",
         size === "P" ? "p-1.5" : "p-2",
       )}
-      style={outline}
+      style={{ ...outline, maxWidth: style.maxWidth }}
       aria-pressed={selected}
     >
       {parcelasBadge}

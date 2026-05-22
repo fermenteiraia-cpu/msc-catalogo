@@ -41,7 +41,7 @@ function MainWord({
       <>
         {word}
         {emoji && ornament !== "none" ? (
-          <span className="ml-1 align-middle text-2xl">{emoji}</span>
+          <span className="ml-1 align-middle text-4xl">{emoji}</span>
         ) : null}
       </>
     );
@@ -51,7 +51,7 @@ function MainWord({
       {word.slice(0, tildeIndex)}
       <span className="relative">
         ã
-        <span className="absolute -top-4 left-0.5 text-xl">{emoji}</span>
+        <span className="absolute -top-5 left-0.5 text-3xl">{emoji}</span>
       </span>
       {word.slice(tildeIndex + 1)}
     </>
@@ -60,10 +60,10 @@ function MainWord({
 
 /**
  * Página 1 do Editor — a CAPA do catálogo (mockup Tela 1 / wireframe da capa).
- * Desenha a folha de impressão (11/14) a partir do `campaign_spec`. O bloco do
- * headline ocupa o miolo da folha (flex-1) pra capa nunca ficar com um vazio
- * gigante no topo (correção David, 2026-05-22): faixa MSC, hero (mascote +
- * headline grande + selo), frases prontas e período.
+ * Desenha a folha de impressão (11/14) a partir do `campaign_spec`. O hero
+ * (headline + mascote + selo) é grande e distribuído pra capa preencher a
+ * folha, sem o vazio gigante no topo (correção David, 2026-05-22): faixa MSC,
+ * hero, frases prontas e período.
  */
 export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
   const { creative, cta_blocks, terms_on_cover, period } = spec;
@@ -107,68 +107,64 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
         ))}
       </div>
 
-      {/* HERO — ocupa o miolo da folha */}
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 py-4">
-        <div
-          className="grid w-full items-center gap-3"
-          style={{ gridTemplateColumns: "88px 1fr 108px" }}
-        >
-          {/* Mascote */}
-          <div className="flex h-[150px] items-center justify-center rounded-lg border-2 border-dashed border-white/70 bg-white/45 text-[58px]">
+      {/* HERO — preenche o miolo da folha */}
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-evenly gap-2 py-2">
+        {/* Headline */}
+        <div className="text-center">
+          {headline.top && (
+            <div
+              className="text-lg font-bold uppercase tracking-wide text-white"
+              style={{ textShadow: `1px 1px 0 ${palette.primary}` }}
+            >
+              {headline.top}
+            </div>
+          )}
+          <div
+            className="text-[72px] font-black uppercase leading-[0.95] text-white"
+            style={{
+              textShadow: `3px 3px 0 ${palette.primary}, 7px 7px 0 rgba(0,0,0,0.35)`,
+            }}
+          >
+            <MainWord word={headline.main} ornament={headline.ornament} />
+          </div>
+          {headline.sub && (
+            <div className="mt-1.5 text-sm font-bold uppercase tracking-wide text-white/85">
+              {headline.sub}
+            </div>
+          )}
+        </div>
+
+        {/* Mascote + selo de CTA */}
+        <div className="flex items-center justify-center gap-5">
+          <div className="flex h-[210px] w-[170px] items-center justify-center rounded-lg border-2 border-dashed border-white/70 bg-white/45 text-[100px]">
             👴
           </div>
-
-          {/* Headline */}
-          <div className="text-center">
-            {headline.top && (
-              <div
-                className="text-base font-bold uppercase tracking-wide text-white"
-                style={{ textShadow: `1px 1px 0 ${palette.primary}` }}
-              >
-                {headline.top}
-              </div>
-            )}
-            <div
-              className="text-[54px] font-black uppercase leading-[0.95] text-white"
-              style={{
-                textShadow: `3px 3px 0 ${palette.primary}, 6px 6px 0 rgba(0,0,0,0.35)`,
-              }}
-            >
-              <MainWord word={headline.main} ornament={headline.ornament} />
-            </div>
-            {headline.sub && (
-              <div className="mt-2 text-xs font-bold uppercase tracking-wide text-white/85">
-                {headline.sub}
-              </div>
-            )}
-          </div>
-
-          {/* Selo de CTA */}
           {cta && (
             <div
-              className="rounded-xl border-2 border-dashed px-1.5 py-2.5 text-center"
+              className="rounded-2xl border-2 border-dashed px-3 py-4 text-center"
               style={{
                 background: palette.accent_seal,
                 borderColor: "rgba(0,0,0,0.4)",
               }}
             >
               {cta.topline && (
-                <div className="text-[8px] font-semibold uppercase text-[#78350F]">
+                <div className="text-[9px] font-semibold uppercase text-[#78350F]">
                   {cta.topline}
                 </div>
               )}
-              <div className="text-[30px] font-black leading-none text-[#DC2626]">
+              <div className="text-[42px] font-black leading-none text-[#DC2626]">
                 {cta.value}
               </div>
-              <div className="text-[8px] font-bold uppercase text-[#78350F]">
+              <div className="text-[9px] font-bold uppercase text-[#78350F]">
                 {cta.label}
               </div>
             </div>
           )}
         </div>
 
+        {/* Slogan */}
         {creative.slogan_on_cover && (
-          <div className="rounded-full bg-white/80 px-4 py-1 text-center text-xs font-semibold italic text-foreground">
+          <div className="rounded-full bg-white/80 px-5 py-1.5 text-center text-sm font-semibold italic text-foreground">
             {creative.slogan_on_cover}
           </div>
         )}
@@ -176,11 +172,11 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
 
       {/* Frases prontas */}
       {termPhrases.length > 0 && (
-        <div className="grid flex-shrink-0 grid-cols-2 gap-2 text-[10px] font-medium text-foreground/90">
+        <div className="grid flex-shrink-0 grid-cols-2 gap-2 text-[11px] font-medium text-foreground/90">
           {termPhrases.map((phrase, i) => (
             <div
               key={`${phrase}-${i}`}
-              className="rounded-sm bg-white/75 px-2.5 py-1.5 text-center"
+              className="rounded-sm bg-white/80 px-3 py-2 text-center"
             >
               {phrase}
             </div>
@@ -191,7 +187,7 @@ export function EditorCover({ spec, termTemplates }: EditorCoverProps) {
       {/* Footer período */}
       <div
         className="mt-2.5 flex-shrink-0 rounded-sm px-2 py-2 text-center font-bold uppercase tracking-wide text-white"
-        style={{ background: "rgba(0,0,0,0.3)", fontSize: 10 }}
+        style={{ background: "rgba(0,0,0,0.3)", fontSize: 11 }}
       >
         {periodLine}
       </div>
