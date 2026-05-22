@@ -10,6 +10,8 @@ import { HomePage } from "@/routes/home";
 import { BriefingPage } from "@/routes/briefing";
 import { ProdutosPage } from "@/routes/produtos";
 import { EditorPage } from "@/routes/editor";
+import { ExportarPage } from "@/routes/exportar";
+import { ApresentacaoPage } from "@/routes/apresentacao";
 import { NotFoundPage } from "@/routes/not-found";
 import { useAuthStore } from "@/stores/auth";
 
@@ -59,7 +61,16 @@ function App() {
                   path="/catalogos/:id/editor"
                   element={<EditorPage />}
                 />
+                <Route
+                  path="/catalogos/:id/exportar"
+                  element={<ExportarPage />}
+                />
               </Route>
+              {/* Modo apresentação — tela cheia, sem o shell da aplicação. */}
+              <Route
+                path="/catalogos/:id/apresentacao"
+                element={<ApresentacaoPage />}
+              />
             </Route>
             {/* Catch-all: qualquer rota não mapeada cai aqui em vez de
                 desmontar a árvore e mostrar tela branca. */}

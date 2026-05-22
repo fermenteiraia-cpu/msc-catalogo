@@ -25,6 +25,7 @@ import {
 } from "@/components/editor/pages";
 import { EditorSketch } from "@/components/editor/EditorSketch";
 import { EditorCover } from "@/components/editor/EditorCover";
+import { SheetScaler } from "@/components/editor/SheetScaler";
 import { FinalArtViewer } from "@/components/editor/FinalArtViewer";
 import { SelectedElementPanel } from "@/components/editor/SelectedElementPanel";
 import { CoverInfoPanel } from "@/components/editor/CoverInfoPanel";
@@ -226,16 +227,18 @@ export function EditorPage() {
               Salvo agora
             </span>
           )}
-          <Button
-            variant="secondary"
-            disabled
-            title="Modo apresentação chega na próxima etapa"
+          <Link
+            to={`/catalogos/${catalog.id}/apresentacao`}
+            className={cn(buttonVariants({ variant: "secondary" }))}
           >
             Modo apresentação
-          </Button>
-          <Button disabled title="A exportação é a próxima etapa do catálogo">
+          </Link>
+          <Link
+            to={`/catalogos/${catalog.id}/exportar`}
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
             Exportar
-          </Button>
+          </Link>
         </div>
       </header>
 
@@ -387,14 +390,16 @@ export function EditorPage() {
 
           {isCover ? (
             spec ? (
-              <EditorCover
-                spec={spec}
-                termTemplates={termTemplates}
-                pieces={currentPagePieces}
-                pageCount={editorPages.length}
-                selectedPieceId={selectedPieceId}
-                onSelectPiece={handleSelect}
-              />
+              <SheetScaler>
+                <EditorCover
+                  spec={spec}
+                  termTemplates={termTemplates}
+                  pieces={currentPagePieces}
+                  pageCount={editorPages.length}
+                  selectedPieceId={selectedPieceId}
+                  onSelectPiece={handleSelect}
+                />
+              </SheetScaler>
             ) : (
               <div
                 className="flex items-center justify-center rounded-xl border border-dashed border-border bg-muted text-center text-sm text-muted-foreground"
@@ -404,13 +409,15 @@ export function EditorPage() {
               </div>
             )
           ) : (
-            <EditorSketch
-              pieces={currentPagePieces}
-              pageNumber={safePageIndex + 1}
-              pageCount={editorPages.length}
-              selectedPieceId={selectedPieceId}
-              onSelectPiece={handleSelect}
-            />
+            <SheetScaler>
+              <EditorSketch
+                pieces={currentPagePieces}
+                pageNumber={safePageIndex + 1}
+                pageCount={editorPages.length}
+                selectedPieceId={selectedPieceId}
+                onSelectPiece={handleSelect}
+              />
+            </SheetScaler>
           )}
 
           {selectedPiece && (
