@@ -199,9 +199,14 @@ def main() -> None:
         page.save(str(png_bytes_path), format="PNG")
         storage_path = f"{CATALOG_ID}/page-{i}.png"
         with open(png_bytes_path, "rb") as fh:
+            # Storage com chaves novas `sb_secret_*` precisa do header `apikey:`
+            # (Authorization: Bearer não funciona — o gateway tenta parsear como
+            # JWT e falha com "Invalid Compact JWS"). Mandar os dois cobre
+            # ambos os formatos (legacy JWT + sb_secret).
             up = requests.put(
                 f"{SUPABASE_URL}/storage/v1/object/{bucket}/{storage_path}",
                 headers={
+                    "apikey": SERVICE_KEY,
                     "Authorization": f"Bearer {SERVICE_KEY}",
                     "Content-Type": "image/png",
                 },
