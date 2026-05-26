@@ -41,6 +41,43 @@ def fmt_split(v):
     return f"R$ {i}", f",{c}"
 
 
+# v2 (T2.3): estrela 12-pontas pro selo "10x SEM JUROS" do catálogo
+def star_polygon_points(cx, cy, r_out, r_in, points=12, rotation_deg=-90):
+    """Calcula vértices de polígono estrela com `points` pontas.
+    rotation_deg=-90: estrela apontando pra cima (vs lado).
+    Retorna lista [(x1,y1), (x2,y2), ...] alternando r_out/r_in (2*points vértices)."""
+    verts = []
+    total = points * 2
+    for i in range(total):
+        angle_deg = rotation_deg + (360.0 / total) * i
+        angle = math.radians(angle_deg)
+        r = r_out if i % 2 == 0 else r_in
+        x = cx + r * math.cos(angle)
+        y = cy + r * math.sin(angle)
+        verts.append((x, y))
+    return verts
+
+
+def draw_star_seal(draw_or_layer, cx, cy, r_out, r_in=None, points=12,
+                   fill=(245, 200, 75), outline=(184, 134, 11), outline_w=3):
+    """Desenha estrela 12-pontas (selo clássico de promoção) centrada em (cx,cy)."""
+    if r_in is None:
+        r_in = int(r_out * 0.72)  # razão padrão estrela "selo de promoção"
+    verts = star_polygon_points(cx, cy, r_out, r_in, points=points)
+    if hasattr(draw_or_layer, 'polygon'):
+        draw_or_layer.polygon(verts, fill=fill, outline=outline)
+        # PIL polygon outline é width=1 sempre; pra width maior precisa desenhar linhas
+        if outline_w > 1:
+            n = len(verts)
+            for i in range(n):
+                a = verts[i]
+                b = verts[(i + 1) % n]
+                draw_or_layer.line([a, b], fill=outline, width=outline_w)
+    else:
+        # caller passou ImageDraw já
+        ImageDraw.Draw(draw_or_layer).polygon(verts, fill=fill, outline=outline)
+
+
 def gradient(w, h, c1, c2):
     img = Image.new("RGB", (w, h), c1)
     px = img.load()
@@ -55,6 +92,11 @@ def gradient(w, h, c1, c2):
 
 
 # ============= CORACOES 3D (decoracao do fundo) =============
+# v2 (visual spike T2.1): coracoes com profundidade real
+#   - face com gradient (highlight no topo, mais escuro embaixo)
+#   - sombra com GaussianBlur (nao pixel-art 8-bit como v1)
+#   - menor densidade (paleta coral aguenta menos decoracao)
+
 def _heart_shape(d, cx, cy, size, color):
     s = size
     d.ellipse((cx - s, cy - s, cx, cy), fill=color)
@@ -62,34 +104,75 @@ def _heart_shape(d, cx, cy, size, color):
     d.polygon([(cx - s, cy - s // 4), (cx + s, cy - s // 4), (cx, cy + int(s * 0.9))], fill=color)
 
 
-def _heart_3d(layer, cx, cy, size, front, side):
-    for d in range(size // 6, 0, -1):
-        _heart_shape(ImageDraw.Draw(layer), cx + d, cy + d, size, side)
-    _heart_shape(ImageDraw.Draw(layer), cx, cy, size, front)
-    h = Image.new("RGBA", layer.size, (0, 0, 0, 0))
-    _heart_shape(ImageDraw.Draw(h), cx - size // 5, cy - size // 4, size // 3, (255, 255, 255, 140))
-    layer.alpha_composite(h)
+def _heart_with_depth(canvas_size, cx, cy, size, front, side, alpha):
+    """v2: coracao com sombra blur + gradient interno (vs v1 que era 8-bit stepping)."""
+    # 1. Shadow layer: silhueta deslocada com blur gaussiano
+    shadow = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shadow)
+    shadow_offset = max(2, size // 8)
+    _heart_shape(sd, cx + shadow_offset, cy + shadow_offset, size,
+                 (*side, max(0, alpha - 40)))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(max(1, size // 10)))
+
+    # 2. Face layer: cor principal
+    face = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+    fd = ImageDraw.Draw(face)
+    _heart_shape(fd, cx, cy, size, (*front, alpha))
+
+    # 3. Highlight: gradient interno suave (topo mais claro)
+    hl_size = max(1, size // 2)
+    hl_off_x = size // 5
+    hl_off_y = size // 4
+    hl = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+    hld = ImageDraw.Draw(hl)
+    _heart_shape(hld, cx - hl_off_x, cy - hl_off_y, hl_size,
+                 (255, 255, 255, min(180, alpha)))
+    hl = hl.filter(ImageFilter.GaussianBlur(max(1, hl_size // 4)))
+
+    return shadow, face, hl
 
 
-def make_hearts_bg(w, h, count=70, seed=123):
+def make_hearts_bg(w, h, count=70, seed=123, palette=None):
+    """v2: paleta coral suave + corações com profundidade real."""
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     rnd = random.Random(seed)
-    pinks = [
-        ((255, 130, 165), (200, 60, 100)),
-        ((255, 165, 195), (210, 90, 130)),
-        ((250, 110, 145), (180, 40, 80)),
-    ]
+    # Paleta coral lavada (não mais o pink saturado da v1)
+    if palette is None:
+        palette = [
+            ((250, 145, 155), (200, 90, 105)),   # coral médio
+            ((252, 175, 180), (215, 120, 135)),  # coral claro
+            ((245, 125, 145), (190, 75, 95)),    # coral pop
+        ]
+    # Aplicar em 3 passes: shadows primeiro, depois faces, depois highlights
+    # (cada um é uma layer separada que compõe na ordem correta)
+    shadows = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    faces = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    highlights = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+
     for _ in range(count):
         cx = rnd.randint(-20, w + 20)
         cy = rnd.randint(-20, h + 20)
-        s = rnd.choice([10, 14, 18, 22, 28, 36, 50])
-        front, side = rnd.choice(pinks)
-        a = rnd.randint(140, 230) if s > 20 else rnd.randint(80, 160)
-        _heart_3d(layer, cx, cy, s, (*front, a), (*side, max(0, a - 30)))
+        s = rnd.choice([12, 16, 22, 30, 42, 56])  # tamanhos um pouco maiores p/ visual mais limpo
+        front, side = rnd.choice(palette)
+        # Alphas mais sutis na v2 (corações não competem com lettering)
+        a = rnd.randint(110, 170) if s > 30 else rnd.randint(60, 120)
+        sh, fc, hl = _heart_with_depth((w, h), cx, cy, s, front, side, a)
+        shadows.alpha_composite(sh)
+        faces.alpha_composite(fc)
+        highlights.alpha_composite(hl)
+
+    layer.alpha_composite(shadows)
+    layer.alpha_composite(faces)
+    layer.alpha_composite(highlights)
     return layer
 
 
-def bg_canvas(W, H, bg_top=(255, 200, 215), bg_bot=(255, 130, 175), hearts=True, density=30000):
+def bg_canvas(W, H, bg_top=(253, 220, 220), bg_bot=(250, 165, 168), hearts=True, density=70000):
+    """v2: paleta CORAL LAVADO (não rosa pink saturado).
+    Cores sampleadas do PDF oficial Mês das Mães:
+      top:    rgb(253, 220, 220) — coral muito claro (quase rosé)
+      bottom: rgb(250, 165, 168) — coral médio salmon
+    Densidade default reduzida de 30000 → 70000 (menos corações, mais respirável)."""
     canvas = gradient(W, H, bg_top, bg_bot).convert("RGBA")
     if hearts:
         canvas.alpha_composite(make_hearts_bg(W, H, count=int(W * H / density)))
@@ -160,9 +243,10 @@ def render_hero_block(W, H, headline_top="MÊS DAS", headline_main="mães",
                       include_terms=True, include_period=True,
                       period_lines=("Sorteio para as compras efetuadas",
                                     "do dia 01/05 ao dia 09/05"),
-                      front_main=(255, 110, 145), side_main=(170, 30, 70)):
+                      front_main=(255, 110, 145), side_main=(170, 30, 70),
+                      bg_top=(253, 220, 220), bg_bot=(250, 165, 168)):
     """Hero artwork campanha-completo: mascote | lettering+logo | CTA + rodape."""
-    canvas = bg_canvas(W, H, density=int(W * H / 70))
+    canvas = bg_canvas(W, H, bg_top=bg_top, bg_bot=bg_bot, density=int(W * H / 70))
     PAD = max(20, int(W * 0.02))
     MASCOTE_W = int(W * 0.22)
     CTA_W = int(W * 0.26)
@@ -190,10 +274,16 @@ def render_hero_block(W, H, headline_top="MÊS DAS", headline_main="mães",
         r = (CENTER_W * 0.85) / mes_das.size[0]
         mes_das = mes_das.resize((int(mes_das.size[0] * r), int(mes_das.size[1] * r)), Image.LANCZOS)
 
-    main_size = max(48, int(H * 0.40))
-    main = render_3d_text(headline_main, LATO_BLACK, main_size,
-                          front_color=front_main, side_color=side_main,
-                          depth=18, outline_w=10)
+    # v2 (T2.2): tenta carregar lettering pré-renderizado primeiro (ex.: "mães" com til-coração)
+    # target_h ajustado: 0.42 não 0.55 — o asset tem halo extra que ocupa altura visual
+    main_target_h = max(100, int(H * 0.42))
+    main = AL.load_lettering(headline_main, target_h=main_target_h)
+    if main is None:
+        # Fallback: render programático com Lato Black (palavras sem asset)
+        main_size = max(48, int(H * 0.40))
+        main = render_3d_text(headline_main, LATO_BLACK, main_size,
+                              front_color=front_main, side_color=side_main,
+                              depth=18, outline_w=10)
     if main.size[0] > CENTER_W * 0.95:
         r = (CENTER_W * 0.95) / main.size[0]
         main = main.resize((int(main.size[0] * r), int(main.size[1] * r)), Image.LANCZOS)
@@ -551,19 +641,42 @@ def render_card_compact(produto, valor_avista, valor_promo, parcelas, size=(700,
         photo.thumbnail((W - 2 * pad, photo_h - 10))
         img.paste(photo, ((W - photo.size[0]) // 2, pad + (photo_h - photo.size[1]) // 2))
 
-    # badge "Nx SEM JUROS"
-    bw_badge = max(70, int(W * 0.18))
-    layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    ld = ImageDraw.Draw(layer)
-    ld.ellipse((pad - 8, pad - 8, pad + bw_badge, pad + bw_badge), fill=(220, 38, 51))
-    ld.ellipse((pad, pad, pad + bw_badge - 16, pad + bw_badge - 16), fill=(255, 200, 50))
-    img.alpha_composite(layer)
-    f_b1 = font(max(14, int(bw_badge * 0.22)), "black")
-    f_b2 = font(max(8, int(bw_badge * 0.12)), "black")
-    bb = d.textbbox((0, 0), f"{parcelas}x", font=f_b1)
-    d.text((pad + (bw_badge - 16) // 2 - (bb[2] - bb[0]) // 2 - bb[0], pad + 8 - bb[1]),
-           f"{parcelas}x", font=f_b1, fill=(220, 38, 51))
-    d.text((pad + 6, pad + bw_badge // 2), "SEM JUROS", font=f_b2, fill=(220, 38, 51))
+    # v2 (T2.3): badge "Nx SEM JUROS" como ESTRELA 12-pontas
+    bw_badge = max(70, int(W * 0.20))  # ligeiramente maior pra acomodar estrela
+    r_out = bw_badge // 2
+    cx = pad + r_out
+    cy = pad + r_out
+
+    # Sombra suave atrás da estrela
+    shadow_layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shadow_layer)
+    shadow_verts = star_polygon_points(cx + 2, cy + 3, r_out, int(r_out * 0.72), points=12)
+    sd.polygon(shadow_verts, fill=(0, 0, 0, 60))
+    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(2))
+    img.alpha_composite(shadow_layer)
+
+    # Estrela amarela com borda dourada escura
+    star_layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    sld = ImageDraw.Draw(star_layer)
+    draw_star_seal(sld, cx, cy, r_out, points=12,
+                   fill=(245, 200, 75), outline=(184, 134, 11), outline_w=3)
+    img.alpha_composite(star_layer)
+
+    # Texto centralizado na estrela: "Nx" grande + "SEM JUROS" pequeno
+    f_b1 = font(max(14, int(bw_badge * 0.26)), "black")
+    f_b2 = font(max(8, int(bw_badge * 0.13)), "black")
+    nx_txt = f"{parcelas}x"
+    bb1 = d.textbbox((0, 0), nx_txt, font=f_b1)
+    bb2 = d.textbbox((0, 0), "SEM JUROS", font=f_b2)
+    nx_w = bb1[2] - bb1[0]
+    nx_h = bb1[3] - bb1[1]
+    sj_w = bb2[2] - bb2[0]
+    sj_h = bb2[3] - bb2[1]
+    total_h = nx_h + sj_h + 2
+    nx_y = cy - total_h // 2 - bb1[1]
+    sj_y = nx_y + nx_h - bb1[1] + 2 - bb2[1]
+    d.text((cx - nx_w // 2 - bb1[0], nx_y), nx_txt, font=f_b1, fill=(0, 0, 0))
+    d.text((cx - sj_w // 2 - bb2[0], sj_y), "SEM JUROS", font=f_b2, fill=(0, 0, 0))
 
     # nome
     nome = produto.get("NOME", "")
@@ -630,62 +743,99 @@ def render_card_compact(produto, valor_avista, valor_promo, parcelas, size=(700,
 def render_catalog_pages(produtos_promo, page_size=(2200, 2540), cols=4, rows=3,
                          headline_top="MÊS DAS", headline_main="mães",
                          titulo_strip="MÊS DAS MÃES", subtitulo_strip="LOJAS MSC",
-                         footer_text="LOJAS MSC  |  TODA LOJA EM ATÉ 10X SEM JUROS"):
-    """Catalogo de paginas com grade de produtos. Header pequeno em cada pagina."""
+                         footer_text="LOJAS MSC  |  TODA LOJA EM ATÉ 10X SEM JUROS",
+                         bg_top=(253, 220, 220), bg_bot=(250, 165, 168),
+                         hero_front=(255, 110, 145), hero_side=(170, 30, 70)):
+    """Catálogo: pág 1 = hero+grade, pág 2+ = grade. Aceita paleta da campanha."""
     pages = []
     W, H = page_size
 
-    # ---- PAGINAS DE GRADE ----
     per_page = cols * rows
     n = len(produtos_promo)
     n_grid_pages = max(1, math.ceil(n / per_page))
+
     for p_idx in range(n_grid_pages):
         chunk = produtos_promo[p_idx * per_page: (p_idx + 1) * per_page]
-        canvas = bg_canvas(W, H, density=70000)
+        canvas = bg_canvas(W, H, bg_top=bg_top, bg_bot=bg_bot, density=70000)
         d = ImageDraw.Draw(canvas)
 
-        # header pequeno
-        header_h = int(H * 0.07)
-        d.rectangle((0, 0, W, header_h), fill=(220, 38, 51))
-        ts = max(28, int(W * 0.030))
-        ss = max(14, int(ts * 0.42))
-        bb = d.textbbox((0, 0), titulo_strip, font=font(ts, "black"))
-        d.text((W // 2 - (bb[2] - bb[0]) // 2 - bb[0], int(header_h * 0.18) - bb[1]),
-               titulo_strip, font=font(ts, "black"), fill=(255, 200, 50))
-        bb2 = d.textbbox((0, 0), subtitulo_strip, font=font(ss, "black"))
-        d.text((W // 2 - (bb2[2] - bb2[0]) // 2 - bb2[0],
-                int(header_h * 0.18) + (bb[3] - bb[1]) + 4 - bb2[1]),
-               subtitulo_strip, font=font(ss, "black"), fill=(255, 255, 255))
-
-        # logo no canto direito
-        logo = AL.load_logo("white", target_h=int(header_h * 0.6))
-        if logo.size[0] > 10:
-            canvas.alpha_composite(logo, (W - logo.size[0] - 30,
-                                          (header_h - logo.size[1]) // 2))
-
-        # grade
-        margin_x = max(20, int(W * 0.018))
-        margin_top = header_h + 30
-        margin_bot = int(H * 0.05)
-        grid_w = W - 2 * margin_x
-        grid_h = H - margin_top - margin_bot
-        gap = 18
-        cell_w = (grid_w - (cols - 1) * gap) // cols
-        cell_h = (grid_h - (rows - 1) * gap) // rows
-
-        for i, item in enumerate(chunk):
-            row = i // cols
-            col = i % cols
-            x = margin_x + col * (cell_w + gap)
-            y = margin_top + row * (cell_h + gap)
-            card = render_card_compact(
-                item["produto"], item["valor_avista"], item["valor_promo"],
-                item.get("parcelas", 10), size=(cell_w, cell_h)
-            )
-            canvas.paste(card, (x, y), card)
-
-        # footer
+        # Footer strip "LOJAS MSC | ATÉ 10X" — usado em todas as páginas.
         ft = int(H * 0.04)
+
+        if p_idx == 0:
+            # ============ PÁGINA 1 — CAPA com HERO + grade 2×6 ============
+            # Hero ocupa ~40% do topo (anjo + 3D headline + selo 50% + sorteio).
+            hero_h = int(H * 0.42)
+            hero = render_hero_block(
+                W, hero_h,
+                headline_top=headline_top, headline_main=headline_main,
+                include_terms=True, include_period=True,
+                front_main=hero_front, side_main=hero_side,
+                bg_top=bg_top, bg_bot=bg_bot,
+            )
+            canvas.alpha_composite(hero, (0, 0))
+
+            # Grade 2 fileiras × 6 colunas embaixo do hero (igual à referência MSC).
+            p1_cols, p1_rows = 6, 2
+            margin_x = max(20, int(W * 0.018))
+            margin_top = hero_h + 24
+            margin_bot = ft + 24
+            grid_w = W - 2 * margin_x
+            grid_h = H - margin_top - margin_bot
+            gap = 14
+            cell_w = (grid_w - (p1_cols - 1) * gap) // p1_cols
+            cell_h = (grid_h - (p1_rows - 1) * gap) // p1_rows
+
+            for i, item in enumerate(chunk[: p1_cols * p1_rows]):
+                row = i // p1_cols
+                col = i % p1_cols
+                x = margin_x + col * (cell_w + gap)
+                y = margin_top + row * (cell_h + gap)
+                card = render_card_compact(
+                    item["produto"], item["valor_avista"], item["valor_promo"],
+                    item.get("parcelas", 10), size=(cell_w, cell_h),
+                )
+                canvas.paste(card, (x, y), card)
+        else:
+            # ============ PÁGINAS 2+ — header pequeno + grade cols×rows ============
+            header_h = int(H * 0.07)
+            d.rectangle((0, 0, W, header_h), fill=(220, 38, 51))
+            ts = max(28, int(W * 0.030))
+            ss = max(14, int(ts * 0.42))
+            bb = d.textbbox((0, 0), titulo_strip, font=font(ts, "black"))
+            d.text((W // 2 - (bb[2] - bb[0]) // 2 - bb[0], int(header_h * 0.18) - bb[1]),
+                   titulo_strip, font=font(ts, "black"), fill=(255, 200, 50))
+            bb2 = d.textbbox((0, 0), subtitulo_strip, font=font(ss, "black"))
+            d.text((W // 2 - (bb2[2] - bb2[0]) // 2 - bb2[0],
+                    int(header_h * 0.18) + (bb[3] - bb[1]) + 4 - bb2[1]),
+                   subtitulo_strip, font=font(ss, "black"), fill=(255, 255, 255))
+
+            logo = AL.load_logo("white", target_h=int(header_h * 0.6))
+            if logo.size[0] > 10:
+                canvas.alpha_composite(logo, (W - logo.size[0] - 30,
+                                              (header_h - logo.size[1]) // 2))
+
+            margin_x = max(20, int(W * 0.018))
+            margin_top = header_h + 30
+            margin_bot = int(H * 0.05)
+            grid_w = W - 2 * margin_x
+            grid_h = H - margin_top - margin_bot
+            gap = 18
+            cell_w = (grid_w - (cols - 1) * gap) // cols
+            cell_h = (grid_h - (rows - 1) * gap) // rows
+
+            for i, item in enumerate(chunk):
+                row = i // cols
+                col = i % cols
+                x = margin_x + col * (cell_w + gap)
+                y = margin_top + row * (cell_h + gap)
+                card = render_card_compact(
+                    item["produto"], item["valor_avista"], item["valor_promo"],
+                    item.get("parcelas", 10), size=(cell_w, cell_h),
+                )
+                canvas.paste(card, (x, y), card)
+
+        # ===== Footer comum a todas as páginas =====
         d.rectangle((0, H - ft, W, H), fill=(167, 25, 35))
         f_foot = font(max(14, int(ft * 0.45)), "bold")
         bb = d.textbbox((0, 0), footer_text, font=f_foot)

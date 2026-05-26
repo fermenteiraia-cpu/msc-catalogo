@@ -149,21 +149,47 @@ def main() -> None:
         raise RuntimeError("nenhum produto válido pra renderizar")
     print(f"[render] {len(promos)} promos prontos")
 
-    # Headline: o renderer usa "main" como a palavra principal em 3D.
-    # Pra "DIA DO TRABALHADOR" (várias palavras) mantemos tudo numa string em
-    # cima — o lettering 3D fica só com a última palavra.
+    # Headline: usa "top" e "main" como vêm do spec — o renderer cuida do
+    # resize pra caber. Pra palavras longas tipo "DIA DO TRABALHADOR" sai
+    # menor, mas não corta.
     headline = (spec.get("creative") or {}).get("headline") or {}
-    headline_top_raw = (headline.get("top") or "PROMOÇÃO").upper()
-    headline_main_raw = (headline.get("main") or "promo").strip()
-    parts = headline_main_raw.split()
-    headline_main = (parts[-1] if parts else "promo").lower()
-    if len(parts) > 1:
-        headline_top = f"{headline_top_raw} {' '.join(parts[:-1]).upper()}".strip()
-    else:
-        headline_top = headline_top_raw
-
+    headline_top = (headline.get("top") or "PROMOÇÃO").upper().strip()
+    headline_main = (headline.get("main") or "promo").strip().lower()
     campaign_name = (spec.get("campaign") or {}).get("name") or "Campanha"
-    print(f"[render] headline_top='{headline_top}' headline_main='{headline_main}'")
+
+    # Paleta da campanha → cores reais do render (substitui o rosa default).
+    palette = (spec.get("creative") or {}).get("palette") or {}
+
+    def _hex_to_rgb(hex_str: str, fallback: tuple) -> tuple:
+        if not hex_str:
+            return fallback
+        s = hex_str.lstrip("#")
+        if len(s) == 3:
+            s = "".join(c * 2 for c in s)
+        if len(s) != 6:
+            return fallback
+        try:
+            return (int(s[0:2], 16), int(s[2:4], 16), int(s[4:6], 16))
+        except ValueError:
+            return fallback
+
+    def _lighten(rgb: tuple, f: float = 0.55) -> tuple:
+        return tuple(min(255, int(c + (255 - c) * f)) for c in rgb)
+
+    def _darken(rgb: tuple, f: float = 0.5) -> tuple:
+        return tuple(max(0, int(c * f)) for c in rgb)
+
+    primary_rgb = _hex_to_rgb(palette.get("primary"), (220, 38, 51))
+    # Gradiente saturado (não rosa claro): topo um pouco mais claro que o primary,
+    # base um pouco mais escura. Mantém a campanha "no tom" sem virar pastel.
+    bg_top = _lighten(primary_rgb, 0.18)
+    bg_bot = _darken(primary_rgb, 0.78)
+    hero_front = primary_rgb
+    hero_side = _darken(primary_rgb, 0.55)
+    print(
+        f"[render] headline_top='{headline_top}' main='{headline_main}'  "
+        f"primary={primary_rgb}"
+    )
 
     pages = R.render_catalog_pages(
         promos,
@@ -174,6 +200,10 @@ def main() -> None:
         headline_main=headline_main,
         titulo_strip=campaign_name,
         subtitulo_strip="LOJAS MSC",
+        bg_top=bg_top,
+        bg_bot=bg_bot,
+        hero_front=hero_front,
+        hero_side=hero_side,
     )
     print(f"[render] {len(pages)} páginas geradas")
     _patch_render_run({"pages_total": len(pages)})
