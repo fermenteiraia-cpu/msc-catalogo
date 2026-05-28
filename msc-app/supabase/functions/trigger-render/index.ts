@@ -145,12 +145,14 @@ Deno.serve(async (req) => {
   const renderRunId = renderRun.id as string;
 
   // --- 3. Dispara o workflow no GitHub
-  const ghPat = Deno.env.get("GITHUB_PAT");
-  const ghOwner = Deno.env.get("GITHUB_OWNER");
-  const ghRepo = Deno.env.get("GITHUB_REPO");
-  const ghRef = Deno.env.get("GITHUB_REF") || "main";
-  const ghWorkflowFile =
-    Deno.env.get("GITHUB_RENDER_WORKFLOW_FILE") || "render-catalog.yml";
+  // .trim() — alguns secrets vieram com espaço/tab perdido no fim.
+  const ghPat = Deno.env.get("GITHUB_PAT")?.trim();
+  const ghOwner = Deno.env.get("GITHUB_OWNER")?.trim();
+  const ghRepo = Deno.env.get("GITHUB_REPO")?.trim();
+  const ghRef = (Deno.env.get("GITHUB_REF") || "main").trim();
+  const ghWorkflowFile = (
+    Deno.env.get("GITHUB_RENDER_WORKFLOW_FILE") || "render-catalog.yml"
+  ).trim();
 
   if (!ghPat || !ghOwner || !ghRepo) {
     await adminClient

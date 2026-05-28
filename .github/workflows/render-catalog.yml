@@ -16,6 +16,10 @@ on:
         description: "UUID do usuário que disparou o render"
         required: false
         type: string
+      style:
+        description: "Sobrescrever o estilo (ex: festivo-maes, trabalhador, black-friday). Vazio = automático pelo theme_key."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -34,20 +38,22 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install fonts (Lato)
+      - name: Install fonts (Lato + DejaVu)
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends fonts-lato fonts-dejavu-core
 
       - name: Install Python dependencies
-        run: pip install --quiet pillow requests
+        run: pip install --quiet pillow requests pyyaml openai playwright
 
-      - name: Render catalog (Python — composição real, sem gpt-image)
+      - name: Install Playwright Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Render catalog (HTML → screenshot → gpt-image-2)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          TERASOFT_USER: ${{ secrets.TERASOFT_USER }}
-          TERASOFT_PASS: ${{ secrets.TERASOFT_PASS }}
-          TERASOFT_URL: ${{ secrets.TERASOFT_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           RENDER_RUN_ID: ${{ inputs.render_run_id }}
           CATALOG_ID: ${{ inputs.catalog_id }}
           TRIGGERED_BY_USER_ID: ${{ inputs.triggered_by_user_id }}
-        run: python scripts/render_catalog.py
+          STYLE: ${{ inputs.style }}
+        run: python scripts/render_catalog_html.py
