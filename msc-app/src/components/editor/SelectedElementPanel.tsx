@@ -200,19 +200,90 @@ export function SelectedElementPanel({
         </small>
       </div>
 
-      {/* Foto do produto */}
-      <div className="mt-3">
-        <label className="text-xs font-medium text-muted-foreground">
-          Foto do produto
-        </label>
-        <button
-          type="button"
-          disabled
-          title="Troca de foto chega na próxima entrega"
-          className="mt-1 w-full cursor-not-allowed rounded-md border border-input bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground opacity-60"
-        >
-          📷 Trocar foto
-        </button>
+      {/* ===== Overrides do esboço (sobrescrevem o produto-mestre) ===== */}
+      <div className="mt-4 border-t border-border pt-3">
+        <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Ajustes do esboço
+        </div>
+
+        {/* Override do nome */}
+        <div className="mt-2">
+          <label className="text-xs font-medium text-muted-foreground">
+            Nome no esboço
+          </label>
+          <input
+            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            defaultValue={piece.display_name ?? ""}
+            onBlur={(e) => {
+              const value = e.target.value.trim();
+              const next = value === "" ? null : value;
+              if (next === piece.display_name) return;
+              updatePiece.mutate({
+                pieceId: piece.id,
+                catalogId,
+                patch: { display_name: next },
+              });
+            }}
+            placeholder={productName}
+          />
+          <small className="mt-1 block text-[11px] text-muted-foreground">
+            {piece.display_name !== null
+              ? "Encurtado pra arte. Apague o campo pra voltar ao nome da Terasoft."
+              : "Encurte aqui se o nome da Terasoft é longo demais."}
+          </small>
+        </div>
+
+        {/* Override da foto */}
+        <div className="mt-3">
+          <label className="text-xs font-medium text-muted-foreground">
+            URL da foto (substituir)
+          </label>
+          <input
+            type="url"
+            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            defaultValue={piece.display_image_url ?? ""}
+            onBlur={(e) => {
+              const value = e.target.value.trim();
+              const next = value === "" ? null : value;
+              if (next === piece.display_image_url) return;
+              updatePiece.mutate({
+                pieceId: piece.id,
+                catalogId,
+                patch: { display_image_url: next },
+              });
+            }}
+            placeholder="https://… (vazio = foto original)"
+          />
+          <small className="mt-1 block text-[11px] text-muted-foreground">
+            Cola o URL de uma foto melhor. Apague pra voltar à foto da Terasoft.
+          </small>
+        </div>
+
+        {/* Tarja opcional */}
+        <div className="mt-3">
+          <label className="text-xs font-medium text-muted-foreground">
+            Tarja (opcional)
+          </label>
+          <input
+            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            defaultValue={piece.badge_label ?? ""}
+            onBlur={(e) => {
+              const value = e.target.value.trim();
+              const next = value === "" ? null : value;
+              if (next === piece.badge_label) return;
+              updatePiece.mutate({
+                pieceId: piece.id,
+                catalogId,
+                patch: { badge_label: next },
+              });
+            }}
+            placeholder="ex: NOVIDADE, ÚLTIMAS UNIDADES"
+            maxLength={32}
+          />
+          <small className="mt-1 block text-[11px] text-muted-foreground">
+            Aparece como tarja amarela na arte final. Vazio = sem tarja.
+          </small>
+        </div>
       </div>
     </div>
   );

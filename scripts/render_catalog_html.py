@@ -54,6 +54,7 @@ THEME_TO_STYLE = {
     "abril": "trabalhador",
     "natal": "natal",
     "black-friday": "black-friday",
+    "criancas": "dia-das-criancas",
     "custom": "minimalista",
 }
 
@@ -137,8 +138,14 @@ def build_html(spec: dict, promos: list[dict]) -> str:
     for p in promos[:12]:
         parc = p["parcelas"]
         per_parc = p["price"] / parc if parc else p["price"]
+        # Tarja opcional ("NOVIDADE", "ÚLTIMAS UNIDADES") quando badge_label preenchido.
+        badge_html = (
+            f'<div class="badge">{html.escape(p["badge"])}</div>'
+            if p.get("badge") else ""
+        )
         cards += f"""
         <div class="card">
+          {badge_html}
           <div class="star">
             <div class="star-burst"></div>
             <div class="star-num">{parc}x</div>
@@ -233,9 +240,23 @@ def build_html(spec: dict, promos: list[dict]) -> str:
                 box-shadow: 0 2px 4px rgba(0,0,0,0.15); }}
   .avista {{ font-size: 8px; color: #555; margin-top: 4px; text-align: center;
             font-weight: 700; }}
+  /* Tarja opcional ("NOVIDADE", "ÚLTIMAS UNIDADES"). Vai NO TOPO direito. */
+  .card .badge {{ position: absolute; top: -8px; right: -6px; z-index: 3;
+                 background: {secondary}; color: #6b1018;
+                 font-weight: 900; font-size: 9px;
+                 padding: 3px 8px; border-radius: 4px;
+                 transform: rotate(8deg);
+                 box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                 border: 1.5px solid #b8860b;
+                 letter-spacing: 0.5px; }}
   .footer {{ margin-top: 14px; background: #6b1018; color: #fff;
-            padding: 10px 16px; display: flex; justify-content: space-between;
-            font-weight: 800; font-size: 12px; border-radius: 4px; }}
+            padding: 10px 16px; border-radius: 4px;
+            display: flex; flex-direction: column; gap: 4px; }}
+  .footer .repeat {{ display: flex; justify-content: space-around;
+                    font-weight: 900; font-size: 16px;
+                    letter-spacing: 2px; font-style: italic; }}
+  .footer .meta {{ display: flex; justify-content: space-between;
+                  font-weight: 700; font-size: 11px; opacity: 0.92; }}
 </style>
 </head>
 <body>
@@ -262,8 +283,14 @@ def build_html(spec: dict, promos: list[dict]) -> str:
     {f'<div class="sorteio">Sorteio para as compras efetuadas {sorteio_line}</div>' if sorteio_line else ''}
     <div class="grid">{cards}</div>
     <div class="footer">
-      <span>LOJAS MSC | TODA LOJA EM ATÉ 10X SEM JUROS</span>
-      <span>página 1 de 1</span>
+      <div class="repeat">
+        <span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span>
+        <span>LOJAS MSC</span><span>LOJAS MSC</span><span>LOJAS MSC</span>
+      </div>
+      <div class="meta">
+        <span>TODA LOJA EM ATÉ 10X SEM JUROS</span>
+        <span>página 1 de 1</span>
+      </div>
     </div>
   </div>
 </body></html>
@@ -311,9 +338,13 @@ def main() -> None:
             valor = float(piece["preco_final_override"])
         else:
             valor = round(base * (1 - desconto / 100.0), 2)
+        # Overrides per-piece (display_name, display_image_url, badge_label)
+        # ganham do produto-mestre quando preenchidos. Permite Amanda/Sally
+        # ajustarem o que aparece na arte sem mexer no produto da Terasoft.
         promos.append({
-            "name": p.get("name") or "",
-            "img": p.get("image_url") or "",
+            "name": (piece.get("display_name") or p.get("name") or "").strip(),
+            "img": (piece.get("display_image_url") or p.get("image_url") or "").strip(),
+            "badge": (piece.get("badge_label") or "").strip(),
             "parcelas": int(piece.get("parcelas") or 10),
             "price": float(valor),
             "avista": base,
@@ -323,15 +354,30 @@ def main() -> None:
         raise RuntimeError("nenhum produto válido pra renderizar")
     print(f"[render] {len(promos)} promos prontos (usando os 12 primeiros)")
 
-    # 2) Build HTML + copy assets
-    html_doc = build_html(spec, promos)
-    html_path = OUT / "catalogo.html"
-    html_path.write_text(html_doc, encoding="utf-8")
-
+    # 2) Build HTML (ou usa override customizado se existir no Storage)
     shutil.copy(ROOT / "mascote_msc.png", OUT / "mascote.png")
     shutil.copy(ROOT / "logo_msc.png", OUT / "logo.png")
     shutil.copy(ROOT / "logo_msc_branco.png", OUT / "logo_branco.png")
-    print(f"[render] HTML pronto: {html_path}")
+
+    html_path = OUT / "catalogo.html"
+    override_url = (
+        f"{SUPABASE_URL}/storage/v1/object/public/catalog-renders/"
+        f"{CATALOG_ID}/catalogo.override.html"
+    )
+    override_ok = False
+    try:
+        r = requests.get(override_url, timeout=10)
+        if r.status_code == 200 and r.text.strip().lower().startswith("<!doctype"):
+            html_path.write_text(r.text, encoding="utf-8")
+            override_ok = True
+            print(f"[render] HTML customizado detectado e baixado: {override_url}")
+    except Exception as e:
+        print(f"[warn] falha ao checar override ({e}), seguindo automático")
+
+    if not override_ok:
+        html_doc = build_html(spec, promos)
+        html_path.write_text(html_doc, encoding="utf-8")
+        print(f"[render] HTML automático: {html_path}")
 
     # 3) Screenshot via Playwright
     screenshot_path = OUT / "esboco.png"

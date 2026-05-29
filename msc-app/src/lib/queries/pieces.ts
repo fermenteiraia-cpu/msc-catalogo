@@ -29,6 +29,9 @@ export interface PieceRow {
   parcelas: number;
   is_destaque: boolean;
   preco_final_override: number | null;
+  display_name: string | null;
+  display_image_url: string | null;
+  badge_label: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +51,10 @@ export interface PieceWithProduct {
   parcelas: number;
   is_destaque: boolean;
   preco_final_override: number | null;
+  /** Overrides do esboço — quando preenchidos, ganham do produto-mestre. */
+  display_name: string | null;
+  display_image_url: string | null;
+  badge_label: string | null;
   product_codes: string[];
   product: ProductRow | null;
 }
@@ -66,7 +73,7 @@ export function useCatalogPieces(catalogId: string | undefined) {
       const { data: pieceData, error: pieceError } = await supabase
         .from("pieces")
         .select(
-          "id,catalog_id,tenant_id,position,size_class,status,render_url,product_codes,desconto_percent,parcelas,is_destaque,preco_final_override,created_at,updated_at",
+          "id,catalog_id,tenant_id,position,size_class,status,render_url,product_codes,desconto_percent,parcelas,is_destaque,preco_final_override,display_name,display_image_url,badge_label,created_at,updated_at",
         )
         .eq("catalog_id", catalogId)
         .order("position", { ascending: true });
@@ -118,6 +125,9 @@ export function useCatalogPieces(catalogId: string | undefined) {
             piece.preco_final_override === undefined
               ? null
               : Number(piece.preco_final_override),
+          display_name: piece.display_name ?? null,
+          display_image_url: piece.display_image_url ?? null,
+          badge_label: piece.badge_label ?? null,
           product_codes: piece.product_codes ?? [],
           product: firstCode ? (byCode.get(firstCode) ?? null) : null,
         };
@@ -175,6 +185,9 @@ export function useAddPieceToCatalog() {
         parcelas: 10,
         is_destaque: false,
         preco_final_override: null,
+        display_name: null,
+        display_image_url: null,
+        badge_label: null,
         product_codes: [input.terasoftCode],
         product: null, // server-side join will fill this in
       };
@@ -334,6 +347,9 @@ export const piecePatchSchema = z
     is_destaque: z.boolean().optional(),
     size_class: z.enum(["P", "M", "G", "D"]).optional(),
     preco_final_override: z.number().min(0).nullable().optional(),
+    display_name: z.string().nullable().optional(),
+    display_image_url: z.string().url().nullable().optional(),
+    badge_label: z.string().nullable().optional(),
   })
   .refine(
     (patch) =>
@@ -341,7 +357,10 @@ export const piecePatchSchema = z
       patch.parcelas !== undefined ||
       patch.is_destaque !== undefined ||
       patch.size_class !== undefined ||
-      patch.preco_final_override !== undefined,
+      patch.preco_final_override !== undefined ||
+      patch.display_name !== undefined ||
+      patch.display_image_url !== undefined ||
+      patch.badge_label !== undefined,
     { message: "É preciso fornecer ao menos um campo pra atualizar." },
   );
 
@@ -384,6 +403,15 @@ export function useUpdatePiece() {
                 }),
                 ...(input.patch.preco_final_override !== undefined && {
                   preco_final_override: input.patch.preco_final_override,
+                }),
+                ...(input.patch.display_name !== undefined && {
+                  display_name: input.patch.display_name,
+                }),
+                ...(input.patch.display_image_url !== undefined && {
+                  display_image_url: input.patch.display_image_url,
+                }),
+                ...(input.patch.badge_label !== undefined && {
+                  badge_label: input.patch.badge_label,
                 }),
               }
             : p,

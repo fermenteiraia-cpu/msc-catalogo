@@ -37,6 +37,7 @@ import { SelectedElementPanel } from "@/components/editor/SelectedElementPanel";
 import { CoverInfoPanel } from "@/components/editor/CoverInfoPanel";
 import { EditorReadyPhrases } from "@/components/editor/EditorReadyPhrases";
 import { PriceAuditPanel } from "@/components/editor/PriceAuditPanel";
+import { HtmlOverridePanel } from "@/components/editor/HtmlOverridePanel";
 import { brl } from "@/lib/money";
 
 type SaveState = "idle" | "saving" | "saved";
@@ -566,6 +567,9 @@ export function EditorPage() {
         <EditorReadyPhrases spec={spec} onChange={setSpec} />
         <PriceAuditPanel pieces={pieces} />
       </div>
+
+      {/* Camada 2 de override: HTML do esboço (David, 2026-05-26) */}
+      <HtmlOverridePanel catalogId={catalog.id} />
     </div>
   );
 }

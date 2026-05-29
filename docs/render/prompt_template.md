@@ -19,4 +19,10 @@ STYLE DIRECTION for this campaign — "{nome}":
 - Dominant color palette: {cor_dominante}
 - Reference style: {referencia}
 
+DECORATION RULE — IMPORTANT:
+The decorative elements listed above must be CLEARLY VISIBLE in the final result, with strong 3D depth and explicit presence. They should NOT be subtle, faded, or hidden in the gradient. Apply with HIGH density and prominent layering around the hero block.
+
+FOOTER RULE:
+The bottom MSC footer band should display the "LOJAS MSC" brand identifier repeated multiple times (5-6×) across the band as a signature pattern, not as a single centered line of text.
+
 Final aesthetic target: premium Brazilian retail encarte ("encarte de varejo"), magazine-print quality, ready for offset printing.
